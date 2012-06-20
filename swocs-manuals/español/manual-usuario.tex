@@ -1,0 +1,394 @@
+\documentclass[a4paper,12pt]{report}
+
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage[dvips]{graphicx,color}
+\usepackage{calc}
+\usepackage{multirow}
+\usepackage{colortbl}
+\usepackage{xcolor}
+\usepackage{moreverb}
+\usepackage{hyperref}
+\hypersetup{colorlinks=false}
+\usepackage[all]{hypcap}
+
+\newcommand{\fig}[3]
+{
+	\begin{figure}[ht!]
+		\centering
+		\includegraphics[scale=0.4]{#1}
+		\caption{#2.\label{#3}}
+	\end{figure}
+}
+
+\newcommand{\PICTURE}[4]
+{
+	\begin{figure}[ht!]\centering\begin{picture}(#1)#2\end{picture}
+	\caption{#3.\label{#4}}\end{figure}
+}
+
+\newcommand{\TABLE}[4]
+{
+	\begin{table}[ht!]\centering
+	\begin{tabular}{#1}\hline#2\\\hline\end{tabular}
+	\caption{#3.\label{#4}}\end{table}
+}
+
+\title
+{
+	{\bf \Large Manual de usuario del programa \emph{SWOCS}}\\
+	{\large	versión 1.0}
+}
+\author
+{
+	{\bf Autores:} Javier Burguete Tolosa y Samuel Ambroj Pérez\\
+	{\small Copyright~\copyright~2011-2012 Javier Burguete Tolosa.
+	Todos los derechos reservados}
+}
+\date{\today}
+
+\hyphenation
+{
+	an-ti-di-fu-si-vo
+	re-sul-ta-dos
+}
+
+\newcommand{\swocs}{\emph{SWOCS}}
+\newcommand{\IT}[1]{{\sl ``#1''}}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+
+\setlength{\parskip}{\baselineskip / 2}
+
+\chapter{Introducción}
+
+El programa {\swocs} ({\it Shallow Water Open Channel Simulator}) está diseñado para resolver numéricamente flujos
+transitorios unidimensionales y transporte con difusión de solutos en un canal
+o surco, con presencia de infiltración. 
+Existen versiones para sistemas operativos Unix y Windows. Windows es una 
+marca registrada de Microsoft Corporation.
+
+El código ha sido escrito en lenguaje C. El programa se distribuye junto con 
+el código fuente, siendo de libre uso y distribución bajo una licencia de tipo BSD.  
+
+\section{Internacionalización}
+
+El programa {\swocs} está escrito en inglés. Para evitar problemas con
+el formato de los ficheros de entrada y salida con distintas configuraciones
+regionales, se ha fijado el formato de los números reales en el estándar
+internacional. Por tanto, debe usarse el carácter \IT{.} para señalar la coma
+decimal. El carácter \IT{e}, bien en mayúsculas o en minúsculas, indica el
+exponente del número. Todas las unidades están expresadas en el Sistema
+Métrico Decimal.
+
+\chapter{Instrucciones de instalación y ejecución}
+
+\section{Requisitos de compilación}
+Para compilar el programa {\swocs} en sistemas operativos de tipo Unix se
+necesita tener instalados:
+\begin{verbatimtab}
+	gcc, GNU make
+\end{verbatimtab}
+En Windows puede realizarse la compilación a través de las plataformas
+\emph{cygwin} (\url{http://www.cygwin.com/}) y \emph{MinGW}
+(\url{http://www.mingw.org/}). 
+
+También pueden usarse otros compiladores. En este caso el archivo de compilación
+proporcionado ({\tt makefile}) no es compatible, y sería necesario crear algún
+tipo de fichero o proyecto para compilar el conjunto de ficheros.
+
+
+\section{Instalación en el sistema operativo Unix}
+
+La instalación de este programa en Unix consta de los siguientes pasos:
+  \begin{enumerate}
+	\item Descomprima el fichero \emph{swocs-src-1-0.zip}. \\
+		Al descomprimir el archivo aparecen archivos con extensiones {\tt .c},
+		{\tt .h} y un archivo de compilación ({\tt makefile}) en formato
+		\emph{GNU make}.
+	\item En un terminal ejecute la instrucción: {\tt make} \\
+			Este paso crea el ejecutable {\tt swocs} 
+	\item También pueden descargarse:
+		\begin{itemize}
+			\item el manual de usuario en español
+				({\it swocs-manual-usuario-1-0.pdf})
+			\item el manual de usuario en inglés
+				({\it swocs-user-manual-1-0.pdf})
+			\item y un manual de referencia del programador\\
+				({\it swocs-reference-manual-1-0.pdf}). 
+		\end{itemize}
+  \end{enumerate}
+
+\section{Instalación en el sistema operativo Microsoft Windows}
+
+Para realizar la instalación en Windows sólo necesita un paso: 
+  \begin{enumerate}
+	\item Descargue el ejecutable \emph{swocs.exe}. \\
+		Si descarga este fichero no necesitará realizar la compilación de los
+		códigos fuente. Si desea compilar a partir de los códigos fuente
+		descargue y descomprima el fichero \emph{swocs-src-1-0.zip} y proceda
+		igual que la compilación en Unix descrita en la sección anterior.
+  \end{enumerate}
+
+\section{Ejecución del programa}
+
+En sistemas Microsoft Windows, para ejecutar el programa vaya al modo de comandos:
+\begin{description}
+\item[Inicio$\rightarrow$Programas$\rightarrow$Accesorios$\rightarrow$Símbolo del sistema]
+\end{description}
+Después acceda usando la orden \emph{cd} al directorio donde se ubica el ejecutable.
+\begin{description}
+\item[Ejemplo:] cd C:$\backslash$Programas$\backslash$Swocs
+\end{description}
+
+La sintaxis de ejecución, tanto en sistemas Unix como en Microsoft Windows, de una simulación es la siguiente:
+\begin{description}
+\item \emph{swocs}  \emph{fichero1} \emph{fichero2} \emph{fichero3} \emph{fichero4} \emph{fichero5} \emph{fichero6}
+\end{description}
+donde los ficheros son:
+\begin{description}
+\item[\it fichero1,] fichero de entrada del cauce.
+\item[\it fichero2,] fichero de resultados de las variables.
+\item[\it fichero3,] fichero de resultados de los flujos.
+\item[\it fichero4,] fichero de resultados del avance.
+\item[\it fichero5,] fichero de entrada de las sondas.
+\item[\it fichero6,] fichero de resultados de las sondas.
+\end{description}
+
+El formato de cada uno de los 6 ficheros se explica en el capítulo posterior.
+
+\chapter{Formato de los ficheros de entrada y salida}
+
+Todos ficheros de entrada y salida utilizan codificación ASCII, pudiéndose crear y modificar 
+con una gran variedad de editores de texto ({\tt notepad}, {\tt vim}).
+
+\section{Formato del fichero de entrada del cauce}
+Se muestra en primer lugar un ejemplo de un fichero de entrada del cauce:
+
+{\footnotesize
+\begin{boxedverbatim}
+100 0 0.14 1.222 0.27
+2
+1 1 1
+0.062
+9.6e-06 0.115 0 0.8
+11.82
+1
+0 0.001
+4
+567 0
+567 0.0106
+867 0.0106
+867 0
+401 1
+3900 60 0.9 0.01
+2 2
+1
+\end{boxedverbatim}
+}
+
+Cada valor tiene la siguiente correspondencia:
+
+{\footnotesize
+\begin{boxedverbatim}
+(longitud) (pendiente fondo) (anchura fondo) (pendiente pared) (profundidad)
+(tipo de salida)
+(modelo de fricción) (modelo de infiltración) (modelo de difusión)
+(coeficientes de fricción) ...
+(coeficientes de infiltración) ...
+(coeficientes de difusión) ...
+(número de puntos hidrograma de entrada de agua)
+(tiempo hidrograma de entrada) (caudal hidrograma de entrada)
+...
+(número de puntos hidrograma de entrada de soluto)
+(tiempo hidrograma entrada soluto) (caudal hidrograma entrada soluto)
+...
+(número de nodos de la malla) (tipo de condiciones iniciales)
+(tiempo final) (intervalo tiempo entre medidas) (número CFL) (altura mínima)
+(modelo numérico flujo de superficie) (modelo numérico de la difusión)
+(modelo físico de la superficie flujo)
+\end{boxedverbatim}
+}
+
+\subsection{Tipo de salida}
+\begin{verbatimtab}
+	1: Cerrada.
+	2: Abierta.
+\end{verbatimtab}
+
+\subsection{Modelos y coeficientes de fricción}
+En la versión actual sólo se encuentra disponible el modelo de fricción de Gauckler-Manning. El único coeficiente de fricción necesario para este modelo es el número de Gauckler-Manning, $n$. Nuevos modelos de fricción podrían necesitar más de un único coeficiente de fricción.
+\begin{verbatimtab}[4]
+(modelo de fricción): 
+		1: Gauckler-Manning.
+(coeficientes de fricción):
+\end{verbatimtab}
+\vspace{-0.60cm}
+\hspace{1.8cm}$n$
+
+En el caso de Gauckler-Manning la formulación empleada es la siguiente (\cite{JaviSurcos1}):
+\begin{equation}
+S_f=\frac{n^2 Q|Q|P^{4/3}}{A^{10/3}}
+\end{equation}
+\noindent donde $S_f$ es la pendiente de fricción, $Q$ es el caudal superficial, $P$ es el perímetro mojado de la 
+sección transversal superficial y $A$ es el área mojada de la sección transversal superficial. 
+
+\subsection{Modelos y coeficientes de infiltración}
+En la versión actual sólo se encuentra disponible el modelo de infiltración de Kostiakov-Lewis. Para este modelo son necesarios 4 coeficientes de infiltración. Nuevos modelos de infiltración podrían necesitar un número distinto de coeficientes de infiltración.
+\begin{verbatimtab}[4]
+(modelo de infiltración): 
+		1: Kostiakov-Lewis.
+(coeficientes de infiltración):
+\end{verbatimtab}
+\vspace{-0.5cm}
+\hspace{1.8cm}$K$\hspace{0.9cm}$a$\hspace{0.9cm}$i_c$\hspace{0.9cm}$D$
+
+La formulación del modelo de Kostiakov-Lewis (\cite{JaviSurcos1}):
+\begin{equation}
+\frac{d\alpha}{dt}=P\left[ i_c + Ka \left( \frac{\alpha}{DK} \right)^{a-1/a} \right]
+\end{equation}
+\noindent donde $\alpha$ es el área infiltrada, $t$ es la coordenada temporal, $i_c$ es la velocidad de infiltración en suelo saturado, $K$ es el parámetro de infiltración de Kostiakov, $a$ es el coeficiente de infiltración de Kostiakov y $D$ es la distancia entre surcos.
+
+\subsection{Modelos y coeficientes de difusión}
+En la versión actual sólo se encuentra disponible el modelo de difusión de Rutherford. El único coeficiente de difusión necesario para este modelo
+es el coeficiente adimensional de difusión superficial, $D_x$.
+\begin{verbatimtab}[4]
+(modelo de difusión): 
+		1: Rutherford.
+(coeficientes de difusión):
+\end{verbatimtab}
+\vspace{-0.5cm}
+\hspace{1.8cm}$D_x$ 
+
+La formulación del modelo de difusión de Rutherford (\cite{JaviSurcos1}):
+\begin{equation}
+K_x=D_x\sqrt{gAP|S_f|}
+\end{equation}
+\noindent donde $K_x$ es el coeficiente de difusión superficial y $g$ es la constante gravitatoria.
+
+\subsection{Tipos y parámetros de las condiciones iniciales}
+\begin{verbatimtab}[4]
+		1: Cauce seco.
+\end{verbatimtab}
+
+\subsection{Modelos numéricos del flujo de superficie}
+\begin{verbatimtab}
+	1: McCormack.
+	2: Upwind.
+\end{verbatimtab}
+
+\subsection{Modelos numéricos de la difusión}
+\begin{verbatimtab}
+	1: Explícito.
+	2: Implícito.
+\end{verbatimtab}
+
+\subsection{Modelos físicos de la superficie de flujo}
+\begin{verbatimtab}
+	1: Completo.
+	2: Cero-inercia.
+	3: Difusivo.
+	4: Cinemático.
+\end{verbatimtab}
+
+
+\section{Formato del fichero de resultados de las variables}
+El fichero de resultados de las variables presenta el valor en la coordenada longitudinal, $x$, de 5 variables de interés, para el tiempo final de la simulación. El orden es el mostrado a continuación:
+
+\hspace{1.8cm}$x$\hspace{0.9cm}$A$\hspace{0.9cm}$Q$\hspace{0.9cm}$A\cdot s$\hspace{0.9cm}$\alpha$\hspace{0.9cm}$\alpha\cdot s_i$ 
+
+\hspace{3.8cm} $\cdots \cdots \cdots$
+
+\noindent donde $s$ es la concentración de soluto promedio en la sección transversal superficial y $s_i$ es la concentración de soluto infiltrada.
+
+\section{Formato del fichero de resultados de los flujos}
+El fichero de resultados de los flujos presenta el valor en la coordenada longitudinal, $x$, de 4 variables de interés, para el tiempo final de la simulación. El orden es el mostrado a continuación:
+
+\hspace{1.8cm}$x$\hspace{0.9cm}$\frac{\delta(Qu)}{\delta x}$\hspace{0.9cm}$-gA\frac{\delta z_b}{\delta x}$\hspace{0.9cm}$gA\frac{\delta h}{\delta x}$
+\hspace{0.9cm}$gAS_f$ 
+
+\hspace{3.8cm} $\cdots \cdots \cdots$
+
+\noindent donde $u$ es la velocidad promedio en la sección transversal superficial, $h$ es la altura de agua superficial y $z_b$ es la 
+coordenada vertical del fondo de la sección transversal. 
+
+\section{Formato del fichero de resultados del avance}
+
+Este fichero guarda para cada paso temporal la pareja de valores:
+
+\hspace{1.8cm}$t$\hspace{0.9cm}$x_{av}$
+
+\hspace{1.8cm} $\cdots$
+
+\noindent donde $x_{av}$ es la coordenada longitudinal máxima que alcanza el agua en tiempo $t$.
+ 
+
+
+\section{Formato del fichero de entrada de las sondas}
+ 
+El formato del fichero de entrada se sondas es muy sencillo:
+
+\begin{verbatimtab}
+	(número de sondas)
+	(coordenada x)
+	...
+\end{verbatimtab}
+
+\section{Formato del fichero de resultados de las sondas}
+El número de columnas de este fichero depende del número de sondas que hayan sido definidas en el fichero de entrada de sondas. 
+En cada paso temporal guarda para cada sonda la pareja de valores ($h$, $s$):
+
+\hspace{1.8cm}$t$\hspace{0.9cm}$h_1$\hspace{0.9cm}$s_1$\hspace{0.9cm}$\cdots$\hspace{0.9cm}$h_N$\hspace{0.9cm}$s_N$
+
+\hspace{3.8cm} $\cdots \cdots$
+
+\noindent donde $N$ es el número total de sondas. 
+
+\clearpage
+\section*{Notación}
+
+\begin{description}
+\item $\alpha$ = área infiltrada,
+\item $A$ = área mojada de la sección transversal superficial,
+\item $a$ = es el coeficiente de infiltración de Kostiakov,
+\item $D$ = distancia entre surcos,
+\item $D_x$ = coeficiente adimensional de difusión superficial,
+\item $g$ = constante gravitatoria,
+\item $h$ = altura de agua superficial,
+\item $i_c$ = velocidad de infiltración en suelo saturado,
+\item $K$ = parámetro de infiltración de Kostiakov, 
+\item $K_x$ = coeficiente de difusión superficial,
+\item $N$ = número total de sondas, 
+\item $n$ = número de Gauckler Manning,
+\item $P$ = perímetro mojado de la sección transversal superficial,
+\item $Q$ = caudal superficial,
+\item $S_f$ = pendiente de fricción,
+\item $s$ = concentración de soluto promedio en la sección transversal superficial,
+\item $s_i$ = concentración de soluto infiltrada,
+\item $t$ = coordenada temporal,
+\item $u=\frac{Q}{A}$ = velocidad promedio en la sección transversal superficial,
+\item $x$ = coordenada longitudinal,
+\item $x_{av}$ = coordenada longitudinal máxima que alcanza el agua en tiempo $t$,
+\item $z_b$ = coordenada vertical del fondo de la sección transversal,
+\end{description}
+
+\clearpage
+\begin{thebibliography}{}
+
+\bibitem[Burguete et~al., 2009]{JaviSurcos1}
+Burguete, J., Zapata, N., Garc\'{\i}a-Navarro, P., Ma\protect{\"{\i}}kaka, M.,
+  Play\'an, E., and Murillo, J. (2009).
+\newblock Fertigation in furrows and level furrow systems. \protect{I}: Model
+  description and numerical tests.
+\newblock {\em ASCE Journal of Irrigation and Drainage Engineering},
+  135(4):401--412.
+
+\end{thebibliography}
+
+\end{document}
+
+

@@ -1,0 +1,398 @@
+\documentclass[a4paper,12pt]{report}
+
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage[dvips]{graphicx,color}
+\usepackage{calc}
+\usepackage{multirow}
+\usepackage{colortbl}
+\usepackage{xcolor}
+\usepackage{moreverb}
+\usepackage{hyperref}
+\hypersetup{colorlinks=false}
+\usepackage[all]{hypcap}
+
+\newcommand{\fig}[3]
+{
+	\begin{figure}[ht!]
+		\centering
+		\includegraphics[scale=0.4]{#1}
+		\caption{#2.\label{#3}}
+	\end{figure}
+}
+
+\newcommand{\PICTURE}[4]
+{
+	\begin{figure}[ht!]\centering\begin{picture}(#1)#2\end{picture}
+	\caption{#3.\label{#4}}\end{figure}
+}
+
+\newcommand{\TABLE}[4]
+{
+	\begin{table}[ht!]\centering
+	\begin{tabular}{#1}\hline#2\\\hline\end{tabular}
+	\caption{#3.\label{#4}}\end{table}
+}
+
+\title
+{
+	{\bf\Large User manual for \emph{SWOCS}}\\
+	{\large	version 1.0}
+}
+\author
+{
+	{\bf Authors:} Javier Burguete Tolosa and Samuel Ambroj Pérez\\
+	{\small Copyright~\copyright~2011-2012 Javier Burguete Tolosa.
+	 All right reserved.}
+}
+\date{\today}
+
+\hyphenation
+{
+	furrow
+}
+
+\newcommand{\swocs}{\emph{SWOCS}}
+\newcommand{\IT}[1]{{\sl ``#1''}}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+
+\setlength{\parskip}{\baselineskip / 2}
+
+\chapter{Introduction}
+
+The program {\swocs} (\emph{Shallow Water Open Channel Simulator}) is designed
+to solve numerically one-dimensional transient flows with solute transport and
+infiltration in a channel or furrow. There are two versions of the code for the
+operating systems Unix and Windows. Windows is a trademark of Microsoft
+Corporation.
+
+The code has been written in C language and is freely distributed under a BSD
+type license.
+
+\section{Internationalization}
+
+In order to avoid conflicts with formats in the input and output data files when
+using different regional configurations, the real numbers format has been forced
+to the international standard. Therefore, the character \IT{.} has to be used to
+indicate the decimal point. The character \IT{e}, indicates the exponential of
+the number. On the other hand, all units have to be specified in the
+International Unit System.
+
+\chapter{Installation and execution instructions}
+
+\section{Compilation requirements}
+
+In order to compile the program {\swocs} on Unix operating systems, it is
+necessary to have installed the following packages:
+\begin{verbatimtab}
+	gcc, GNU make
+\end{verbatimtab}
+The compilation can be made under \emph{cygwin} (\url{http://www.cygwin.com/})
+and \emph{MinGW} (\url{http://www.mingw.org/}) platforms for Windows users.
+
+It is also possible to use different compilers. In this case, the included
+compilation file ({\tt makefile}) does not work, and it would be necessary
+to create some kind of file or project to compile the set of source code files.  
+\section{Installation on Unix systems}
+
+The following steps are required to install this program on Unix systems:
+\begin{enumerate}
+	\item Decompress the file \emph{swocs-src-1-0.zip}. \\
+		Once decompressed, the contents of the folder must be the following one:
+		some files with {\tt c} extension, some files with {\tt h} extension, a
+		compilation file ({\tt makefile}) in \emph{GNU make} format.
+	\item Execute the shell instruction: {\tt make} \\
+			The executable {\tt swocs} is built. 
+	\item Some manuals can be also downloaded:
+		\begin{description}
+			\item{Spanish manual} ({\it swocs-manual-de-usuario-1-0.pdf}),
+			\item{English manual} ({\it swocs-user-manual-1-0.pdf})
+			\item and a programmer's reference manual 
+				({\it swocs-reference-manual-1-0.pdf}). 
+		\end{description}
+\end{enumerate}
+
+\section{Installation on Microsoft Windows systems}
+
+The following step is required to install this program on Windows systems:
+\begin{enumerate}
+	\item Download the executable \emph{swocs.exe}. \\
+		If this file is downloaded, no more files will be necessary and no
+		compilation will be required.
+	\item It is also possible to compile the source code, being necessary to
+		download the file \emph{swocs-src-1-0.zip} and proceed as detailed in
+		the previous section.
+	\item Some manuals can be also downloaded:
+		\begin{description}
+			\item{Spanish manual} ({\it swocs-manual-de-usuario-1-0.pdf}),
+			\item{English manual} ({\it swocs-user-manual-1-0.pdf})
+			\item and a programmer's reference manual 
+				({\it swocs-reference-manual-1-0.pdf}). 
+		\end{description}
+\end{enumerate}
+
+\section{Program execution}
+
+In Microsoft Windows systems, to execute the program go to the commands interface:
+\begin{description}
+\item[Start$\rightarrow$Programs$\rightarrow$Accesories$\rightarrow$Command Prompt]
+\end{description}
+Then, access to the folder where the executable file is located using the \emph{cd} command.
+\begin{description}
+\item[Example:] cd C:$\backslash$Programs$\backslash$Swocs
+\end{description}
+
+The execution syntax, for Unix and Microsoft Windows systems, is the following one:
+\begin{description}
+\item \emph{swocs}  \emph{file1} \emph{file2} \emph{file3} \emph{file4} \emph{file5} \emph{file6}
+\end{description}
+where the files are:
+\begin{description}
+\item[\it file1,] input channel file.
+\item[\it file2,] output variables file.
+\item[\it file3,] output flows file.
+\item[\it file4,] output advance file.
+\item[\it file5,] input probes file.
+\item[\it file6,] output probes file.
+\end{description}
+
+File formats are explained in the following chapter.
+
+\chapter{Format of input and output files}
+
+ASCII character encoding is used for input and output files. These files can be created and modified
+with a wide range of text editors ({\tt notepad}, {\tt vim}). 
+
+
+\section{Format of input channel file}
+An example of the input channel file is shown:
+
+{\footnotesize
+\begin{boxedverbatim}
+100 0 0.14 1.222 0.27
+2
+1 1 1
+0.062
+9.6e-06 0.115 0 0.8
+11.82
+1
+0 0.001
+4
+567 0
+567 0.0106
+867 0.0106
+867 0
+401 1
+3900 60 0.9 0.01
+2 2
+1
+\end{boxedverbatim}
+}
+
+Each value has the following correspondence:
+
+{\footnotesize
+\begin{boxedverbatim}
+(channel length) (channel slope) (bottom width) (wall slope) (channel depth)
+(outlet type)
+(friction model) (infiltration model) (diffusion model)
+(friction coefficients) ...
+(infiltration coefficients) ...
+(diffusion coefficients) ...
+(number of points of the inlet water hydrogam)
+(time of the inlet water hydrogam) (discharge of the inlet water hydrogram)
+...
+(number of points of the inlet solute hydrogam)
+(time of the inlet solute hydrogam) (discharge of the inlet solute hydrogram)
+...
+(number of mesh nodes) (initial conditions type)
+(final time) (time interval between measures) (cfl number) (minimum depth)
+(numerical model of surface flow) (numerical model of diffusion)
+(physical model of surface flow)
+\end{boxedverbatim}
+}
+
+\subsection{Outlet type}
+\begin{verbatimtab}
+	1: Closed.
+	2: Open.
+\end{verbatimtab}
+
+\subsection{Friction model and coefficients}
+It is only available the Gauckler-Manning friction model in the current version. The only necessary coefficient for this model is the Gauckler-Manning number, $n$.
+More than a single number could be necessary for different friction models. 
+\begin{verbatimtab}[4]
+(friction model): 
+		1: Gauckler-Manning.
+(friction coefficients):
+\end{verbatimtab}
+\vspace{-0.60cm}
+\hspace{1.8cm}$n$
+
+The formulation used for the Gauckler-Manning model (\cite{JaviSurcos1}):
+\begin{equation}
+S_f=\frac{n^2 Q|Q|P^{4/3}}{A^{10/3}}
+\end{equation}
+\noindent where $S_f$ is the friction slope, $Q$ is the superficial discharge, $P$ is the superficial cross sectional wetted perimeter
+and $A$ is the superficial cross sectional wetted area.
+
+\subsection{Infiltration model and coefficients}
+It is only available the Kostiakov-Lewis infiltration model in the current version. Four infiltration coefficients need to be defined for this model.
+A different number of coefficientes could be necessary for different infiltration models.  
+\begin{verbatimtab}[4]
+(infiltration model): 
+		1: Kostiakov-Lewis.
+(infiltration coefficients):
+\end{verbatimtab}
+\vspace{-0.5cm}
+\hspace{1.8cm}$K$\hspace{0.9cm}$a$\hspace{0.9cm}$i_c$\hspace{0.9cm}$D$
+
+The formulation used for the Kostiakov-Lewis model (\cite{JaviSurcos1}):
+\begin{equation}
+\frac{d\alpha}{dt}=P\left[ i_c + Ka \left( \frac{\alpha}{DK} \right)^{a-1/a} \right]
+\end{equation}
+\noindent where $\alpha$ is the infiltrated cross sectional area, $t$ is the temporal coordinate, $i_c$ is the saturated infiltration long-term rate, $K$ is the Kostiakov infiltration parameter, $a$ is the Kostiakov infiltration exponent and $D$ is the distance between furrows.
+
+\subsection{Diffusion model and coefficients}
+It is only available the Rutherford diffusion model in the current version. The only necessary coefficient for this model is 
+the adimensional superficial diffusion coefficient, $D_x$.
+\begin{verbatimtab}[4]
+(diffusion model): 
+		1: Rutherford.
+(diffusion coefficients):
+\end{verbatimtab}
+\vspace{-0.5cm}
+\hspace{1.8cm}$D_x$ 
+
+The Rutherford model formulation for the infiltration (\cite{JaviSurcos1}):
+\begin{equation}
+K_x=D_x\sqrt{gAP|S_f|}
+\end{equation}
+\noindent where $K_x$ is the superficial diffusion coefficient and $g$ is the gravitational constant.
+
+\subsection{Initial conditions type}
+\begin{verbatimtab}[4]
+		1: Dry bed.
+\end{verbatimtab}
+
+\subsection{Numerical model of surface flow}
+\begin{verbatimtab}
+	1: McCormack.
+	2: Upwind.
+\end{verbatimtab}
+
+\subsection{Numerical model of diffusion}
+\begin{verbatimtab}
+	1: Explicit.
+	2: Implicit.
+\end{verbatimtab}
+
+\subsection{Physical model of surface flow}
+\begin{verbatimtab}
+	1: Complete.
+	2: Zero-inertia.
+	3: Diffusive.
+	4: Kinematic.
+\end{verbatimtab}
+
+\section{Format of output variables file}
+Five different variables are saved for every longitudinal coordinate, $x$, in the final simulation time. 
+The order of every row:
+
+\hspace{1.8cm}$x$\hspace{0.9cm}$A$\hspace{0.9cm}$Q$\hspace{0.9cm}$A\cdot s$\hspace{0.9cm}$\alpha$\hspace{0.9cm}$\alpha\cdot s_i$ 
+
+\hspace{3.8cm} $\cdots \cdots \cdots$
+
+\noindent where $s$ is the cross-sectional average solute concentration and $s_i$ is the infiltrated solute concentration.
+
+\section{Format of output flows file}
+Four different variables are saved for every longitudinal coordinate, $x$, in the final simulation time. 
+The order of every row:
+
+\hspace{1.8cm}$x$\hspace{0.9cm}$\frac{\delta(Qu)}{\delta x}$\hspace{0.9cm}$-gA\frac{\delta z_b}{\delta x}$\hspace{0.9cm}$gA\frac{\delta h}{\delta x}$
+\hspace{0.9cm}$gAS_f$ 
+
+\hspace{3.8cm} $\cdots \cdots \cdots$
+
+\noindent where $u$ is the cross-sectional averaged velocity, $h$ is the superficial water depth and $z_b$ is the 
+level of the lowest point in the cross section.
+
+\section{Format of output advance file}
+
+The pair of values ($t$, $x_{av}$) are saved in every time step:
+
+\hspace{1.8cm}$t$\hspace{0.9cm}$x_{av}$
+
+\hspace{1.8cm} $\cdots$
+
+\noindent where $x_{av}$ is the maximum longitudinal coordinate reached by water in time $t$.
+
+\section{Format of input probes file}
+ 
+The total number of probes and the longitudinal location $x$ of every probe need to be defined:
+
+\begin{verbatimtab}
+	(total number of probes)
+	(longitudinal coordinate)
+	...
+\end{verbatimtab}
+
+\section{Format of output probes file}
+The number of columns depends on the number of probes defined in the input probes file.
+The pair of values ($h$, $s$) for every probe are saved in every time step:
+
+\hspace{1.8cm}$t$\hspace{0.9cm}$h_1$\hspace{0.9cm}$s_1$\hspace{0.9cm}$\cdots$\hspace{0.9cm}$h_N$\hspace{0.9cm}$s_N$
+
+\hspace{3.8cm} $\cdots \cdots$
+
+\noindent where $N$ is the number of probes. 
+
+\clearpage
+\section*{Notation}
+
+\begin{description}
+\item $\alpha$ = infiltrated cross sectional area,
+\item $A$ = superficial cross sectional wetted area,
+\item $a$ = Kostiakov infiltration exponent,
+\item $D$ = distance between furrows,
+\item $D_x$ = adimensional superficial diffusion coefficient,
+\item $g$ = gravitational constant,
+\item $h$ = superficial water depth, 
+\item $i_c$ = saturated infiltration long-term rate, 
+\item $K$ = Kostiakov infiltration parameter, 
+\item $K_x$ = superficial diffusion coefficient,
+\item $N$ = number of probes, 
+\item $n$ = Gauckler-Manning roughness coefficient,
+\item $P$ = superficial cross sectional wetted perimeter,
+\item $Q$ = superficial discharge,
+\item $S_f$ = friction slope,
+\item $s$ = cross-sectional average solute concentration,
+\item $s_i$ = infiltrated solute concentration,
+\item $t$ = temporal coordinate,
+\item $u=\frac{Q}{A}$ = cross-sectional averaged velocity,
+\item $x$ = longitudinal coordinate,
+\item $x_{av}$ = maximum longitudinal coordinate reached by water in time $t$,
+\item $z_b$ = level of the lowest point in the cross section,
+\end{description}
+
+
+\clearpage
+\begin{thebibliography}{}
+
+\bibitem[Burguete et~al., 2009]{JaviSurcos1}
+Burguete, J., Zapata, N., Garc\'{\i}a-Navarro, P., Ma\protect{\"{\i}}kaka, M.,
+  Play\'an, E., and Murillo, J. (2009).
+\newblock Fertigation in furrows and level furrow systems. \protect{I}: Model
+  description and numerical tests.
+\newblock {\em ASCE Journal of Irrigation and Drainage Engineering},
+  135(4):401--412.
+
+\end{thebibliography}
+
+\end{document}
+
