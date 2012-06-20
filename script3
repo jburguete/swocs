@@ -1,0 +1,11 @@
+./swocs s-0001-003-1/i-1-3-60 s-0001-003-1/o-1-3-60
+./swocs s-001-003-1/i-1-3-60 s-001-003-1/o-1-3-60
+./swocs s-001-003-1/i-1-3-e s-001-003-1/o-1-3-e
+./swocs s-0001-003-01/i-1-3-200 s-0001-003-01/o-1-3-200
+./swocs s-001-003-01/i-1-3-200 s-001-003-01/o-1-3-200
+./swocs s-001-003-01/i-1-3-e s-001-003-01/o-1-3-e
+./swocs nery3/input1 nery3/variables.out nery3/flows.out nery3/advances1.out nery3/probes nery3/probes1.out
+./swocs nery3/input2 nery3/variables.out nery3/flows.out nery3/advances2.out nery3/probes nery3/probes2.out
+./swocs nery3/input3 nery3/variables.out nery3/flows.out nery3/advances3.out nery3/probes nery3/probes3.out
+./swocs nery3/input4 nery3/variables.out nery3/flows.out nery3/advances4.out nery3/probes nery3/probes4.out
+

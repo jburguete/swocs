@@ -1,0 +1,4 @@
+./swocs nery/input1 nery/variables.out nery/flows.out nery/advances1.out nery/probes nery/probes1.out
+./swocs nery/input2 nery/variables.out nery/flows.out nery/advances2.out nery/probes nery/probes2.out
+./swocs nery/input3 nery/variables.out nery/flows.out nery/advances3.out nery/probes nery/probes3.out
+./swocs nery/input4 nery/variables.out nery/flows.out nery/advances4.out nery/probes nery/probes4.out

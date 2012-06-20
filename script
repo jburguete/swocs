@@ -1,0 +1,7 @@
+make
+time ./script1
+time ./script2
+time ./script3
+time ./script4
+gnuplot plot
+mv *.{tex,eps} ../tex/simplified
