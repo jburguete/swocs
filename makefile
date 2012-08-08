@@ -19,6 +19,9 @@ objects = main.o channel.o node.o mesh.o model.o model_complete.o \
 	model_complete_upwind.o model_zero_inertia_upwind.o \
 	# model_diffusive_LaxFriedrichs.o model_kinematic_LaxFriedrichs.o
 
+manuals = reference-manual.pdf swocs-manuals/english/user-manual.pdf \
+	swocs-manuals/español/manual-usuario.pdf
+
 libraries = -lm
 
 flags = -O2 -Wall
@@ -106,3 +109,17 @@ main.o: main.c model.h mesh.h node.h channel.h config.h makefile \
 	model_zero_inertia_upwind.h model_complete_upwind.h
 	$(compiler) main.c -o main.o
 
+manuals: $(manuals)
+
+reference-manual.pdf: $(headers) $(sources) Doxyfile makefile
+	doxygen
+	cd latex; make; mv refman.pdf ../reference-manual.pdf
+
+swocs-manuals/english/user-manual.pdf: swocs-manuals/english/user-manual.tex \
+	makefile
+	cd swocs-manuals/english; pdflatex user-manual; pdflatex user-manual
+
+swocs-manuals/español/manual-usuario.pdf: \
+	swocs-manuals/español/manual-usuario.tex \
+	makefile
+	cd swocs-manuals/español; pdflatex manual-usuario; pdflatex manual-usuario

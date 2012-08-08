@@ -104,7 +104,7 @@ bad:
 }
 
 /**
- * \fn double hydrogram_discharge(Hydrogram *hydrogram, double t1)
+ * \fn double hydrogram_discharge(Hydrogram *hydrogram, double t)
  * \brief Function to calculate the discharge in a hydrogram.
  * \param hydrogram
  * \brief hydrogram struct.
@@ -176,6 +176,72 @@ double hydrogram_integrate(Hydrogram *hydrogram, double t1, double t2)
 			hydrogram->Q[i], hydrogram->Q[i - 1]);
 	}
 	return I + 0.5 * (Q2 + hydrogram->Q[i - 1]) * (t2 - hydrogram->t[i - 1]);
+}
+
+/**
+ * \fn int geometry_read(Geometry *geometry, FILE *file)
+ * \brief Function to read the data of a channel geometry.
+ * \param geometry
+ * \brief channel geometry struct.
+ * \param file
+ * \brief input file.
+ * \return 0 on error, 1 on success.
+ */
+int geometry_read(Geometry *geometry, FILE *file)
+{
+	int i;
+	char *msg;
+	if (fscanf(file, "%d", &geometry->n) != 1 || geometry->n < 1)
+	{
+		msg = "geometry: bad points number\n";
+		goto bad;
+	}
+#if DEBUG_MODEL_READ
+	printf("geometry: n=%d\n", geometry->n);
+#endif
+	geometry->x = (double*)malloc(geometry->n * sizeof(double));
+	geometry->zb = (double*)malloc(geometry->n * sizeof(double));
+	if (!geometry->x || !geometry->zb)
+	{
+		msg = "geometry: not enough memory\n";
+		goto bad;
+	}
+	for (i = 0; i < geometry->n; ++i)
+	{
+		if (fscanf(file, "%lf%lf", geometry->x + i, geometry->zb + i) != 2)
+		{
+			msg = "geometry: bad defined\n";
+			goto bad;
+		}
+#if DEBUG_MODEL_READ
+		printf("geometry: t=%lf Q=%lf\n", geometry->x[i], geometry->zb[i]);
+#endif
+	}
+	return 1;
+
+bad:
+	printf(msg);
+	return 0;
+}
+
+/**
+ * \fn double geometry_level(Geometry *geometry, double x)
+ * \brief Function to calculate the level in a geometry.
+ * \param geometry
+ * \brief geometry struct.
+ * \param x
+ * \brief x-coordinate.
+ * \return level.
+ */
+double geometry_level(Geometry *geometry, double x)
+{
+	int i, n1;
+	n1 = geometry->n - 1;
+	if (x <= geometry->x[0]) return geometry->zb[0];
+	if (x >= geometry->x[n1]) return geometry->zb[n1];
+	for (i = 0; x > geometry->x[i];) ++i;
+	return interpolate(x, geometry->x[i], geometry->x[i - 1],
+		geometry->zb[i], geometry->zb[i - 1]);
 }
 
 /**
@@ -272,9 +338,8 @@ int channel_diffusion_read_Rutherford(Channel *channel, FILE *file)
 int channel_read(Channel *channel, FILE *file)
 {
 	char *msg;
-	if (fscanf(file, "%lf%lf%lf%lf%lf%d%d%d%d",
+	if (fscanf(file, "%lf%lf%lf%lf%d%d%d%d",
 		&channel->length,
-		&channel->slope,
 		&channel->bottom_width,
 		&channel->wall_slope,
 		&channel->height,
@@ -288,12 +353,11 @@ int channel_read(Channel *channel, FILE *file)
 	}
 #if DEBUG_MODEL_READ
 	printf("channel:\n"
-		"length=%lf slope=%lf\n"
+		"length=%lf\n"
 		"bottom_width=%lf wall_slope=%lf\n"
 		"height=%lf type_outlet=%d\n"
 		"friction_model=%d infiltration_model=%d diffusion_model=%d\n",
 		channel->length,
-		channel->slope,
 		channel->bottom_width,
 		channel->wall_slope,
 		channel->height,
@@ -320,6 +384,11 @@ int channel_read(Channel *channel, FILE *file)
 	if (channel->height <= 0.)
 	{
 		msg = "channel: bad height\n";
+		goto bad;
+	}
+	if (!geometry_read(channel->geometry, file))
+	{
+		msg = "channel: geometry\n";
 		goto bad;
 	}
 	switch (channel->type_outlet)

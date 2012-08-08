@@ -67,7 +67,7 @@ int mesh_open(Mesh *mesh, Channel *channel)
 	{
 		node[i].ix = ix;
 		node[i].x = i * ix;
-		node[i].zb = (channel->length - node[i].x) * channel->slope;
+		node[i].zb = geometry_level(channel->geometry, node[i].x);
 		node[i].B0 = channel->bottom_width;
 		node[i].Z = Z;
 		memcpy(node[i].friction_coefficient, channel->friction_coefficient,

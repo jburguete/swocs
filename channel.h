@@ -61,6 +61,29 @@ struct _Hydrogram
 typedef struct _Hydrogram Hydrogram;
 
 /**
+ * \struct _Geometry
+ * \brief Struct to define a channel geometry.
+ */
+struct _Geometry
+{
+/**
+ * \var x
+ * \brief array of point x-coordinates.
+ * \var zb
+ * \brief array of point y-coordinates.
+ * \var n
+ * \brief number of points defining the channel geometry.
+ */
+	double *x, *zb;
+	int n;
+};
+
+/**
+ * \typedef Geometry
+ */
+typedef struct _Geometry Geometry;
+
+/**
  * \struct _Channel
  * \brief Struct to define a channel.
  */
@@ -71,6 +94,8 @@ struct _Channel
  * \brief hydrogram of water inlet.
  * \var solute_inlet
  * \brief hydrogram of solute inlet.
+ * \var geometry
+ * \brief channel geometry.
  * \var friction_coefficient
  * \brief array of friction coefficients.
  * \var infiltration_coefficient
@@ -79,8 +104,6 @@ struct _Channel
  * \brief array of diffusion coefficients.
  * \var length
  * \brief channel length.
- * \var slope
- * \brief channel slope.
  * \var bottom_width
  * \brief bottom width.
  * \var wall_slope
@@ -96,10 +119,10 @@ struct _Channel
  * \var diffusion_model
  * \brief type of diffusion model (1 Rutherford).
  */
-	Hydrogram water_inlet[1], solute_inlet[1]; 
+	Hydrogram water_inlet[1], solute_inlet[1];
+	Geometry geometry[1];
 	double friction_coefficient[3], infiltration_coefficient[4],
-		diffusion_coefficient[1], slope, length, bottom_width, wall_slope,
-		height;
+		diffusion_coefficient[1], length, bottom_width, wall_slope, height;
 	int type_outlet, friction_model, infiltration_model, diffusion_model;
 };
 
@@ -115,6 +138,9 @@ double interpolate(double x, double x1, double x2, double y1, double y2);
 int hydrogram_read(Hydrogram *hydrogram, FILE *file);
 double hydrogram_discharge(Hydrogram *hydrogram, double t);
 double hydrogram_integrate(Hydrogram *hydrogram, double t1, double t2);
+
+int geometry_read(Geometry *geometry, FILE *file);
+double geometry_level(Geometry *geometry, double x);
 
 int channel_friction_read_Manning(Channel *channel, FILE *file);
 int channel_infiltration_read_KostiakovLewis(Channel *channel, FILE *file);
