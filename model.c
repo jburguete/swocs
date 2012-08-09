@@ -71,7 +71,7 @@ void model_infiltration(Model *model)
 	double Pidt;
 	Mesh *mesh = model->mesh;
 	Node *node = mesh->node;
-printf("t=%lg dt=%lg Pi=%lg A=%lg Ai=%lg\n", model->t, model->dt, node[0].Pi, node[0].A, node[0].Ai);
+//printf("t=%lg dt=%lg Pi=%lg A=%lg Ai=%lg\n", model->t, model->dt, node[0].Pi, node[0].A, node[0].Ai);
 	for (i = 0; i < mesh->n; ++i)
 	{
 		Pidt = fmin(node[i].Pi * model->dt, node[i].A);

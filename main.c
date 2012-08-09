@@ -141,7 +141,7 @@ int main(int argn, char **argc)
 		model->model_inlet_dtmax = model_inlet_dtmax_kinematic;
 		goto kinematic;
 	default:
-		printf("model: bad type\n");
+		printf("model: bad type (%u)\n", model->type_model);
 		return 2;
 	}
 

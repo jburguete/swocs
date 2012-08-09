@@ -248,7 +248,6 @@ void mesh_write_variables(Mesh *mesh, FILE *file)
 	for (i = 0; i < mesh->n; ++i)
 	{
 		node = mesh->node + i;
-printf("i=%d A=%.14le\n", i, node->A);
 		fprintf(file, "%.14le %.14le %.14le %.14le %.14le %.14le\n",
 			node->x,
 			node->A,
@@ -301,7 +300,6 @@ double mesh_water_mass(Mesh *mesh)
 	Node *node = mesh->node;
 	for (i = 0; i < mesh->n; ++i)
 		mass += node[i].dx * (node[i].A + node[i].Ai);
-for (i=0; i<mesh->n; ++i) printf("i=%d A=%.14le Ai=%.14le\n", i, node[i].A, node[i].Ai);
 	return mass;
 }
 

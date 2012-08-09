@@ -346,7 +346,7 @@ int channel_read(Channel *channel, FILE *file)
 		&channel->type_outlet,
 		&channel->friction_model,
 		&channel->infiltration_model,
-		&channel->diffusion_model) != 9)
+		&channel->diffusion_model) != 8)
 	{
 		msg = "channel: bad defined\n";
 		goto bad;
