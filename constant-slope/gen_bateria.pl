@@ -26,9 +26,9 @@ print <<END2;
 1
 END2
 
-printf "0 %g\n1\n0 %g\n101 1\n", $Q,$Q; 
+printf "0 %g\n1\n0 %g\n2001 1\n", $Q,$Q; 
 
-printf "%g 0 0.9 0.01\n", $t; 
+printf "%g 0 0.9 0.003\n", $t; 
 
 printf "%d 2\n", $nm; 
 printf "%d\n\n", $pm; 
