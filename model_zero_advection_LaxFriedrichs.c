@@ -27,9 +27,9 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 /**
- * \file model_zero_inertia_LaxFriedrichs.c
+ * \file model_zero_advection_LaxFriedrichs.c
  * \brief Source file to define the Lax-Friedrichs numerical model applied to
- *   the zero-inertia model.
+ *   the zero-advection model.
  * \author Javier Burguete Tolosa.
  * \copyright Copyright 2011, Javier Burguete Tolosa.
  */
@@ -40,16 +40,16 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "node.h"
 #include "mesh.h"
 #include "model.h"
-#include "model_zero_inertia_LaxFriedrichs.h"
+#include "model_zero_advection_LaxFriedrichs.h"
 
 /**
- * \fn void model_surface_flow_zero_inertia_LaxFriedrichs(Model *model)
+ * \fn void model_surface_flow_zero_advection_LaxFriedrichs(Model *model)
  * \brief Function to make the surface flow with the Lax-Friedrichs numerical
  *   scheme.
  * \param model
  * \brief model struct.
  */
-void model_surface_flow_zero_inertia_LaxFriedrichs(Model *model)
+void model_surface_flow_zero_advection_LaxFriedrichs(Model *model)
 {
 	int i, n1;
 	double k1, k2, inlet_water_contribution, inlet_solute_contribution;

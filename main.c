@@ -40,16 +40,16 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "mesh.h"
 #include "model.h"
 #include "model_complete.h"
+#include "model_zero_advection.h"
 #include "model_zero_inertia.h"
-#include "model_diffusive.h"
 #include "model_kinematic.h"
 #include "model_complete_upwind.h"
+#include "model_zero_advection_upwind.h"
 #include "model_zero_inertia_upwind.h"
-#include "model_diffusive_upwind.h"
 #include "model_kinematic_upwind.h"
 #include "model_complete_LaxFriedrichs.h"
-#include "model_zero_inertia_LaxFriedrichs.h"
-//#include "model_diffusive_LaxFriedrichs.h"
+#include "model_zero_advection_LaxFriedrichs.h"
+//#include "model_zero_inertia_LaxFriedrichs.h"
 //#include "model_kinematic_LaxFriedrichs.h"
 
 /**
@@ -93,32 +93,32 @@ int main(int argn, char **argc)
 		model->model_node_parameters_centre
 			= model->model_node_parameters_right
 			= model->model_node_parameters_left
-			= model_node_parameters_zero_inertia;
-		model->node_1dt_max = node_1dt_max_zero_inertia;
-		model->node_flows = node_flows_zero_inertia;
-		model->model_inlet_dtmax = model_inlet_dtmax_zero_inertia;
-		goto zero_inertia;
+			= model_node_parameters_zero_advection;
+		model->node_1dt_max = node_1dt_max_zero_advection;
+		model->node_flows = node_flows_zero_advection;
+		model->model_inlet_dtmax = model_inlet_dtmax_zero_advection;
+		goto zero_advection;
 	case 3:
 		switch (model->channel->friction_model)
 		{
 		case 1:
 			model->node_discharge_centre
-				= node_discharge_centre_diffusive_Manning;
+				= node_discharge_centre_zero_inertia_Manning;
 			model->node_discharge_right
-				= node_discharge_right_diffusive_Manning;
+				= node_discharge_right_zero_inertia_Manning;
 			model->node_discharge_left
-				= node_discharge_left_diffusive_Manning;
+				= node_discharge_left_zero_inertia_Manning;
 			model->model_node_parameters_centre
-				= model_node_parameters_centre_diffusive;
+				= model_node_parameters_centre_zero_inertia;
 			model->model_node_parameters_right
-				= model_node_parameters_right_diffusive;
+				= model_node_parameters_right_zero_inertia;
 			model->model_node_parameters_left
-				= model_node_parameters_left_diffusive;
+				= model_node_parameters_left_zero_inertia;
 		}
-		model->node_1dt_max = node_1dt_max_diffusive;
-		model->node_flows = node_flows_diffusive;
-		model->model_inlet_dtmax = model_inlet_dtmax_diffusive;
-		goto diffusive;
+		model->node_1dt_max = node_1dt_max_zero_inertia;
+		model->node_flows = node_flows_zero_inertia;
+		model->model_inlet_dtmax = model_inlet_dtmax_zero_inertia;
+		goto zero_inertia;
 	case 4:
 		switch (model->channel->friction_model)
 		{
@@ -159,29 +159,29 @@ complete:
 		return 2;
 	}
 
-zero_inertia:
+zero_advection:
 	switch (model->type_surface_flow)
 	{
 	case 1:
-		model->model_surface_flow = model_surface_flow_zero_inertia_upwind;
+		model->model_surface_flow = model_surface_flow_zero_advection_upwind;
 		goto calculate;
 	case 2:
 		model->model_surface_flow =
-			model_surface_flow_zero_inertia_LaxFriedrichs;
+			model_surface_flow_zero_advection_LaxFriedrichs;
 		goto calculate;
 	default:
 		printf("model: bad surface flow type\n");
 		return 2;
 	}
 
-diffusive:
+zero_inertia:
 	switch (model->type_surface_flow)
 	{
 	case 1:
-		model->model_surface_flow = model_surface_flow_diffusive_upwind;
+		model->model_surface_flow = model_surface_flow_zero_inertia_upwind;
 		break;
 //	case 2:
-//		model->model_surface_flow = model_surface_flow_diffusive_LaxFriedrichs;
+//		model->model_surface_flow = model_surface_flow_zero_inertia_LaxFriedrichs;
 //		break;
 	default:
 		printf("model: bad surface flow type\n");

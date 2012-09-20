@@ -27,8 +27,8 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 /**
- * \file model_zero_inertia.c
- * \brief Source file to define the zero inertia model.
+ * \file model_zero_advection.c
+ * \brief Source file to define the zero advection model.
  * \author Javier Burguete Tolosa.
  * \copyright Copyright 2011, Javier Burguete Tolosa.
  */
@@ -39,18 +39,18 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "node.h"
 #include "mesh.h"
 #include "model.h"
-#include "model_zero_inertia.h"
+#include "model_zero_advection.h"
 
 /**
- * \fn void model_node_parameters_zero_inertia(Model *model, Node *node)
+ * \fn void model_node_parameters_zero_advection(Model *model, Node *node)
  * \brief Function to calculate the numerical parameters of a node with the
- *   zero-inertia model.
+ *   zero-advection model.
  * \param model
  * \brief model struct.
  * \param node
  * \brief node struct.
  */
-void model_node_parameters_zero_inertia(Model *model, Node *node)
+void model_node_parameters_zero_advection(Model *model, Node *node)
 {
 	node_depth(node);
 	node_width(node);
@@ -84,26 +84,26 @@ if (isnan(node->i)) printf("i=%lg\n", node->i);
 }
 
 /**
- * \fn double node_1dt_max_zero_inertia(Node *node)
+ * \fn double node_1dt_max_zero_advection(Node *node)
  * \brief Function to calculate the allowed maximum time step size in a node
- *   with the zero-inertia model.
+ *   with the zero-advection model.
  * \param node
  * \brief node struct.
  * \return inverse of the allowed maximum time step size.
  */
-double node_1dt_max_zero_inertia(Node *node)
+double node_1dt_max_zero_advection(Node *node)
 {
 	return node->l1 / node->dx; 
 }
 
 /**
- * \fn void node_flows_zero_inertia(Node *node1)
+ * \fn void node_flows_zero_advection(Node *node1)
  * \brief Function to calculate the flux differences in a node with the
- *   zero-inertia model.
+ *   zero-advection model.
  * \param node1
  * \brief node struct.
  */
-void node_flows_zero_inertia(Node *node1)
+void node_flows_zero_advection(Node *node1)
 {
 	Node *node2 = node1 + 1;
 	node1->dQ = node2->Q - node1->Q;
@@ -113,14 +113,14 @@ void node_flows_zero_inertia(Node *node1)
 }
 
 /**
- * \fn double model_inlet_dtmax_zero_inertia(Model *model)
+ * \fn double model_inlet_dtmax_zero_advection(Model *model)
  * \brief Function to calculate the allowed maximum time step size at the inlet
- *   with the zero-inertia model.
+ *   with the zero-advection model.
  * \param model
  * \brief model struct.
  * \return allowed maximum time step size.
  */
-double model_inlet_dtmax_zero_inertia(Model *model)
+double model_inlet_dtmax_zero_advection(Model *model)
 {
 	double A, Q, h, B, c;
 	Node *node = model->mesh->node;

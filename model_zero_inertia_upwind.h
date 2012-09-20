@@ -27,19 +27,19 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 /**
- * \file model_diffusive_upwind.h
+ * \file model_zero_inertia_upwind.h
  * \brief Header file to define the upwind numerical model applied to the
- *   diffusive model.
+ *   zero-inertia model.
  * \author Javier Burguete Tolosa.
  * \copyright Copyright 2011, Javier Burguete Tolosa.
  */
 
 // in order to prevent multiple definitions
-#ifndef MODEL_DIFFUSIVE_UPWIND__H
-#define MODEL_DIFFUSIVE_UPWIND__H 1
+#ifndef MODEL_ZERO_INERTIA_UPWIND__H
+#define MODEL_ZERO_INERTIA_UPWIND__H 1
 
 // member functions
 
-void model_surface_flow_diffusive_upwind(Model *model);
+void model_surface_flow_zero_inertia_upwind(Model *model);
 
 #endif

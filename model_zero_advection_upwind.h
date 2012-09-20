@@ -1,7 +1,7 @@
 /*
 
-model_zero_inertia_upwind.h: header file to define the upwind numerical model
-	applied to the zero-inertia model
+model_zero_advection_upwind.h: header file to define the upwind numerical model
+	applied to the zero-advection model
 
 Copyright 2011, Javier Burguete Tolosa.
 
@@ -30,12 +30,12 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 // in order to prevent multiple definitions
 
-#ifndef MODEL_ZERO_INERTIA_UPWIND__H
-#define MODEL_ZERO_INERTIA_UPWIND__H 1
+#ifndef MODEL_ZERO_ADVECTION_UPWIND__H
+#define MODEL_ZERO_ADVECTION_UPWIND__H 1
 
 // member functions
 
-void model_surface_flow_zero_inertia_upwind(Model *model);
+void model_surface_flow_zero_advection_upwind(Model *model);
 
 #endif
 

@@ -27,8 +27,8 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 /**
- * \file model_diffusive.c
- * \brief Source file to define the diffusive model.
+ * \file model_zero_inertia.c
+ * \brief Source file to define the zero-inertia model.
  * \author Javier Burguete Tolosa.
  * \copyright Copyright 2011, Javier Burguete Tolosa.
  */
@@ -39,16 +39,16 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "node.h"
 #include "mesh.h"
 #include "model.h"
-#include "model_diffusive.h"
+#include "model_zero_inertia.h"
 
 /**
- * \fn void node_discharge_centre_diffusive_Manning(Node *node)
- * \brief Function to calculate the diffusive discharge with the Manning model
+ * \fn void node_discharge_centre_zero_inertia_Manning(Node *node)
+ * \brief Function to calculate the zero-inertia discharge with the Manning model
  *   using centred derivatives.
  * \param node
  * \brief node struct.
  */
-void node_discharge_centre_diffusive_Manning(Node *node)
+void node_discharge_centre_zero_inertia_Manning(Node *node)
 {
 	double dz;
 	dz = (node - 1)->zs - (node + 1)->zs;
@@ -58,13 +58,13 @@ void node_discharge_centre_diffusive_Manning(Node *node)
 }
 
 /**
- * \fn void node_discharge_right_diffusive_Manning(Node *node)
- * \brief Function to calculate the diffusive discharge with the Manning model
+ * \fn void node_discharge_right_zero_inertia_Manning(Node *node)
+ * \brief Function to calculate the zero-inertia discharge with the Manning model
  *   using right derivatives.
  * \param node
  * \brief node struct.
  */
-void node_discharge_right_diffusive_Manning(Node *node)
+void node_discharge_right_zero_inertia_Manning(Node *node)
 {
 	double dz;
 	dz = node->zs - (node + 1)->zs;
@@ -74,13 +74,13 @@ void node_discharge_right_diffusive_Manning(Node *node)
 }
 
 /**
- * \fn void node_discharge_left_diffusive_Manning(Node *node)
- * \brief Function to calculate the diffusive discharge with the Manning model
+ * \fn void node_discharge_left_zero_inertia_Manning(Node *node)
+ * \brief Function to calculate the zero-inertia discharge with the Manning model
  *   using left derivatives.
  * \param node
  * \brief node struct.
  */
-void node_discharge_left_diffusive_Manning(Node *node)
+void node_discharge_left_zero_inertia_Manning(Node *node)
 {
 	double dz;
 	dz = (node - 1)->zs - node->zs;
@@ -90,15 +90,15 @@ void node_discharge_left_diffusive_Manning(Node *node)
 }
 
 /**
- * \fn void model_node_parameters_centre_diffusive(Model *model, Node *node)
+ * \fn void model_node_parameters_centre_zero_inertia(Model *model, Node *node)
  * \brief Function to calculate the numerical parameters of a node with the
- *   diffusive model using centred derivatives.
+ *   zero-inertia model using centred derivatives.
  * \param model
  * \brief model struct.
  * \param node
  * \brief node struct.
  */
-void model_node_parameters_centre_diffusive(Model *model, Node *node)
+void model_node_parameters_centre_zero_inertia(Model *model, Node *node)
 {
 	node_depth(node);
 	node_width(node);
@@ -129,15 +129,15 @@ void model_node_parameters_centre_diffusive(Model *model, Node *node)
 }
 
 /**
- * \fn void model_node_parameters_right_diffusive(Model *model, Node *node)
+ * \fn void model_node_parameters_right_zero_inertia(Model *model, Node *node)
  * \brief Function to calculate the numerical parameters of a node with the
- *   diffusive model using right derivatives.
+ *   zero-inertia model using right derivatives.
  * \param model
  * \brief model struct.
  * \param node
  * \brief node struct.
  */
-void model_node_parameters_right_diffusive(Model *model, Node *node)
+void model_node_parameters_right_zero_inertia(Model *model, Node *node)
 {
 	node_depth(node);
 	node_width(node);
@@ -166,15 +166,15 @@ void model_node_parameters_right_diffusive(Model *model, Node *node)
 }
 
 /**
- * \fn void model_node_parameters_left_diffusive(Model *model, Node *node)
+ * \fn void model_node_parameters_left_zero_inertia(Model *model, Node *node)
  * \brief Function to calculate the numerical parameters of a node with the
- *   diffusive model using left derivatives.
+ *   zero-inertia model using left derivatives.
  * \param model
  * \brief model struct.
  * \param node
  * \brief node struct.
  */
-void model_node_parameters_left_diffusive(Model *model, Node *node)
+void model_node_parameters_left_zero_inertia(Model *model, Node *node)
 {
 	node_depth(node);
 	node_width(node);
@@ -202,14 +202,14 @@ void model_node_parameters_left_diffusive(Model *model, Node *node)
 }
 
 /**
- * \fn double node_1dt_max_diffusive(Node *node)
+ * \fn double node_1dt_max_zero_inertia(Node *node)
  * \brief Function to calculate the allowed maximum time step size in a node
- *   with the diffusive model.
+ *   with the zero-inertia model.
  * \param node
  * \brief node struct.
  * \return inverse of the allowed maximum time step size.
  */
-double node_1dt_max_diffusive(Node *node)
+double node_1dt_max_zero_inertia(Node *node)
 {
 	double u;
 	u =  5./3. * node->u - 4./3. * node->Q * sqrt(1 + node->Z * node->Z)
@@ -222,13 +222,13 @@ double node_1dt_max_diffusive(Node *node)
 }
 
 /**
- * \fn void node_flows_diffusive(Node *node1)
+ * \fn void node_flows_zero_inertia(Node *node1)
  * \brief Function to calculate the flux differences in a node with the
- *   diffusive model.
+ *   zero-inertia model.
  * \param node1
  * \brief node struct.
  */
-void node_flows_diffusive(Node *node1)
+void node_flows_zero_inertia(Node *node1)
 {
 	Node *node2 = node1 + 1;
 	node1->dQ = node2->Q - node1->Q;
@@ -236,14 +236,14 @@ void node_flows_diffusive(Node *node1)
 }
 
 /**
- * \fn double model_inlet_dtmax_diffusive(Model *model)
+ * \fn double model_inlet_dtmax_zero_inertia(Model *model)
  * \brief Function to calculate the allowed maximum time step size at the inlet
- *   with the diffusive model.
+ *   with the zero-inertia model.
  * \param model
  * \brief model struct.
  * \return allowed maximum time step size.
  */
-double model_inlet_dtmax_diffusive(Model *model)
+double model_inlet_dtmax_zero_inertia(Model *model)
 {
 	double A, Q, h, B, c;
 	Node *node = model->mesh->node;
