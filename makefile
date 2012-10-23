@@ -19,26 +19,23 @@ objects = main.o channel.o node.o mesh.o model.o model_complete.o \
 	model_complete_upwind.o model_zero_inertia_upwind.o \
 	# model_diffusive_LaxFriedrichs.o model_kinematic_LaxFriedrichs.o
 
+manuals = reference-manual.pdf swocs-manuals/english/user-manual.pdf \
+	swocs-manuals/español/manual-usuario.pdf
+
 libraries = -lm
 
 flags = -O2 -Wall
 
-compiler = gcc -c $(flags)
-#compiler = i586-mingw32msvc-gcc -c $(flags)
+#compiler = gcc -c $(flags)
+compiler = i586-mingw32msvc-gcc -c $(flags)
 
-linker = gcc $(flags)
-#linker = i586-mingw32msvc-gcc $(flags)
+#linker = gcc $(flags)
+linker = i586-mingw32msvc-gcc $(flags)
 
-swocs = swocs
-#swocs = swocs.exe
-
-translate-1-2 = translate-1-2
-#translate-1-2 = translate-1-2.exe
+#swocs = swocs
+swocs = swocs.exe
 
 all: $(swocs) $(translate-1-2)
-
-$(translate-1-2): translate-1-2.c makefile
-	$(linker) translate-1-2.c -o $(translate-1-2)
 
 $(swocs): $(objects) makefile
 	$(linker) $(objects) $(libraries) -o $(swocs)
@@ -114,3 +111,23 @@ main.o: main.c model.h mesh.h node.h channel.h config.h makefile \
 	model_zero_inertia_upwind.h model_complete_upwind.h
 	$(compiler) main.c -o main.o
 
+manuals: $(manuals)
+
+reference-manual.pdf: $(headers) $(sources) Doxyfile makefile
+	doxygen
+	cd latex; make; mv refman.pdf ../reference-manual.pdf
+
+swocs-manuals/english/user-manual.pdf: swocs-manuals/english/user-manual.tex \
+	makefile
+	cd swocs-manuals/english; pdflatex user-manual; pdflatex user-manual
+
+swocs-manuals/español/manual-usuario.pdf: \
+	swocs-manuals/español/manual-usuario.tex \
+	makefile
+	cd swocs-manuals/español; pdflatex manual-usuario; pdflatex manual-usuario
+
+zip: $(src) makefile
+	zip swocs-src-1-2 *.h *.c makefile Doxyfile README
+
+examples:
+	zip swocs-examples-1-2 constant-slope/i-* nery*/input-*
