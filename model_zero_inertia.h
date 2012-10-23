@@ -28,10 +28,10 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 /**
  * \file model_zero_inertia.h
- * \brief Header file to define the zero inertia model.
+ * \brief Header file to define the zero-inertia model.
  * \author Javier Burguete Tolosa.
  * \copyright Copyright 2011, Javier Burguete Tolosa.
- */
+*/
 
 // in order to prevent multiple definitions
 #ifndef MODEL_ZERO_INERTIA__H
@@ -39,7 +39,12 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 // member functions
 
-void model_node_parameters_zero_inertia(Model *model, Node *node);
+void node_discharge_centre_zero_inertia_Manning(Node *node);
+void node_discharge_right_zero_inertia_Manning(Node *node);
+void node_discharge_left_zero_inertia_Manning(Node *node);
+void model_node_parameters_centre_zero_inertia(Model *model, Node *node);
+void model_node_parameters_right_zero_inertia(Model *model, Node *node);
+void model_node_parameters_left_zero_inertia(Model *model, Node *node);
 double node_1dt_max_zero_inertia(Node *node);
 void node_flows_zero_inertia(Node *node1);
 double model_inlet_dtmax_zero_inertia(Model *model);

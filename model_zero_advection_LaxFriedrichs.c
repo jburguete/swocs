@@ -27,9 +27,9 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 /**
- * \file model_zero_inertia_upwind.c
- * \brief Source file to define the upwind numerical model applied to the
- *   zero-inertia model.
+ * \file model_zero_advection_LaxFriedrichs.c
+ * \brief Source file to define the Lax-Friedrichs numerical model applied to
+ *   the zero-advection model.
  * \author Javier Burguete Tolosa.
  * \copyright Copyright 2011, Javier Burguete Tolosa.
  */
@@ -40,27 +40,63 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "node.h"
 #include "mesh.h"
 #include "model.h"
-#include "model_zero_inertia_upwind.h"
+#include "model_zero_advection_LaxFriedrichs.h"
 
 /**
- * \fn void model_surface_flow_zero_inertia_upwind(Model *model)
- * \brief Function to make the surface flow with the upwind numerical scheme.
+ * \fn void model_surface_flow_zero_advection_LaxFriedrichs(Model *model)
+ * \brief Function to make the surface flow with the Lax-Friedrichs numerical
+ *   scheme.
  * \param model
  * \brief model struct.
  */
-void model_surface_flow_zero_inertia_upwind(Model *model)
+void model_surface_flow_zero_advection_LaxFriedrichs(Model *model)
 {
-	int i;
+	int i, n1;
+	double k1, k2, inlet_water_contribution, inlet_solute_contribution;
 	Mesh *mesh = model->mesh;
 	Node *node = mesh->node;
-	double inlet_water_contribution, inlet_solute_contribution;
 	inlet_water_contribution = model->dt * node[0].Q;
 	inlet_solute_contribution = model->dt * node[0].T;
-	for (i = 0; ++i < mesh->n;)
+	n1 = mesh->n - 1;
+	for (i = 0; i < n1; ++i)
 	{
-		model->node_flows(node + i - 1);
-		node[i].A -= model->dt * node[i - 1].dQ / node[i].dx;
-		node[i].As -= model->dt * node[i - 1].dT / node[i].dx;
+		model->node_flows(node + i);
+		node[i].dQr = node[i].dFr = node[i].dTr = node[i].dQl = node[i].dFl
+			= node[i].dTl = 0;
+		if (node[i].h <= model->minimum_depth &&
+			node[i + 1].h <= model->minimum_depth)
+				continue;
+
+		// wave decomposition
+
+		node[i].dQr = node[i].dQl = 0.5 * node[i].dQ;
+		node[i].dFr = node[i].dFl = 0.5 * node[i].dF;
+		node[i].dTr = node[i].dTl = 0.5 * node[i].dT;
+
+		// artificial viscosity
+
+		k1 = 0.5 * fmax(node[i + 1].l1, node[i].l1);
+		k2 = k1 * (node[i + 1].A - node[i].A);
+		node[i].dQl += k2;
+		node[i].dQr -= k2;
+		k2 = k1 * node[i].dQ;
+		node[i].dFl += k2;
+		node[i].dFr -= k2;
+		k2 = k1 * (node[i + 1].As - node[i].As);
+		node[i].dTl += k2;
+		node[i].dTr -= k2;
+	}
+
+	// variables actualization
+
+	for (i = 0; i < n1; ++i)
+	{
+		node[i].A -= model->dt * node[i].dQr / node[i].dx;
+		node[i].Q -= model->dt * node[i].dFr / node[i].dx;
+		node[i].As -= model->dt * node[i].dTr / node[i].dx;
+		node[i + 1].A -= model->dt * node[i].dQl / node[i + 1].dx;
+		node[i + 1].Q -= model->dt * node[i].dFl / node[i + 1].dx;
+		node[i + 1].As -= model->dt * node[i].dTl / node[i + 1].dx;
 	}
 	node[0].A -= inlet_water_contribution / node[0].dx;
 	node[0].As -= inlet_solute_contribution / node[0].dx;

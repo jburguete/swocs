@@ -27,19 +27,21 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 /**
- * \file model_diffusive_upwind.h
- * \brief Header file to define the upwind numerical model applied to the
- *   diffusive model.
+ * \file model_zero_advection.h
+ * \brief Header file to define the zero advection model.
  * \author Javier Burguete Tolosa.
  * \copyright Copyright 2011, Javier Burguete Tolosa.
  */
 
 // in order to prevent multiple definitions
-#ifndef MODEL_DIFFUSIVE_UPWIND__H
-#define MODEL_DIFFUSIVE_UPWIND__H 1
+#ifndef MODEL_ZERO_ADVECTION__H
+#define MODEL_ZERO_ADVECTION__H 1
 
 // member functions
 
-void model_surface_flow_diffusive_upwind(Model *model);
+void model_node_parameters_zero_advection(Model *model, Node *node);
+double node_1dt_max_zero_advection(Node *node);
+void node_flows_zero_advection(Node *node1);
+double model_inlet_dtmax_zero_advection(Model *model);
 
 #endif
