@@ -34,6 +34,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #include <stdio.h>
 #include <math.h>
+#include <time.h>
 #include "config.h"
 #include "channel.h"
 #include "node.h"
@@ -66,6 +67,7 @@ int main(int argn, char **argc)
 {
 	int i;
 	FILE *file, *file_advance, *file_probes;
+	clock_t cpu;
 	Model model[1];
 	if (argn < 3 || argn == 6 || argn > 7)
 	{
@@ -234,6 +236,9 @@ calculate:
 		}
 	}
 
+	// reset the clock
+	cpu = clock();
+
 	// init model parameters
 	model_parameters(model);
 
@@ -253,6 +258,9 @@ calculate:
 		model_step(model);
 //		model_print(model, i);
 	}
+
+	// printing main results
+	printf("cpu=%lg ", (clock() - cpu) / ((double)CLOCKS_PER_SEC));
 	model_print(model, i);
 
 	// writing result variables
