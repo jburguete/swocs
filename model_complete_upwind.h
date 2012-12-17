@@ -1,9 +1,8 @@
 /*
+SWOCS: a software to check the numerical performance of different models in
+	channel or furrow flows
 
-model_complete_upwind.h: header file to define the upwind numerical model
-	applied to the complete model
-
-Copyright 2011, Javier Burguete Tolosa.
+Copyright 2011-2012, Javier Burguete Tolosa.
 
 Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:

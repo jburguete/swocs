@@ -2,7 +2,7 @@
 SWOCS: a software to check the numerical performance of different models in
 	channel or furrow flows
 
-Copyright 2011, Javier Burguete Tolosa.
+Copyright 2011-2012, Javier Burguete Tolosa.
 
 Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
@@ -30,7 +30,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * \file main.c
  * \brief Main source code.
  * \author Javier Burguete Tolosa.
- * \copyright Copyright 2011, Javier Burguete Tolosa.
+ * \copyright Copyright 2011-2012, Javier Burguete Tolosa.
  */
 #include <stdio.h>
 #include <math.h>
@@ -52,6 +52,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "model_zero_advection_LaxFriedrichs.h"
 //#include "model_zero_inertia_LaxFriedrichs.h"
 //#include "model_kinematic_LaxFriedrichs.h"
+#include "model_complete_implicit.h"
 
 /**
  * \var critical_depth_tolerance
@@ -155,6 +156,9 @@ complete:
 		goto calculate;
 	case 2:
 		model->model_surface_flow = model_surface_flow_complete_LaxFriedrichs;
+		goto calculate;
+	case 3:
+		model->model_surface_flow = model_surface_flow_complete_implicit;
 		goto calculate;
 	default:
 		printf("model: bad surface flow type\n");

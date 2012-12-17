@@ -33,22 +33,23 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "node.h"
 #include "mesh.h"
 #include "model.h"
-#include "model_complete_upwind.h"
+#include "model_complete_implicit.h"
 
 /**
- * \fn void model_surface_flow_complete_upwind(Model *model)
- * \brief Function to make the surface flow with the upwind numerical scheme.
+ * \fn void model_surface_flow_complete_implicit(Model *model)
+ * \brief Function to make the surface flow with the upwind implicit numerical
+ * 	scheme.
  * \param model
  * \brief model struct.
  */
 
-void model_surface_flow_complete_upwind(Model *model)
+void model_surface_flow_complete_implicit(Model *model)
 {
 	int i, n1;
 	double c, u, s, l1, l2, sA1, sA2, k1, k2;
+	double inlet_water_contribution, inlet_solute_contribution;
 	Mesh *mesh = model->mesh;
 	Node *node = mesh->node;
-	double inlet_water_contribution, inlet_solute_contribution;
 	inlet_water_contribution = model->dt * node[0].Q;
 	inlet_solute_contribution = model->dt * node[0].T;
 	n1 = mesh->n - 1;
