@@ -130,17 +130,11 @@ struct _Node
  * \brief right numerical solute mass flux difference.
  * \var nu
  * \brief artificial viscosity coefficient.
- * \var theta
- * \brief implicit coefficient.
- * \var Jp
- * \brief positive implicit operator.
- * \var Jn
- * \brief negative implicit operator.
  */
 	double friction_coefficient[3], infiltration_coefficient[4],
 		diffusion_coefficient[1], x, dx, ix, A, Ai, Q, s, si, As, Asi, h, Sf,
 		zb, zs, P, B, u, c, l1, l2, i, Pi, Z, B0, F, T, Kx, KxA, Kxi, KxiA,
-		dQ, dF, dT, dQl, dFl, dTl, dQr, dFr, dTr, nu, theta, Jp[9], Jm[9];
+		dQ, dF, dT, dQl, dFl, dTl, dQr, dFr, dTr, nu;
 };
 
 /**
