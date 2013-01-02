@@ -36,7 +36,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "model_complete_implicit.h"
 
 /**
- * \fn void model_surface_flow_complete_multiply\
+ * \fn void model_surface_flow_complete_implicit_multiply\
  *   (double *m, double *v, double *r)
  * \brief Function to multiply a matrix by a vector of the complete model.
  * \var m
@@ -46,7 +46,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * \var r
  * \brief resulting vector.
  */
-void model_surface_flow complete_multiply(double *m, double *v, double *r)
+void model_surface_flow_complete_implicit_multiply(double *m, double *v, double *r)
 {
 	r[0] = m[0] * v[0] + m[1] * v[1];
 	r[1] = m[3] * v[0] + m[4] * v[1];
@@ -54,14 +54,14 @@ void model_surface_flow complete_multiply(double *m, double *v, double *r)
 }
 
 /**
- * \fn void model_surface_flow_complete_invert(double *m, double *i)
+ * \fn void model_surface_flow_complete_implicit_invert(double *m, double *i)
  * \brief Function to invert an implicit operator of the complete model.
  * \var m
  * \brief implicit operator to invert.
  * \var i
  * \brief invert operator.
  */
-void model_surface_flow complete_invert(double *m, double *i)
+void model_surface_flow_complete_implicit_invert(double *m, double *i)
 {
 	double d;
 	d = m[8] * (m[0] * m[4] - m[1] * m[3]);
@@ -183,7 +183,7 @@ void model_surface_flow_complete_implicit(Model *model)
 	// variables updating
 
 	odt = model->theta * model->dt;
-	for (j = 0; j < 9; ++j) B[j] = odt * node[0].JP[j];
+	for (j = 0; j < 9; ++j) B[j] = odt * node[0].Jp[j];
 	for (j = 0; j < 3; ++j)
 	{
 		node[0].dU[j] = 0.;
@@ -192,7 +192,7 @@ void model_surface_flow_complete_implicit(Model *model)
 	for (i = 0; ++i <= n1;)
 	{
 		model_surface_flow_complete_implicit_multiply(B, node[i - 1].dU, D);
-		for (j = 0; j < 9; ++j) A[j] = B[j] = odt * node[i].JP[j];
+		for (j = 0; j < 9; ++j) A[j] = B[j] = odt * node[i].Jp[j];
 		A[0] += node[i].dx;
 		A[4] += node[i].dx;
 		A[8] += node[i].dx;
@@ -203,12 +203,12 @@ void model_surface_flow_complete_implicit(Model *model)
 		for (j = 0; j < 3; ++j) node[i].U[j] = node[i].Un[j] + node[i].dU[j];
 	}
 	i = n1;
-	for (j = 0; j < 9; ++j) B[j] = odt * node[i].JM[j];
+	for (j = 0; j < 9; ++j) B[j] = odt * node[i].Jm[j];
 	for (j = 0; j < 3; ++j) node[i].dU[j] = 0.;
 	while (--i >= 0)
 	{
 		model_surface_flow_complete_implicit_multiply(B, node[i + 1].dU, D);
-		for (j = 0; j < 9; ++j) A[j] = B[j] = odt * node[i].JP[j];
+		for (j = 0; j < 9; ++j) A[j] = B[j] = odt * node[i].Jp[j];
 		A[0] += node[i].dx;
 		A[4] += node[i].dx;
 		A[8] += node[i].dx;

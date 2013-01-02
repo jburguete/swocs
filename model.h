@@ -84,6 +84,8 @@ struct _Model
  * \brief final time.
  * \var cfl
  * \brief CFL number.
+ * \var theta
+ * \brief implicit coefficient.
  * \var interval
  * \brief time interval to save the data.
  * \var minimum_depth
@@ -138,7 +140,7 @@ struct _Model
 	Mesh mesh[1];
 	Channel channel[1];
 	Probes probes[1];
-	double t, t2, dt, tfinal, cfl, interval, minimum_depth;
+	double t, t2, dt, tfinal, cfl, theta, interval, minimum_depth;
 	void (*model_node_parameters_centre)(struct _Model *model, Node *node);
 	void (*model_node_parameters_right)(struct _Model *model, Node *node);
 	void (*model_node_parameters_left)(struct _Model *model, Node *node);

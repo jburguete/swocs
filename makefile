@@ -3,6 +3,7 @@ headers = config.h channel.c node.h mesh.h model.h model_complete.h \
 	model_complete_LaxFriedrichs.h model_zero_advection_LaxFriedrichs.h  \
 	model_zero_inertia_upwind.h model_kinematic_upwind.h \
 	model_complete_upwind.h model_zero_advection_upwind.h  \
+	model_complete_implicit.h
 	# model_zero_inertia_LaxFriedrichs.h model_kinematic_LaxFriedrichs.h
 
 sources = main.c channel.c node.c mesh.c model.c model_complete.c \
@@ -10,6 +11,7 @@ sources = main.c channel.c node.c mesh.c model.c model_complete.c \
 	model_complete_LaxFriedrichs.c model_zero_advection_LaxFriedrichs.c  \
 	model_zero_inertia_upwind.c model_kinematic_upwind.c \
 	model_complete_upwind.c model_zero_advection_upwind.c \
+	model_complete_implicit.c
 	# model_zero_inertia_LaxFriedrichs.c model_kinematic_LaxFriedrichs.c
 
 objects = main.o channel.o node.o mesh.o model.o model_complete.o \
@@ -17,6 +19,7 @@ objects = main.o channel.o node.o mesh.o model.o model_complete.o \
 	model_complete_LaxFriedrichs.o model_zero_advection_LaxFriedrichs.o  \
 	model_zero_inertia_upwind.o model_kinematic_upwind.o \
 	model_complete_upwind.o model_zero_advection_upwind.o \
+	model_complete_implicit.o
 	# model_zero_inertia_LaxFriedrichs.o model_kinematic_LaxFriedrichs.o
 
 manuals = reference-manual.pdf swocs-manuals/english/user-manual.pdf \
@@ -93,6 +96,10 @@ model_complete_upwind.o: model_complete_upwind.c model_complete_upwind.h \
 model_zero_advection_upwind.o: model_zero_advection_upwind.c \
 	model_zero_advection_upwind.h model.h node.h channel.h config.h makefile
 	$(compiler) model_zero_advection_upwind.c -o model_zero_advection_upwind.o
+
+model_complete_implicit.o: model_complete_implicit.c model_complete_implicit.h \
+	model.h node.h channel.h config.h makefile
+	$(compiler) model_complete_implicit.c -o model_complete_implicit.o
 
 #model_zero_inertia_LaxFriedrichs.o: model_zero_inertia_LaxFriedrichs.c \
 	model_zero_inertia_LaxFriedrichs.h model.h node.h channel.h config.h makefile

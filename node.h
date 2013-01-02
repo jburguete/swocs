@@ -112,8 +112,6 @@ struct _Node
  * \brief right numerical momentum flux difference.
  * \var nu
  * \brief artificial viscosity coefficient.
- * \var theta
- * \brief implicit coefficient.
  * \var Jp
  * \brief positive implicit operator.
  * \var Jn
@@ -124,7 +122,7 @@ struct _Node
 	double friction_coefficient[3], infiltration_coefficient[4],
 		diffusion_coefficient[1], x, dx, ix, U[5], s, si, h, Sf, zb, zs, P, B,
 		u, c, l1, l2, i, Pi, Z, B0, F, T, Kx, KxA, Kxi, KxiA,
-		dF[3], dFl[3], dFr[3], nu, theta, Jp[9], Jm[9], Un[3], dU[3];
+		dF[3], dFl[3], dFr[3], nu, Jp[9], Jm[9], Un[3], dU[3];
 };
 
 /**
