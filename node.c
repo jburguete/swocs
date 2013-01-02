@@ -47,11 +47,10 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 void node_depth(Node *node)
 {
 	if (node->Z == 0.)
-		node->h = node->A / node->B0;
+		node->h = node->U[0] / node->B0;
 	else
-		node->h = (sqrt(node->B0 * node->B0 + 4. * node->A * node->Z)
+		node->h = (sqrt(node->B0 * node->B0 + 4. * node->U[0] * node->Z)
 			- node->B0) / (2 * node->Z);
-if (isnan(node->h)) printf("A=%lg B0=%lg Z=%lg\n", node->A, node->B0, node->Z);
 }
 
 /**
@@ -85,7 +84,7 @@ void node_perimeter(Node *node)
 
 void node_critical_velocity(Node *node)
 {
-	if (node->B > 0.) node->c = sqrt(G * node->A / node->B); else node->c = 0.;
+	if (node->B > 0.) node->c = sqrt(G * node->U[0] / node->B); else node->c = 0.;
 }
 
 /**
@@ -99,7 +98,7 @@ void node_subcritical_discharge(Node *node)
 	node_depth(node);
 	node_width(node);
 	node_critical_velocity(node);
-	node->Q = fmin(node->Q, 0.99 * node->A * node->c);
+	node->U[1] = fmin(node->U[1], 0.99 * node->U[0] * node->c);
 }
 
 /**
@@ -160,7 +159,7 @@ double node_critical_depth(Node *node, double Q)
 void node_friction_Manning(Node *node)
 {
 	node->Sf = node->friction_coefficient[0] * node->friction_coefficient[0]
-		* node->u * fabs(node->u) * pow(node->P / node->A, 4./3.);
+		* node->u * fabs(node->u) * pow(node->P / node->U[0], 4./3.);
 }
 
 /**
@@ -176,7 +175,7 @@ void node_infiltration_KostiakovLewis(Node *node)
 	if (node->infiltration_coefficient[0] == 0.) return;
 	node->i += node->infiltration_coefficient[0] *
 		node->infiltration_coefficient[1]
-		* pow(node->Ai / (node->infiltration_coefficient[0]
+		* pow(node->U[3] / (node->infiltration_coefficient[0]
 		* node->infiltration_coefficient[3]),
 		1. - 1. / node->infiltration_coefficient[1]);
 }
@@ -191,11 +190,12 @@ void node_infiltration_KostiakovLewis(Node *node)
 void node_diffusion_Rutherford(Node *node)
 {
 	node->Kx = node->diffusion_coefficient[0]
-		* sqrt(G * node->P * node->A * fabs(node->Sf));
+		* sqrt(G * node->P * node->U[0] * fabs(node->Sf));
 }
 
 /**
- * \fn void node_inlet(Node *node, Hydrogram *water, Hydrogram *solute, double t, double t2)
+ * \fn void node_inlet(Node *node, Hydrogram *water, Hydrogram *solute,\
+ *   double t, double t2)
  * \brief Function to calculate the inlet boundary condition.
  * \param node
  * \brief node struct.
@@ -211,8 +211,8 @@ void node_diffusion_Rutherford(Node *node)
 void node_inlet
 	(Node *node, Hydrogram *water, Hydrogram *solute, double t, double t2)
 {
-	node->A += hydrogram_integrate(water, t, t2) / node->dx;
-	node->As += hydrogram_integrate(solute, t, t2) / node->dx;
+	node->U[0] += hydrogram_integrate(water, t, t2) / node->dx;
+	node->U[2] += hydrogram_integrate(solute, t, t2) / node->dx;
 	node_subcritical_discharge(node);
 }
 
@@ -224,7 +224,7 @@ void node_inlet
 */
 void node_outlet_closed(Node *node)
 {
-	node->Q = 0.;
+	node->U[1] = 0.;
 }
 
 /**
@@ -238,6 +238,5 @@ void node_outlet_open(Node *node)
 	node_depth(node);
 	node_width(node);
 	node_critical_velocity(node);
-	node->Q = fmax(node->Q, 1.01 * node->A * node->c);
+	node->U[1] = fmax(node->U[1], 1.01 * node->U[0] * node->c);
 }
-

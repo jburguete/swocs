@@ -56,31 +56,28 @@ void model_node_parameters_zero_advection(Model *model, Node *node)
 	node_width(node);
 	node_perimeter(node);
 	node_critical_velocity(node);
-	if (node->A <= 0.)
+	if (node->U[0] <= 0.)
 	{
-		node->s = node->Q = node->u = node->Sf = node->T = node->Kx = node->KxA
-			= 0.;
+		node->s = node->U[1] = node->u = node->Sf = node->T = node->Kx
+			= node->KxA = 0.;
 	}
 	else if (node->h < model->minimum_depth)
 	{
-		node->s = node->As / node->A;
-		node->Q = node->u = node->Sf = node->T = node->Kx = node->KxA = 0.;
+		node->s = node->U[2] / node->U[0];
+		node->U[1] = node->u = node->Sf = node->T = node->Kx = node->KxA = 0.;
 	}
 	else
 	{
-		node->s = node->As / node->A;
-		node->u = node->Q / node->A;
-		node->T = node->Q * node->s;
+		node->s = node->U[2] / node->U[0];
+		node->u = node->U[1] / node->U[0];
+		node->T = node->U[1] * node->s;
 		model->node_friction(node);
 		model->node_diffusion(node);
-		node->KxA = node->Kx * node->A;
+		node->KxA = node->Kx * node->U[0];
 	}
 	node->zs = node->zb + node->h;
-	node->l1 = fmax(node->c, fabs(node->u));
 	model->node_infiltration(node);
 	node->Pi = node->P * node->i;
-if (isnan(node->P)) printf("P=%lg\n", node->P);
-if (isnan(node->i)) printf("i=%lg\n", node->i);
 }
 
 /**
@@ -93,7 +90,7 @@ if (isnan(node->i)) printf("i=%lg\n", node->i);
  */
 double node_1dt_max_zero_advection(Node *node)
 {
-	return node->l1 / node->dx; 
+	return fmax(node->c, fabs(node->u)) / node->dx; 
 }
 
 /**
@@ -106,10 +103,10 @@ double node_1dt_max_zero_advection(Node *node)
 void node_flows_zero_advection(Node *node1)
 {
 	Node *node2 = node1 + 1;
-	node1->dQ = node2->Q - node1->Q;
-	node1->dF = G * 0.5 * (node2->A + node1->A)
+	node1->dF[0] = node2->U[1] - node1->U[1];
+	node1->dF[1] = G * 0.5 * (node2->U[0] + node1->U[0])
 		* (node2->zs - node1->zs + 0.5 * (node2->Sf + node1->Sf) * node1->ix);
-	node1->dT = node2->T - node1->T;
+	node1->dF[2] = node2->T - node1->T;
 }
 
 /**

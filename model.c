@@ -71,15 +71,15 @@ void model_infiltration(Model *model)
 	double Pidt;
 	Mesh *mesh = model->mesh;
 	Node *node = mesh->node;
-//printf("t=%lg dt=%lg Pi=%lg A=%lg Ai=%lg\n", model->t, model->dt, node[0].Pi, node[0].A, node[0].Ai);
+//printf("t=%lg dt=%lg Pi=%lg A=%lg Ai=%lg\n", model->t, model->dt, node[0].Pi, node[0].U[0], node[0].U[3]);
 	for (i = 0; i < mesh->n; ++i)
 	{
-		Pidt = fmin(node[i].Pi * model->dt, node[i].A);
-		node[i].A -= Pidt;
-		node[i].Ai += Pidt;
+		Pidt = fmin(node[i].Pi * model->dt, node[i].U[0]);
+		node[i].U[0] -= Pidt;
+		node[i].U[3] += Pidt;
 		Pidt *= node[i].s;
-		node[i].As -= Pidt;
-		node[i].Asi += Pidt;
+		node[i].U[2] -= Pidt;
+		node[i].U[4] += Pidt;
 	}
 }
 
@@ -100,8 +100,8 @@ void model_diffusion_explicit(Model *model)
 	{
 		dD = model->dt * fmin(node[i + 1].KxA, node[i].KxA)
 			* (node[i + 1].s - node[i].s) / node[i].ix;
-		node[i].As += dD / node[i].dx;
-		node[i + 1].As -= dD / node[i + 1].dx;
+		node[i].U[2] += dD / node[i].dx;
+		node[i + 1].U[2] -= dD / node[i + 1].dx;
 	}
 }
 
@@ -119,8 +119,8 @@ void model_diffusion_implicit(Model *model)
 	double k, C[mesh->n], D[mesh->n], E[mesh->n], H[mesh->n];
 	for (i = 0; i < mesh->n; ++i)
 	{
-		D[i] = node[i].A * node[i].dx;
-		H[i] = node[i].As * node[i].dx;
+		D[i] = node[i].U[0] * node[i].dx;
+		H[i] = node[i].U[2] * node[i].dx;
 	}
 	n1 = mesh->n - 1;
 	for (i = 0; i < n1; ++i)
@@ -137,11 +137,11 @@ void model_diffusion_implicit(Model *model)
 		H[i + 1] -= k * H[i];
 	}
 	if (D[i] == 0.) H[i] = 0; else H[i] /= D[i];
-	node[i].As = H[i] * node[i].A;
+	node[i].U[2] = H[i] * node[i].U[0];
 	while (--i >= 0)
 	{
 		if (D[i] == 0.) H[i] = 0; else H[i] = (H[i] - E[i] * H[i+1]) / D[i];
-		node[i].As = H[i] * node[i].A;
+		node[i].U[2] = H[i] * node[i].U[0];
 	}
 }
 
@@ -307,7 +307,7 @@ void model_write_advance(Model *model, FILE *file)
 	for (i = 0; i < mesh->n; ++i)
 	{
 		node = mesh->node + i;
-		if (node->A == 0) break;
+		if (node->U[0] == 0) break;
 	}
 	if (i) --i;
 	fprintf(file, "%lg %lg\n", model->t, mesh->node[i].x);

@@ -103,7 +103,7 @@ void mesh_initial_conditions_dry(Mesh *mesh)
 	int i;
 	Node *node = mesh->node;
 	for (i = 0; i < mesh->n; ++i)
-		node[i].A = node[i].Q = node[i].As = node[i].Ai = node[i].Asi = 0.; 
+		node[i].U[0] = node[i].U[1] = node[i].U[2] = node[i].U[3] = node[i].U[4] = 0.; 
 }
 
 /**
@@ -157,24 +157,24 @@ int mesh_initial_conditions_profile(Mesh *mesh, FILE *file)
 		}
 		if (node[i].x <= x[0])
 		{
-			node[i].A = A[0];
-			node[i].Q = Q[0];
-			node[i].As = A[0] * s[0];
+			node[i].U[0] = A[0];
+			node[i].U[1] = Q[0];
+			node[i].U[2] = A[0] * s[0];
 		}
 		else if (node[i].x >= x[n])
 		{
-			node[i].A = A[n];
-			node[i].Q = Q[n];
-			node[i].As = A[n] * s[n];
+			node[i].U[0] = A[n];
+			node[i].U[1] = Q[n];
+			node[i].U[2] = A[n] * s[n];
 		}
 		else
 		{
 			dx = (node[i].x - x[j]) / (x[j + 1] - x[j]);
-			node[i].A = A[j] + dx * (A[j+1] - A[j]);
-			node[i].Q = Q[j] + dx * (Q[j+1] - Q[j]);
-			node[i].As = node[i].A * (s[j] + dx * (s[j+1] - s[j]));
+			node[i].U[0] = A[j] + dx * (A[j+1] - A[j]);
+			node[i].U[1] = Q[j] + dx * (Q[j+1] - Q[j]);
+			node[i].U[2] = node[i].U[0] * (s[j] + dx * (s[j+1] - s[j]));
 		}
-		node[i].Ai = node[i].Asi = 0.;
+		node[i].U[3] = node[i].U[4] = 0.;
 	}
 	return 1;
 
@@ -250,11 +250,11 @@ void mesh_write_variables(Mesh *mesh, FILE *file)
 		node = mesh->node + i;
 		fprintf(file, "%.14le %.14le %.14le %.14le %.14le %.14le\n",
 			node->x,
-			node->A,
-			node->Q,
-			node->As,
-			node->Ai,
-			node->Asi);
+			node->U[0],
+			node->U[1],
+			node->U[2],
+			node->U[3],
+			node->U[4]);
 	}
 }
 
@@ -275,13 +275,13 @@ void mesh_write_flows(Mesh *mesh, FILE *file)
 	{
 		fprintf(file, "%.14le %.14le %.14le %.14le %.14le\n",
 			0.5 * (node[i].x + node[i + 1].x),
-			(node[i + 1].Q * node[i + 1].u - node[i].Q * node[i].u)
+			(node[i + 1].U[1] * node[i + 1].u - node[i].U[1] * node[i].u)
 				/ node[i].ix,
-			0.5 * G * (node[i + 1].A + node[i].A)
+			0.5 * G * (node[i + 1].U[0] + node[i].U[0])
 				* (node[i + 1].zb - node[i].zb) / node[i].ix,
-			0.5 * G * (node[i + 1].A + node[i].A)
+			0.5 * G * (node[i + 1].U[0] + node[i].U[0])
 				* (node[i + 1].h - node[i].h) / node[i].ix,
-			0.25 * G * (node[i + 1].A + node[i].A)
+			0.25 * G * (node[i + 1].U[0] + node[i].U[0])
 				* (node[i + 1].Sf + node[i].Sf));
 	}
 }
@@ -299,7 +299,7 @@ double mesh_water_mass(Mesh *mesh)
 	double mass = 0.;
 	Node *node = mesh->node;
 	for (i = 0; i < mesh->n; ++i)
-		mass += node[i].dx * (node[i].A + node[i].Ai);
+		mass += node[i].dx * (node[i].U[0] + node[i].U[3]);
 	return mass;
 }
 
@@ -316,7 +316,6 @@ double mesh_solute_mass(Mesh *mesh)
 	double mass = 0.;
 	Node *node = mesh->node;
 	for (i = 0; i < mesh->n; ++i)
-		mass += node[i].dx * (node[i].As + node[i].Asi);
+		mass += node[i].dx * (node[i].U[2] + node[i].U[4]);
 	return mass;
 }
-

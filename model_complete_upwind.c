@@ -41,31 +41,31 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * \param model
  * \brief model struct.
  */
-
 void model_surface_flow_complete_upwind(Model *model)
 {
-	int i, n1;
+	int i, j, n1;
 	double c, u, s, l1, l2, sA1, sA2, k1, k2;
 	Mesh *mesh = model->mesh;
 	Node *node = mesh->node;
 	double inlet_water_contribution, inlet_solute_contribution;
-	inlet_water_contribution = model->dt * node[0].Q;
+	inlet_water_contribution = model->dt * node[0].U[1];
 	inlet_solute_contribution = model->dt * node[0].T;
 	n1 = mesh->n - 1;
 	for (i = 0; i < n1; ++i)
 	{
 		model->node_flows(node + i);
-		node[i].dQr = node[i].dFr = node[i].dTr = node[i].dQl = node[i].dFl
-			= node[i].dTl = 0;
+		node[i].dFr[0] = node[i].dFr[1] = node[i].dFr[2] = node[i].dFl[0] =
+			node[i].dFl[1] = node[i].dFl[2] = 0;
 		if (node[i].h <= model->minimum_depth &&
 			node[i + 1].h <= model->minimum_depth)
 				continue;
 
 		// Roe's averages
 
-		c = sqrt(G * (node[i + 1].A + node[i].A) / (node[i + 1].B + node[i].B));
-		sA1 = sqrt(node[i].A);
-		sA2 = sqrt(node[i + 1].A);
+		c = sqrt(G * (node[i + 1].U[0] + node[i].U[0]) /
+			(node[i + 1].B + node[i].B));
+		sA1 = sqrt(node[i].U[0]);
+		sA2 = sqrt(node[i + 1].U[0]);
 		k2 = sA1 + sA2;
 		k1 = sA1 / k2;
 		k2 = sA2 / k2;
@@ -77,50 +77,44 @@ void model_surface_flow_complete_upwind(Model *model)
 
 		if (u >= c)
 		{
-			node[i].dQl = node[i].dQ;
-			node[i].dFl = node[i].dF;
-			node[i].dTl = node[i].dT;
+			for (j = 0; j < 3; ++j) node[i].dFl[j] = node[i].dF[j];
 		}
 		else
 		{
 			s = k1 * node[i].s + k2 * node[i + 1].s;
-			node[i].dQr = 0.5 * (l1 * node[i].dQ - node[i].dF) / c;
-			node[i].dFr = l2 * node[i].dQr;
-			node[i].dTr = s * node[i].dQr;
-			node[i].dQl = node[i].dQ - node[i].dQr;
-			node[i].dFl = node[i].dF - node[i].dFr;
-			node[i].dTl = node[i].dT - node[i].dTr;
+			node[i].dFr[0] = 0.5 * (l1 * node[i].dF[0] - node[i].dF[1]) / c;
+			node[i].dFr[1] = l2 * node[i].dFr[0];
+			node[i].dFr[2] = s * node[i].dFr[0];
+			for (j = 0; j < 3; ++j)
+				node[i].dFl[j] = node[i].dF[j] - node[i].dFr[j];
 		}
 
 		// entropy correction
 
 		if (node[i].l2 < 0. && node[i + 1].l2 > 0.)
-		{
 			k1 = 0.25 * (node[i + 1].l2 - node[i].l2 - 2 * fabs(l2));
-			k2 = k1 * (node[i + 1].A - node[i].A);
-			node[i].dQl += k2;
-			node[i].dQr -= k2;
-			k2 = k1 * node[i].dQ;
-			node[i].dFl += k2;
-			node[i].dFr -= k2;
-			k2 = k1 * (node[i + 1].As - node[i].As);
-			node[i].dTl += k2;
-			node[i].dTr -= k2;
+		else if (node[i].l1 < 0. && node[i + 1].l1 > 0.)
+			k1 = 0.25 * (node[i + 1].l1 - node[i].l1 - 2 * fabs(l1));
+		else continue;
+
+		for (j = 0; j < 3; ++j)
+		{
+			k2 = k1 * (node[i + 1].U[j] - node[i].U[j]);
+			node[i].dFl[j] += k2;
+			node[i].dFr[j] -= k2;
 		}
 	}
 
-	// variables actualization
+	// variables updating
 
 	for (i = 0; i < n1; ++i)
 	{
-		node[i].A -= model->dt * node[i].dQr / node[i].dx;
-		node[i].Q -= model->dt * node[i].dFr / node[i].dx;
-		node[i].As -= model->dt * node[i].dTr / node[i].dx;
-		node[i + 1].A -= model->dt * node[i].dQl / node[i + 1].dx;
-		node[i + 1].Q -= model->dt * node[i].dFl / node[i + 1].dx;
-		node[i + 1].As -= model->dt * node[i].dTl / node[i + 1].dx;
+		for (j = 0; j < 3; ++j)
+		{
+			node[i].U[j] -= model->dt * node[i].dFr[j] / node[i].dx;
+			node[i + 1].U[j] -= model->dt * node[i].dFl[j] / node[i + 1].dx;
+		}
 	}
-	node[0].A -= inlet_water_contribution / node[0].dx;
-	node[0].As -= inlet_solute_contribution / node[0].dx;
+	node[0].U[0] -= inlet_water_contribution / node[0].dx;
+	node[0].U[2] -= inlet_solute_contribution / node[0].dx;
 }
-

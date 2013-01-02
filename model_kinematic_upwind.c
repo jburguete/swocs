@@ -54,14 +54,14 @@ void model_surface_flow_kinematic_upwind(Model *model)
 	Mesh *mesh = model->mesh;
 	Node *node = mesh->node;
 	double inlet_water_contribution, inlet_solute_contribution;
-	inlet_water_contribution = model->dt * node[0].Q;
+	inlet_water_contribution = model->dt * node[0].U[1];
 	inlet_solute_contribution = model->dt * node[0].T;
 	for (i = 0; ++i < mesh->n;)
 	{
 		model->node_flows(node + i - 1);
-		node[i].A -= model->dt * node[i - 1].dQ / node[i].dx;
-		node[i].As -= model->dt * node[i - 1].dT / node[i].dx;
+		node[i].U[0] -= model->dt * node[i - 1].dF[0] / node[i].dx;
+		node[i].U[2] -= model->dt * node[i - 1].dF[2] / node[i].dx;
 	}
-	node[0].A -= inlet_water_contribution / node[0].dx;
-	node[0].As -= inlet_solute_contribution / node[0].dx;
+	node[0].U[0] -= inlet_water_contribution / node[0].dx;
+	node[0].U[2] -= inlet_solute_contribution / node[0].dx;
 }

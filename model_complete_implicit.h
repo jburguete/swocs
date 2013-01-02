@@ -34,7 +34,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 // member functions
 
+void model_surface_flow_complete_invert(double *m, double *i);
 void model_surface_flow_complete_implicit(Model *model);
 
 #endif
-

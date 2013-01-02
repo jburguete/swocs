@@ -52,9 +52,9 @@ void node_discharge_centre_zero_inertia_Manning(Node *node)
 {
 	double dz;
 	dz = (node - 1)->zs - (node + 1)->zs;
-	if (dz <= 0.) node->Q = 0.; else
-		node->Q = sqrt(dz / ((node - 1)->ix + node->ix)) * node->A
-			* pow(node->A / node->P, 2./3.) / node->friction_coefficient[0];
+	if (dz <= 0.) node->U[1] = 0.; else
+		node->U[1] = sqrt(dz / ((node - 1)->ix + node->ix)) * node->U[0]
+			* pow(node->U[0] / node->P, 2./3.) / node->friction_coefficient[0];
 }
 
 /**
@@ -68,8 +68,8 @@ void node_discharge_right_zero_inertia_Manning(Node *node)
 {
 	double dz;
 	dz = node->zs - (node + 1)->zs;
-	if (dz <= 0.) node->Q = 0.; else
-		node->Q = sqrt(dz / node->ix) * node->A * pow(node->A / node->P, 2./3.)
+	if (dz <= 0.) node->U[1] = 0.; else
+		node->U[1] = sqrt(dz / node->ix) * node->U[0] * pow(node->U[0] / node->P, 2./3.)
 			/ node->friction_coefficient[0];
 }
 
@@ -84,9 +84,9 @@ void node_discharge_left_zero_inertia_Manning(Node *node)
 {
 	double dz;
 	dz = (node - 1)->zs - node->zs;
-	if (dz <= 0.) node->Q = 0.; else
-		node->Q = sqrt(dz / (node - 1)->ix) * node->A
-			* pow(node->A / node->P, 2./3.) / node->friction_coefficient[0];
+	if (dz <= 0.) node->U[1] = 0.; else
+		node->U[1] = sqrt(dz / (node - 1)->ix) * node->U[0]
+			* pow(node->U[0] / node->P, 2./3.) / node->friction_coefficient[0];
 }
 
 /**
@@ -103,25 +103,25 @@ void model_node_parameters_centre_zero_inertia(Model *model, Node *node)
 	node_depth(node);
 	node_width(node);
 	node_perimeter(node);
-	if (node->A <= 0.)
+	if (node->U[0] <= 0.)
 	{
-		node->s = node->Q = node->u = node->T = node->Sf = node->Kx = node->KxA
+		node->s = node->U[1] = node->u = node->T = node->Sf = node->Kx = node->KxA
 			= 0.;
 	}
 	else if (node->h < model->minimum_depth)
 	{
-		node->s = node->As / node->A;
-		node->Q = node->u = node->T = node->Sf = node->Kx = node->KxA = 0.;
+		node->s = node->U[2] / node->U[0];
+		node->U[1] = node->u = node->T = node->Sf = node->Kx = node->KxA = 0.;
 	}
 	else
 	{
-		node->s = node->As / node->A;
+		node->s = node->U[2] / node->U[0];
 		model->node_discharge_centre(node);
-		node->u = node->Q / node->A;
-		node->T = node->Q * node->s;
+		node->u = node->U[1] / node->U[0];
+		node->T = node->U[1] * node->s;
 		model->node_friction(node);
 		model->node_diffusion(node);
-		node->KxA = node->Kx * node->A;
+		node->KxA = node->Kx * node->U[0];
 	}
 	node->zs = node->zb + node->h;
 	model->node_infiltration(node);
@@ -142,23 +142,23 @@ void model_node_parameters_right_zero_inertia(Model *model, Node *node)
 	node_depth(node);
 	node_width(node);
 	node_perimeter(node);
-	if (node->A <= 0.)
+	if (node->U[0] <= 0.)
 	{
-		node->s = node->Q = node->u = node->T = node->Kx = node->KxA = 0.;
+		node->s = node->U[1] = node->u = node->T = node->Kx = node->KxA = 0.;
 	}
 	else if (node->h < model->minimum_depth)
 	{
-		node->s = node->As / node->A;
-		node->Q = node->u = node->T = node->Kx = node->KxA = 0.;
+		node->s = node->U[2] / node->U[0];
+		node->U[1] = node->u = node->T = node->Kx = node->KxA = 0.;
 	}
 	else
 	{
-		node->s = node->As / node->A;
+		node->s = node->U[2] / node->U[0];
 		model->node_discharge_right(node);
-		node->u = node->Q / node->A;
-		node->T = node->Q * node->s;
+		node->u = node->U[1] / node->U[0];
+		node->T = node->U[1] * node->s;
 		model->node_diffusion(node);
-		node->KxA = node->Kx * node->A;
+		node->KxA = node->Kx * node->U[0];
 	}
 	node->zs = node->zb + node->h;
 	model->node_infiltration(node);
@@ -179,22 +179,22 @@ void model_node_parameters_left_zero_inertia(Model *model, Node *node)
 	node_depth(node);
 	node_width(node);
 	node_perimeter(node);
-	if (node->A <= 0.)
+	if (node->U[0] <= 0.)
 	{
-		node->s = node->Q = node->u = node->T = node->Kx = node->KxA = 0.;
+		node->s = node->U[1] = node->u = node->T = node->Kx = node->KxA = 0.;
 	}
 	else if (node->h < model->minimum_depth)
 	{
-		node->s = node->As / node->A;
-		node->Q = node->u = node->T = node->Kx = node->KxA = 0.;
+		node->s = node->U[2] / node->U[0];
+		node->U[1] = node->u = node->T = node->Kx = node->KxA = 0.;
 	}
 	else
 	{
-		node->s = node->As / node->A;
-		node->u = node->Q / node->A;
-		node->T = node->Q * node->s;
+		node->s = node->U[2] / node->U[0];
+		node->u = node->U[1] / node->U[0];
+		node->T = node->U[1] * node->s;
 		model->node_diffusion(node);
-		node->KxA = node->Kx * node->A;
+		node->KxA = node->Kx * node->U[0];
 	}
 	node->zs = node->zb + node->h;
 	model->node_infiltration(node);
@@ -212,10 +212,10 @@ void model_node_parameters_left_zero_inertia(Model *model, Node *node)
 double node_1dt_max_zero_inertia(Node *node)
 {
 	double u;
-	u =  5./3. * node->u - 4./3. * node->Q * sqrt(1 + node->Z * node->Z)
+	u =  5./3. * node->u - 4./3. * node->U[1] * sqrt(1 + node->Z * node->Z)
 		/ (node->B * node->P);
 	if (node->u > 0.)
-		u += node->A * pow(node->A / node->P, 4./3.)
+		u += node->U[0] * pow(node->U[0] / node->P, 4./3.)
 			/ (node->friction_coefficient[0] * node->friction_coefficient[0]
 			* node->u * node->dx);
 	return u / node->dx;
@@ -231,8 +231,8 @@ double node_1dt_max_zero_inertia(Node *node)
 void node_flows_zero_inertia(Node *node1)
 {
 	Node *node2 = node1 + 1;
-	node1->dQ = node2->Q - node1->Q;
-	node1->dT = node2->T - node1->T;
+	node1->dF[0] = node2->U[1] - node1->U[1];
+	node1->dF[2] = node2->T - node1->T;
 }
 
 /**

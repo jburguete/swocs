@@ -50,8 +50,9 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 void node_discharge_centre_kinematic_Manning(Node *node)
 {
-	node->Q = sqrt(((node - 1)->zb - (node + 1)->zb)
-		/ ((node - 1)->ix + node->ix)) * node->A * pow(node->A / node->P, 2./3.)
+	node->U[1] = sqrt(((node - 1)->zb - (node + 1)->zb)
+		/ ((node - 1)->ix + node->ix)) * node->U[0]
+		* pow(node->U[0] / node->P, 2./3.)
 		/ node->friction_coefficient[0];
 }
 
@@ -64,8 +65,8 @@ void node_discharge_centre_kinematic_Manning(Node *node)
  */
 void node_discharge_right_kinematic_Manning(Node *node)
 {
-	node->Q = sqrt((node->zb - (node + 1)->zb) / node->ix) * node->A
-		* pow(node->A / node->P, 2./3.) / node->friction_coefficient[0];
+	node->U[1] = sqrt((node->zb - (node + 1)->zb) / node->ix) * node->U[0]
+		* pow(node->U[0] / node->P, 2./3.) / node->friction_coefficient[0];
 }
 
 /**
@@ -77,8 +78,8 @@ void node_discharge_right_kinematic_Manning(Node *node)
  */
 void node_discharge_left_kinematic_Manning(Node *node)
 {
-	node->Q = sqrt(((node - 1)->zb - node->zb) / (node - 1)->ix) * node->A
-		* pow(node->A / node->P, 2./3.) / node->friction_coefficient[0];
+	node->U[1] = sqrt(((node - 1)->zb - node->zb) / (node - 1)->ix) * node->U[0]
+		* pow(node->U[0] / node->P, 2./3.) / node->friction_coefficient[0];
 }
 
 /**
@@ -95,25 +96,25 @@ void model_node_parameters_centre_kinematic(Model *model, Node *node)
 	node_depth(node);
 	node_width(node);
 	node_perimeter(node);
-	if (node->A <= 0.)
+	if (node->U[0] <= 0.)
 	{
-		node->s = node->Q = node->u = node->T = node->Sf = node->Kx = node->KxA
-			= 0.;
+		node->s = node->U[1] = node->u = node->T = node->Sf = node->Kx
+			= node->KxA = 0.;
 	}
 	else if (node->h < model->minimum_depth)
 	{
-		node->s = node->As / node->A;
-		node->Q = node->u = node->T = node->Sf = node->Kx = node->KxA = 0.;
+		node->s = node->U[2] / node->U[0];
+		node->U[1] = node->u = node->T = node->Sf = node->Kx = node->KxA = 0.;
 	}
 	else
 	{
-		node->s = node->As / node->A;
+		node->s = node->U[2] / node->U[0];
 		model->node_discharge_centre(node);
-		node->u = node->Q / node->A;
-		node->T = node->Q * node->s;
+		node->u = node->U[1] / node->U[0];
+		node->T = node->U[1] * node->s;
 		model->node_friction(node);
 		model->node_diffusion(node);
-		node->KxA = node->Kx * node->A;
+		node->KxA = node->Kx * node->U[0];
 	}
 	node->zs = node->zb + node->h;
 	model->node_infiltration(node);
@@ -134,23 +135,23 @@ void model_node_parameters_right_kinematic(Model *model, Node *node)
 	node_depth(node);
 	node_width(node);
 	node_perimeter(node);
-	if (node->A <= 0.)
+	if (node->U[0] <= 0.)
 	{
-		node->s = node->Q = node->u = node->T = node->Kx = node->KxA = 0.;
+		node->s = node->U[1] = node->u = node->T = node->Kx = node->KxA = 0.;
 	}
 	else if (node->h < model->minimum_depth)
 	{
-		node->s = node->As / node->A;
-		node->Q = node->u = node->T = node->Kx = node->KxA = 0.;
+		node->s = node->U[2] / node->U[0];
+		node->U[1] = node->u = node->T = node->Kx = node->KxA = 0.;
 	}
 	else
 	{
-		node->s = node->As / node->A;
+		node->s = node->U[2] / node->U[0];
 		model->node_discharge_right(node);
-		node->u = node->Q / node->A;
-		node->T = node->Q * node->s;
+		node->u = node->U[1] / node->U[0];
+		node->T = node->U[1] * node->s;
 		model->node_diffusion(node);
-		node->KxA = node->Kx * node->A;
+		node->KxA = node->Kx * node->U[0];
 	}
 	node->zs = node->zb + node->h;
 	model->node_infiltration(node);
@@ -171,23 +172,23 @@ void model_node_parameters_left_kinematic(Model *model, Node *node)
 	node_depth(node);
 	node_width(node);
 	node_perimeter(node);
-	if (node->A <= 0.)
+	if (node->U[0] <= 0.)
 	{
-		node->s = node->Q = node->u = node->T = node->Kx = node->KxA = 0.;
+		node->s = node->U[1] = node->u = node->T = node->Kx = node->KxA = 0.;
 	}
 	else if (node->h < model->minimum_depth)
 	{
-		node->s = node->As / node->A;
-		node->Q = node->u = node->T = node->Kx = node->KxA = 0.;
+		node->s = node->U[2] / node->U[0];
+		node->U[1] = node->u = node->T = node->Kx = node->KxA = 0.;
 	}
 	else
 	{
-		node->s = node->As / node->A;
+		node->s = node->U[2] / node->U[0];
 		model->node_discharge_left(node);
-		node->u = node->Q / node->A;
-		node->T = node->Q * node->s;
+		node->u = node->U[1] / node->U[0];
+		node->T = node->U[1] * node->s;
 		model->node_diffusion(node);
-		node->KxA = node->Kx * node->A;
+		node->KxA = node->Kx * node->U[0];
 	}
 	node->zs = node->zb + node->h;
 	model->node_infiltration(node);
@@ -204,7 +205,7 @@ void model_node_parameters_left_kinematic(Model *model, Node *node)
  */
 double node_1dt_max_kinematic(Node *node)
 {
-	return (5./3. * node->u - 4./3. * node->Q * sqrt(1 + node->Z * node->Z)
+	return (5./3. * node->u - 4./3. * node->U[1] * sqrt(1 + node->Z * node->Z)
 		/ (node->B * node->P)) / node->dx; 
 }
 
@@ -218,8 +219,8 @@ double node_1dt_max_kinematic(Node *node)
 void node_flows_kinematic(Node *node1)
 {
 	Node *node2 = node1 + 1;
-	node1->dQ = node2->Q - node1->Q;
-	node1->dT = node2->T - node1->T;
+	node1->dF[0] = node2->U[1] - node1->U[1];
+	node1->dF[2] = node2->T - node1->T;
 }
 
 /**

@@ -56,20 +56,10 @@ struct _Node
  * \brief cell size.
  * \var ix
  * \brief cell distance.
- * \var A
- * \brief wetted cross sectional area.
- * \var Ai
- * \brief infiltrated cross sectional area.
- * \var Q
- * \brief discharge.
+ * \var U
+ * \brief conserved variables vector.
  * \var s
  * \brief solute concentration.
- * \var si
- * \brief infiltrated solute concentration.
- * \var As
- * \brief A * s.
- * \var Asi
- * \brief A * si.
  * \var h
  * \brief depth.
  * \var Sf
@@ -116,18 +106,10 @@ struct _Node
  * \brief momentum flux difference.
  * \var dT
  * \brief solute mass flux difference.
- * \var dQl
- * \brief left numerical mass flux difference.
  * \var dFl
  * \brief left numerical momentum flux difference.
- * \var dTl
- * \brief left numerical solute mass flux difference.
- * \var dQr
- * \brief right numerical mass flux difference.
  * \var dFr
  * \brief right numerical momentum flux difference.
- * \var dTr
- * \brief right numerical solute mass flux difference.
  * \var nu
  * \brief artificial viscosity coefficient.
  * \var theta
@@ -136,11 +118,13 @@ struct _Node
  * \brief positive implicit operator.
  * \var Jn
  * \brief negative implicit operator.
+ * \var dU
+ * \brief conserved variables increment vector.
  */
 	double friction_coefficient[3], infiltration_coefficient[4],
-		diffusion_coefficient[1], x, dx, ix, A, Ai, Q, s, si, As, Asi, h, Sf,
-		zb, zs, P, B, u, c, l1, l2, i, Pi, Z, B0, F, T, Kx, KxA, Kxi, KxiA,
-		dQ, dF, dT, dQl, dFl, dTl, dQr, dFr, dTr, nu, theta, Jp[9], Jm[9];
+		diffusion_coefficient[1], x, dx, ix, U[5], s, si, h, Sf, zb, zs, P, B,
+		u, c, l1, l2, i, Pi, Z, B0, F, T, Kx, KxA, Kxi, KxiA,
+		dF[3], dFl[3], dFr[3], nu, theta, Jp[9], Jm[9], Un[3], dU[3];
 };
 
 /**
