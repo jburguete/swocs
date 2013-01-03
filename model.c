@@ -71,7 +71,6 @@ void model_infiltration(Model *model)
 	double Pidt;
 	Mesh *mesh = model->mesh;
 	Node *node = mesh->node;
-//printf("t=%lg dt=%lg Pi=%lg A=%lg Ai=%lg\n", model->t, model->dt, node[0].Pi, node[0].U[0], node[0].U[3]);
 	for (i = 0; i < mesh->n; ++i)
 	{
 		Pidt = fmin(node[i].Pi * model->dt, node[i].U[0]);
@@ -197,7 +196,8 @@ void model_step(Model *model)
  * \brief Function to read the numerical model.
  * \param model
  * \brief model struct.
-	file_name = name of the input data file
+ * \param file_name
+ * \brief name of the input data file
  * \return 0 on error, 1 on success.
  */
 int model_read(Model *model, char *file_name)

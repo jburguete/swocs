@@ -24,8 +24,15 @@ PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
 LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
 OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+*/
 
+/**
+ * \file model_zero_advection_upwind.c
+ * \brief Source file to define the first order upwind implicit numerical model 
+ *   applied to the zero advection model.
+ * \author Javier Burguete Tolosa.
+ * \copyright Copyright 2011-2012, Javier Burguete Tolosa.
+ */
 #include <stdio.h>
 #include <math.h>
 #include "config.h"

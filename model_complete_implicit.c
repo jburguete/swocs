@@ -24,8 +24,15 @@ PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
 LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
 OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+*/
 
+/**
+ * \file model_complete_implicit.c
+ * \brief Source file to define the first order upwind implicit numerical model 
+ *   applied to the complete model.
+ * \author Javier Burguete Tolosa.
+ * \copyright Copyright 2011-2012, Javier Burguete Tolosa.
+ */
 #include <stdio.h>
 #include <math.h>
 #include "config.h"
@@ -39,11 +46,11 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * \fn void model_surface_flow_complete_implicit_multiply\
  *   (double *m, double *v, double *r)
  * \brief Function to multiply a matrix by a vector of the complete model.
- * \var m
+ * \param m
  * \brief multiplying matrix.
- * \var v
+ * \param v
  * \brief vector to multiply.
- * \var r
+ * \param r
  * \brief resulting vector.
  */
 void model_surface_flow_complete_implicit_multiply(double *m, double *v, double *r)
@@ -56,9 +63,9 @@ void model_surface_flow_complete_implicit_multiply(double *m, double *v, double 
 /**
  * \fn void model_surface_flow_complete_implicit_invert(double *m, double *i)
  * \brief Function to invert an implicit operator of the complete model.
- * \var m
+ * \param m
  * \brief implicit operator to invert.
- * \var i
+ * \param i
  * \brief invert operator.
  */
 void model_surface_flow_complete_implicit_invert(double *m, double *i)
@@ -96,7 +103,7 @@ void model_surface_flow_complete_implicit(Model *model)
 	{
 		if (node[i].h <= model->minimum_depth)
 		{
-			for (j = 0; j < 9; ++j) node[i].Jp[j] = node[i].Jm[j] = 0.;
+			for (j = 0; j < 9; ++j) node[i].Jp[j] = node[i].Jn[j] = 0.;
 			continue;
 		}
 		c2 = 2. * node[i].c;
@@ -115,15 +122,15 @@ void model_surface_flow_complete_implicit(Model *model)
 		l1 = fmin(0., node[i].l1);
 		l2 = fmin(0., node[i].l2);
 		l3 = fmin(0., node[i].u);
-		node[i].Jm[0] = (node[i].l1 * l2 - node[i].l2 * l1) / c2;
-		node[i].Jm[1] = (l1 -l2) / c2;
-		node[i].Jm[2] = 0.;
-		node[i].Jm[3] = - node[i].l1 * node[i].l2 * node[i].Jm[1];
-		node[i].Jm[4] = (node[i].l1 * l1 - node[i].l2 * l2) / c2;
-		node[i].Jm[5] = 0.;
-		node[i].Jm[6] = (node[i].Jm[0] - l3) * node[i].s;
-		node[i].Jm[7] = node[i].Jm[1] * node[i].s;
-		node[i].Jm[8] = l3;
+		node[i].Jn[0] = (node[i].l1 * l2 - node[i].l2 * l1) / c2;
+		node[i].Jn[1] = (l1 -l2) / c2;
+		node[i].Jn[2] = 0.;
+		node[i].Jn[3] = - node[i].l1 * node[i].l2 * node[i].Jn[1];
+		node[i].Jn[4] = (node[i].l1 * l1 - node[i].l2 * l2) / c2;
+		node[i].Jn[5] = 0.;
+		node[i].Jn[6] = (node[i].Jn[0] - l3) * node[i].s;
+		node[i].Jn[7] = node[i].Jn[1] * node[i].s;
+		node[i].Jn[8] = l3;
 	}
 	n1 = mesh->n - 1;
 	for (i = 0; i < n1; ++i)
@@ -203,7 +210,7 @@ void model_surface_flow_complete_implicit(Model *model)
 		for (j = 0; j < 3; ++j) node[i].U[j] = node[i].Un[j] + node[i].dU[j];
 	}
 	i = n1;
-	for (j = 0; j < 9; ++j) B[j] = odt * node[i].Jm[j];
+	for (j = 0; j < 9; ++j) B[j] = odt * node[i].Jn[j];
 	for (j = 0; j < 3; ++j) node[i].dU[j] = 0.;
 	while (--i >= 0)
 	{

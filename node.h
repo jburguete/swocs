@@ -59,7 +59,9 @@ struct _Node
  * \var U
  * \brief conserved variables vector.
  * \var s
- * \brief solute concentration.
+ * \brief surface solute concentration.
+ * \var si
+ * \brief infiltrated solute concentration.
  * \var h
  * \brief depth.
  * \var Sf
@@ -100,29 +102,27 @@ struct _Node
  * \brief soil diffusion coefficient.
  * \var KxiA
  * \brief Kxi * A.
- * \var dQ
- * \brief mass flux difference.
  * \var dF
- * \brief momentum flux difference.
- * \var dT
- * \brief solute mass flux difference.
+ * \brief flux difference vector.
  * \var dFl
- * \brief left numerical momentum flux difference.
+ * \brief left numerical flux difference vector.
  * \var dFr
- * \brief right numerical momentum flux difference.
+ * \brief right numerical flux difference vector.
  * \var nu
  * \brief artificial viscosity coefficient.
  * \var Jp
  * \brief positive implicit operator.
  * \var Jn
  * \brief negative implicit operator.
+ * \var Un
+ * \brief former time step conserved variables vector.
  * \var dU
  * \brief conserved variables increment vector.
  */
 	double friction_coefficient[3], infiltration_coefficient[4],
 		diffusion_coefficient[1], x, dx, ix, U[5], s, si, h, Sf, zb, zs, P, B,
 		u, c, l1, l2, i, Pi, Z, B0, F, T, Kx, KxA, Kxi, KxiA,
-		dF[3], dFl[3], dFr[3], nu, Jp[9], Jm[9], Un[3], dU[3];
+		dF[3], dFl[3], dFr[3], nu, Jp[9], Jn[9], Un[3], dU[3];
 };
 
 /**
