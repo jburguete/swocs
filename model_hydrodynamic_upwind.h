@@ -27,21 +27,21 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 /**
- * \file model_complete_upwind.h
+ * \file model_hydrodynamic_upwind.h
  * \brief Header file to define the first order upwind explicit numerical model 
- *   applied to the complete model.
+ *   applied to the hydrodynamic model.
  * \author Javier Burguete Tolosa.
  * \copyright Copyright 2011-2012, Javier Burguete Tolosa.
  */
 
 // in order to prevent multiple definitions
 
-#ifndef MODEL_COMPLETE_UPWIND__H
-#define MODEL_COMPLETE_UPWIND__H 1
+#ifndef MODEL_HYDRODYNAMIC_UPWIND__H
+#define MODEL_HYDRODYNAMIC_UPWIND__H 1
 
 // member functions
 
-void model_surface_flow_complete_upwind(Model *model);
+void model_surface_flow_hydrodynamic_upwind(Model *model);
 
 #endif
 

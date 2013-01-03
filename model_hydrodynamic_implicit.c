@@ -27,9 +27,9 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 /**
- * \file model_complete_implicit.c
+ * \file model_hydrodynamic_implicit.c
  * \brief Source file to define the first order upwind implicit numerical model 
- *   applied to the complete model.
+ *   applied to the hydrodynamic model.
  * \author Javier Burguete Tolosa.
  * \copyright Copyright 2011-2012, Javier Burguete Tolosa.
  */
@@ -40,12 +40,12 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "node.h"
 #include "mesh.h"
 #include "model.h"
-#include "model_complete_implicit.h"
+#include "model_hydrodynamic_implicit.h"
 
 /**
- * \fn void model_surface_flow_complete_implicit_multiply\
+ * \fn void model_surface_flow_hydrodynamic_implicit_multiply\
  *   (double *m, double *v, double *r)
- * \brief Function to multiply a matrix by a vector of the complete model.
+ * \brief Function to multiply a matrix by a vector of the hydrodynamic model.
  * \param m
  * \brief multiplying matrix.
  * \param v
@@ -53,7 +53,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * \param r
  * \brief resulting vector.
  */
-void model_surface_flow_complete_implicit_multiply(double *m, double *v, double *r)
+void model_surface_flow_hydrodynamic_implicit_multiply(double *m, double *v, double *r)
 {
 	r[0] = m[0] * v[0] + m[1] * v[1];
 	r[1] = m[3] * v[0] + m[4] * v[1];
@@ -61,14 +61,14 @@ void model_surface_flow_complete_implicit_multiply(double *m, double *v, double 
 }
 
 /**
- * \fn void model_surface_flow_complete_implicit_invert(double *m, double *i)
- * \brief Function to invert an implicit operator of the complete model.
+ * \fn void model_surface_flow_hydrodynamic_implicit_invert(double *m, double *i)
+ * \brief Function to invert an implicit operator of the hydrodynamic model.
  * \param m
  * \brief implicit operator to invert.
  * \param i
  * \brief invert operator.
  */
-void model_surface_flow_complete_implicit_invert(double *m, double *i)
+void model_surface_flow_hydrodynamic_implicit_invert(double *m, double *i)
 {
 	double d;
 	d = m[8] * (m[0] * m[4] - m[1] * m[3]);
@@ -84,13 +84,13 @@ void model_surface_flow_complete_implicit_invert(double *m, double *i)
 }
 
 /**
- * \fn void model_surface_flow_complete_implicit(Model *model)
+ * \fn void model_surface_flow_hydrodynamic_implicit(Model *model)
  * \brief Function to make the surface flow with the upwind implicit numerical
  * 	scheme.
  * \param model
  * \brief model struct.
  */
-void model_surface_flow_complete_implicit(Model *model)
+void model_surface_flow_hydrodynamic_implicit(Model *model)
 {
 	int i, j, n1;
 	double c, u, s, l1, l2, l3, c2, sA1, sA2, k1, k2, odt, A[9], B[9], C[9],
@@ -198,15 +198,15 @@ void model_surface_flow_complete_implicit(Model *model)
 	}
 	for (i = 0; ++i <= n1;)
 	{
-		model_surface_flow_complete_implicit_multiply(B, node[i - 1].dU, D);
+		model_surface_flow_hydrodynamic_implicit_multiply(B, node[i - 1].dU, D);
 		for (j = 0; j < 9; ++j) A[j] = B[j] = odt * node[i].Jp[j];
 		A[0] += node[i].dx;
 		A[4] += node[i].dx;
 		A[8] += node[i].dx;
-		model_surface_flow_complete_implicit_invert(A, C);
+		model_surface_flow_hydrodynamic_implicit_invert(A, C);
 		for (j = 0; j < 3; ++j)
 			D[j] -= model->dt * node[i - 1].dFl[j] / node[i].dx;
-		model_surface_flow_complete_implicit_multiply(C, D, node[i].dU);
+		model_surface_flow_hydrodynamic_implicit_multiply(C, D, node[i].dU);
 		for (j = 0; j < 3; ++j) node[i].U[j] = node[i].Un[j] + node[i].dU[j];
 	}
 	i = n1;
@@ -214,14 +214,14 @@ void model_surface_flow_complete_implicit(Model *model)
 	for (j = 0; j < 3; ++j) node[i].dU[j] = 0.;
 	while (--i >= 0)
 	{
-		model_surface_flow_complete_implicit_multiply(B, node[i + 1].dU, D);
+		model_surface_flow_hydrodynamic_implicit_multiply(B, node[i + 1].dU, D);
 		for (j = 0; j < 9; ++j) A[j] = B[j] = odt * node[i].Jp[j];
 		A[0] += node[i].dx;
 		A[4] += node[i].dx;
 		A[8] += node[i].dx;
-		model_surface_flow_complete_implicit_invert(A, C);
+		model_surface_flow_hydrodynamic_implicit_invert(A, C);
 		for (j = 0; j < 3; ++j) D[j] -= model->dt * node[i].dFr[j] / node[i].dx;
-		model_surface_flow_complete_implicit_multiply(C, D, node[i].dU);
+		model_surface_flow_hydrodynamic_implicit_multiply(C, D, node[i].dU);
 		for (j = 0; j < 3; ++j) node[i].U[j] += node[i].dU[j];
 	}
 }

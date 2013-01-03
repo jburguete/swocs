@@ -27,9 +27,9 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 /**
- * \file model_complete_upwind.c
+ * \file model_hydrodynamic_upwind.c
  * \brief Source file to define the first order upwind explicit numerical model 
- *   applied to the complete model.
+ *   applied to the hydrodynamic model.
  * \author Javier Burguete Tolosa.
  * \copyright Copyright 2011-2012, Javier Burguete Tolosa.
  */
@@ -40,15 +40,15 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "node.h"
 #include "mesh.h"
 #include "model.h"
-#include "model_complete_upwind.h"
+#include "model_hydrodynamic_upwind.h"
 
 /**
- * \fn void model_surface_flow_complete_upwind(Model *model)
+ * \fn void model_surface_flow_hydrodynamic_upwind(Model *model)
  * \brief Function to make the surface flow with the upwind numerical scheme.
  * \param model
  * \brief model struct.
  */
-void model_surface_flow_complete_upwind(Model *model)
+void model_surface_flow_hydrodynamic_upwind(Model *model)
 {
 	int i, j, n1;
 	double c, u, s, l1, l2, sA1, sA2, k1, k2;

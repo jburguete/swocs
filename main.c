@@ -40,19 +40,19 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "node.h"
 #include "mesh.h"
 #include "model.h"
-#include "model_complete.h"
+#include "model_hydrodynamic.h"
 #include "model_zero_advection.h"
 #include "model_zero_inertia.h"
 #include "model_kinematic.h"
-#include "model_complete_upwind.h"
+#include "model_hydrodynamic_upwind.h"
 #include "model_zero_advection_upwind.h"
 #include "model_zero_inertia_upwind.h"
 #include "model_kinematic_upwind.h"
-#include "model_complete_LaxFriedrichs.h"
+#include "model_hydrodynamic_LaxFriedrichs.h"
 #include "model_zero_advection_LaxFriedrichs.h"
 //#include "model_zero_inertia_LaxFriedrichs.h"
 //#include "model_kinematic_LaxFriedrichs.h"
-#include "model_complete_implicit.h"
+#include "model_hydrodynamic_implicit.h"
 
 /**
  * \var critical_depth_tolerance
@@ -87,11 +87,11 @@ int main(int argn, char **argc)
 		model->model_node_parameters_centre
 			= model->model_node_parameters_right
 			= model->model_node_parameters_left
-			= model_node_parameters_complete;
-		model->node_1dt_max = node_1dt_max_complete;
-		model->node_flows = node_flows_complete;
-		model->model_inlet_dtmax = model_inlet_dtmax_complete;
-		goto complete;
+			= model_node_parameters_hydrodynamic;
+		model->node_1dt_max = node_1dt_max_hydrodynamic;
+		model->node_flows = node_flows_hydrodynamic;
+		model->model_inlet_dtmax = model_inlet_dtmax_hydrodynamic;
+		goto hydrodynamic;
 	case 2:
 		model->model_node_parameters_centre
 			= model->model_node_parameters_right
@@ -148,17 +148,17 @@ int main(int argn, char **argc)
 		return 2;
 	}
 
-complete:
+hydrodynamic:
 	switch (model->type_surface_flow)
 	{
 	case 1:
-		model->model_surface_flow = model_surface_flow_complete_upwind;
+		model->model_surface_flow = model_surface_flow_hydrodynamic_upwind;
 		goto calculate;
 	case 2:
-		model->model_surface_flow = model_surface_flow_complete_LaxFriedrichs;
+		model->model_surface_flow = model_surface_flow_hydrodynamic_LaxFriedrichs;
 		goto calculate;
 	case 3:
-		model->model_surface_flow = model_surface_flow_complete_implicit;
+		model->model_surface_flow = model_surface_flow_hydrodynamic_implicit;
 		goto calculate;
 	default:
 		printf("model: bad surface flow type\n");

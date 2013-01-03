@@ -90,6 +90,10 @@ struct _Model
  * \brief time interval to save the data.
  * \var minimum_depth
  * \brief minimum depth allowing the water movement.
+ * \var inlet_contribution
+ * \brief inlet contribution vector to ensure global conservation.
+ * \var outlet_contribution
+ * \brief outlet contribution vector to ensure global conservation.
  * \var model_node_parameters_centre
  * \brief pointer to the function calculating the node parameters in a centred
  *   form.
@@ -122,9 +126,9 @@ struct _Model
  * \brief pointer to the function calculating the node infiltration.
  * \var node_diffusion
  * \brief pointer to the function calculating the node diffusion.
- * \var node_inlet
+ * \var inlet
  * \brief pointer to the function calculating the inlet.
- * \var node_outlet
+ * \var outlet
  * \brief pointer to the function calculating the outlet.
  * \var model_surface_flow
  * \brief pointer to the function defining the numerical surface flow scheme.
@@ -135,12 +139,13 @@ struct _Model
  * \var type_diffusion
  * \brief type of numerical diffusion scheme (1 explicit, 2 implicit).
  * \var type_model
- * \brief type of model (1 complete, 2 zero-inertia, 3 diffusive, 4 kinematic).
+ * \brief type of model (1 hydrodynamic, 2 zero-inertia, 3 diffusive, 4 kinematic).
 */
 	Mesh mesh[1];
 	Channel channel[1];
 	Probes probes[1];
-	double t, t2, dt, tfinal, cfl, theta, interval, minimum_depth;
+	double t, t2, dt, tfinal, cfl, theta, interval, minimum_depth,
+		inlet_contribution[3], outlet_contribution[3];
 	void (*model_node_parameters_centre)(struct _Model *model, Node *node);
 	void (*model_node_parameters_right)(struct _Model *model, Node *node);
 	void (*model_node_parameters_left)(struct _Model *model, Node *node);
@@ -153,9 +158,8 @@ struct _Model
 	void (*node_friction)(Node *node);
 	void (*node_infiltration)(Node *node);
 	void (*node_diffusion)(Node *node);
-	void (*node_inlet)
-		(Node *node, Hydrogram *water, Hydrogram *solute, double t, double t2);
-	void (*node_outlet)(Node *node);
+	void (*model_inlet)(struct _Model *model);
+	void (*model_outlet)(struct _Model *model);
 	void (*model_surface_flow)(struct _Model *model);
 	void (*model_diffusion)(struct _Model *model);
 	int type_surface_flow, type_diffusion, type_model;
@@ -179,5 +183,8 @@ void model_print(Model *model, int nsteps);
 void model_write_advance(Model *model, FILE *file);
 int model_probes_read(Model *model, char *name);
 void model_write_probes(Model *model, FILE *file);
+void model_inlet(Model *model);
+void model_outlet_closed(Model *model);
+void model_outlet_open(Model *model);
 
 #endif

@@ -27,19 +27,19 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 /**
- * \file model_complete_LaxFriedrichs.h
+ * \file model_hydrodynamic_LaxFriedrichs.h
  * \brief Header file to define the Lax-Friedrichs numerical model applied to
- *   the complete model.
+ *   the hydrodynamic model.
  * \author Javier Burguete Tolosa.
  * \copyright Copyright 2011-2012, Javier Burguete Tolosa.
  */
 
 // in order to prevent multiple definitions
-#ifndef MODEL_COMPLETE_LAXFRIEDRICHS__H
-#define MODEL_COMPLETE_LAXFRIEDRICHS__H 1
+#ifndef MODEL_HYDRODYNAMIC_LAXFRIEDRICHS__H
+#define MODEL_HYDRODYNAMIC_LAXFRIEDRICHS__H 1
 
 // member functions
 
-void model_surface_flow_complete_LaxFriedrichs(Model *model);
+void model_surface_flow_hydrodynamic_LaxFriedrichs(Model *model);
 
 #endif

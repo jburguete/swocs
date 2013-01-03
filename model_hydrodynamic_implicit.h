@@ -27,22 +27,22 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 /**
- * \file model_complete_implicit.h
+ * \file model_hydrodynamic_implicit.h
  * \brief Header file to define the first order upwind implicit numerical model 
- *   applied to the complete model.
+ *   applied to the hydrodynamic model.
  * \author Javier Burguete Tolosa.
  * \copyright Copyright 2011-2012, Javier Burguete Tolosa.
  */
 
 // in order to prevent multiple definitions
-#ifndef MODEL_COMPLETE_IMPLICIT__H
-#define MODEL_COMPLETE_IMPLICIT__H 1
+#ifndef MODEL_HYDRODYNAMIC_IMPLICIT__H
+#define MODEL_HYDRODYNAMIC_IMPLICIT__H 1
 
 // member functions
 
-void model_surface_flow_complete_implicit_multiply
+void model_surface_flow_hydrodynamic_implicit_multiply
 	(double *m, double *v, double *r);
-void model_surface_flow_complete_implicit_invert(double *m, double *i);
-void model_surface_flow_complete_implicit(Model *model);
+void model_surface_flow_hydrodynamic_implicit_invert(double *m, double *i);
+void model_surface_flow_hydrodynamic_implicit(Model *model);
 
 #endif

@@ -27,8 +27,8 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 /**
- * \file model_complete.c
- * \brief Source file to define the complete model.
+ * \file model_hydrodynamic.c
+ * \brief Source file to define the hydrodynamic model.
  * \author Javier Burguete Tolosa.
  * \copyright Copyright 2011-2012, Javier Burguete Tolosa.
  */
@@ -39,18 +39,18 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "node.h"
 #include "mesh.h"
 #include "model.h"
-#include "model_complete.h"
+#include "model_hydrodynamic.h"
 
 /**
- * \fn void model_node_parameters_complete(Model *model, Node *node)
+ * \fn void model_node_parameters_hydrodynamic(Model *model, Node *node)
  * \brief Ffunction to calculate the numerical parameters of a node with the
- *   complete model.
+ *   hydrodynamic model.
  * \param model
  * \brief model struct.
  * \param node
  * \brief node struct.
  */
-void model_node_parameters_complete(Model *model, Node *node)
+void model_node_parameters_hydrodynamic(Model *model, Node *node)
 {
 	node_depth(node);
 	node_width(node);
@@ -85,26 +85,26 @@ void model_node_parameters_complete(Model *model, Node *node)
 }
 
 /**
- * \fn double node_1dt_max_complete(Node *node)
+ * \fn double node_1dt_max_hydrodynamic(Node *node)
  * \brief Function to calculate the allowed maximum time step size in a node
- *   with the complete model.
+ *   with the hydrodynamic model.
  * \param node
  * \brief node struct.
  * \return inverse of the allowed maximum time step size.
  */
-double node_1dt_max_complete(Node *node)
+double node_1dt_max_hydrodynamic(Node *node)
 {
 	return (node->c + fabs(node->u)) / node->dx; 
 }
 
 /**
- * \fn void node_flows_complete(Node *node1)
- * \brief Function to calculate the flux differences in a node with the complete
+ * \fn void node_flows_hydrodynamic(Node *node1)
+ * \brief Function to calculate the flux differences in a node with the hydrodynamic
  *   model.
  * \param node1
  * \brief node struct.
  */
-void node_flows_complete(Node *node1)
+void node_flows_hydrodynamic(Node *node1)
 {
 	Node *node2 = node1 + 1;
 	node1->dF[0] = node2->U[1] - node1->U[1];
@@ -114,14 +114,14 @@ void node_flows_complete(Node *node1)
 }
 
 /**
- * \fn double model_inlet_dtmax_complete(Model *model)
+ * \fn double model_inlet_dtmax_hydrodynamic(Model *model)
  * \brief Function to calculate the allowed maximum time step size at the inlet
- *   with the complete model.
+ *   with the hydrodynamic model.
  * \param model
  * \brief model struct.
  * \return allowed maximum time step size.
  */
-double model_inlet_dtmax_complete(Model *model)
+double model_inlet_dtmax_hydrodynamic(Model *model)
 {
 	double A, Q, h, B, u, c;
 	Node *node = model->mesh->node;

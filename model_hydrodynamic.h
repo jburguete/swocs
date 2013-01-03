@@ -27,21 +27,21 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 /**
- * \file model_complete.h
- * \brief Header file to define the complete model.
+ * \file model_hydrodynamic.h
+ * \brief Header file to define the hydrodynamic model.
  * \author Javier Burguete Tolosa.
  * \copyright Copyright 2011-2012, Javier Burguete Tolosa.
  */
 
 // in order to prevent multiple definitions
-#ifndef MODEL_COMPLETE__H
-#define MODEL_COMPLETE__H 1
+#ifndef MODEL_HYDRODYNAMIC__H
+#define MODEL_HYDRODYNAMIC__H 1
 
 // member functions
 
-void model_node_parameters_complete(Model *model, Node *node);
-double node_1dt_max_complete(Node *node);
-void node_flows_complete(Node *node1);
-double model_inlet_dtmax_complete(Model *model);
+void model_node_parameters_hydrodynamic(Model *model, Node *node);
+double node_1dt_max_hydrodynamic(Node *node);
+void node_flows_hydrodynamic(Node *node1);
+double model_inlet_dtmax_hydrodynamic(Model *model);
 
 #endif

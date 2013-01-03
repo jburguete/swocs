@@ -184,9 +184,8 @@ void model_step(Model *model)
 	model->model_surface_flow(model);
 	model->model_diffusion(model);
 	model_infiltration(model);
-	model->node_inlet(node, channel->water_inlet, channel->solute_inlet,
-		model->t, model->t2);
-	model->node_outlet(node + mesh->n - 1);
+	model->model_inlet(model);
+	model->model_outlet(model);
 	model_parameters(model);
 	model->t = model->t2;
 }
@@ -231,14 +230,14 @@ int model_read(Model *model, char *file_name)
 
 	if (!mesh_read(model->mesh, model->channel, file)) goto bad;
 
-	model->node_inlet = node_inlet;
+	model->model_inlet = model_inlet;
 	switch (model->channel->type_outlet)
 	{
 	case 1:
-		model->node_outlet = node_outlet_closed;
+		model->model_outlet = model_outlet_closed;
 		break;
 	case 2:
-		model->node_outlet = node_outlet_open;
+		model->model_outlet = model_outlet_open;
 	}
 
 	if (fscanf(file, "%lf%lf%lf%lf%d%d%d",
@@ -390,4 +389,50 @@ int i;
 	}
 	// writing a new row
 	fprintf(file, "\n");
+}
+
+/**
+ * \fn void model_inlet(Model *model)
+ * \brief Function to calculate the inlet boundary condition.
+ * \param model
+ * \brief model struct.
+ */
+void model_inlet(Model *model)
+{
+	double t, t2;
+	Node *node = model->mesh->node;
+	t = model->t;
+	t2 = model->t2;
+	node->U[0] += hydrogram_integrate(model->channel->water_inlet, t, t2)
+		/ node->dx;
+	node->U[2] += hydrogram_integrate(model->channel->solute_inlet, t, t2)
+		/ node->dx;
+	node_subcritical_discharge(node);
+}
+
+/**
+ * \fn void model_outlet_closed(Model *model)
+ * \brief Function to calculate a closed outlet boundary condition.
+ * \param model
+ * \brief model struct.
+*/
+void model_outlet_closed(Model *model)
+{
+	Node *node = model->mesh->node + model->mesh->n - 1;
+	node->U[1] = 0.;
+}
+
+/**
+ * \fn void model_outlet_open(Model *model)
+ * \brief Function to calculate a open outlet boundary condition.
+ * \param model
+ * \brief model struct.
+ */
+void model_outlet_open(Model *model)
+{
+	Node *node = model->mesh->node + model->mesh->n - 1;
+	node_depth(node);
+	node_width(node);
+	node_critical_velocity(node);
+	node->U[1] = fmax(node->U[1], node->U[0] * node->c);
 }

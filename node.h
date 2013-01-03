@@ -145,9 +145,5 @@ double node_critical_depth(Node *node, double Q);
 void node_friction_Manning(Node *node);
 void node_infiltration_KostiakovLewis(Node *node);
 void node_diffusion_Rutherford(Node *node);
-void node_inlet
-	(Node *node, Hydrogram *water, Hydrogram *solute, double t, double t2);
-void node_outlet_closed(Node *node);
-void node_outlet_open(Node *node);
 
 #endif
