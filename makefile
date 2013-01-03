@@ -4,7 +4,7 @@ headers = config.h channel.c node.h mesh.h model.h model_hydrodynamic.h \
 	model_zero_inertia_upwind.h model_kinematic_upwind.h \
 	model_hydrodynamic_upwind.h model_zero_advection_upwind.h  \
 	model_hydrodynamic_implicit.h
-	# model_zero_inertia_LaxFriedrichs.h model_kinematic_LaxFriedrichs.h
+#	model_zero_inertia_LaxFriedrichs.h model_kinematic_LaxFriedrichs.h
 
 sources = main.c channel.c node.c mesh.c model.c model_hydrodynamic.c \
 	model_zero_advection.c model_zero_inertia.c model_kinematic.c \
@@ -12,7 +12,7 @@ sources = main.c channel.c node.c mesh.c model.c model_hydrodynamic.c \
 	model_zero_inertia_upwind.c model_kinematic_upwind.c \
 	model_hydrodynamic_upwind.c model_zero_advection_upwind.c \
 	model_hydrodynamic_implicit.c
-	# model_zero_inertia_LaxFriedrichs.c model_kinematic_LaxFriedrichs.c
+#	model_zero_inertia_LaxFriedrichs.c model_kinematic_LaxFriedrichs.c
 
 objects = main.o channel.o node.o mesh.o model.o model_hydrodynamic.o \
 	model_zero_advection.o model_zero_inertia.o model_kinematic.o \
@@ -20,7 +20,7 @@ objects = main.o channel.o node.o mesh.o model.o model_hydrodynamic.o \
 	model_zero_inertia_upwind.o model_kinematic_upwind.o \
 	model_hydrodynamic_upwind.o model_zero_advection_upwind.o \
 	model_hydrodynamic_implicit.o
-	# model_zero_inertia_LaxFriedrichs.o model_kinematic_LaxFriedrichs.o
+#	model_zero_inertia_LaxFriedrichs.o model_kinematic_LaxFriedrichs.o
 
 manuals = reference-manual.pdf swocs-manuals/english/user-manual.pdf \
 	swocs-manuals/español/manual-usuario.pdf
@@ -104,16 +104,16 @@ model_hydrodynamic_implicit.o: model_hydrodynamic_implicit.c \
 	$(compiler) model_hydrodynamic_implicit.c -o model_hydrodynamic_implicit.o
 
 #model_zero_inertia_LaxFriedrichs.o: model_zero_inertia_LaxFriedrichs.c \
-	model_zero_inertia_LaxFriedrichs.h model.h node.h channel.h config.h \
-	makefile
+#	model_zero_inertia_LaxFriedrichs.h model.h node.h channel.h config.h \
+#	makefile
 #	$(compiler) model_zero_inertia_LaxFriedrichs.c \
-		-o model_zero_inertia_LaxFriedrichs.o
+#		-o model_zero_inertia_LaxFriedrichs.o
 
 #model_kinematic_LaxFriedrichs.o: model_kinematic_LaxFriedrichs.c \
-	model_kinematic_LaxFriedrichs.h model.h node.h channel.h config.h \
-	makefile
+#	model_kinematic_LaxFriedrichs.h model.h node.h channel.h config.h \
+#	makefile
 #	$(compiler) model_kinematic_LaxFriedrichs.c \
-		-o model_kinematic_LaxFriedrichs.o
+#		-o model_kinematic_LaxFriedrichs.o
 
 main.o: main.c model.h mesh.h node.h channel.h config.h makefile \
 	model_kinematic.h model_zero_inertia.h model_zero_advection.h \

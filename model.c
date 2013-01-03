@@ -168,7 +168,6 @@ void model_step(Model *model)
 	int i;
 	double dtmax;
 	Mesh *mesh = model->mesh;
-	Channel *channel = model->channel;
 	Node *node = mesh->node;
 	for (i = 0, dtmax = 0; i < mesh->n; ++i)
 		dtmax = fmax(dtmax, model->node_1dt_max(node + i));
