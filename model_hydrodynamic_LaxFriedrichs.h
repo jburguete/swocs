@@ -41,5 +41,6 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // member functions
 
 void model_surface_flow_hydrodynamic_LaxFriedrichs(Model *model);
+void model_surface_flow_hydrodynamic_LaxFriedrichs_inlet(Model *model);
 
 #endif

@@ -184,6 +184,7 @@ void model_step(Model *model)
 	model->model_diffusion(model);
 	model_infiltration(model);
 	model->model_inlet(model);
+	model->model_numerical_inlet(model);
 	model->model_outlet(model);
 	model_parameters(model);
 	model->t = model->t2;
@@ -399,14 +400,12 @@ int i;
 void model_inlet(Model *model)
 {
 	double t, t2;
-	Node *node = model->mesh->node;
 	t = model->t;
 	t2 = model->t2;
-	node->U[0] += hydrogram_integrate(model->channel->water_inlet, t, t2)
-		/ node->dx;
-	node->U[2] += hydrogram_integrate(model->channel->solute_inlet, t, t2)
-		/ node->dx;
-	node_subcritical_discharge(node);
+	model->inlet_contribution[0] +=
+		hydrogram_integrate(model->channel->water_inlet, t, t2);
+	model->inlet_contribution[2] +=
+		hydrogram_integrate(model->channel->solute_inlet, t, t2);
 }
 
 /**

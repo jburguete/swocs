@@ -153,9 +153,14 @@ hydrodynamic:
 	{
 	case 1:
 		model->model_surface_flow = model_surface_flow_hydrodynamic_upwind;
+		model->model_numerical_inlet =
+			model_surface_flow_hydrodynamic_upwind_inlet;
 		goto calculate;
 	case 2:
-		model->model_surface_flow = model_surface_flow_hydrodynamic_LaxFriedrichs;
+		model->model_surface_flow =
+			model_surface_flow_hydrodynamic_LaxFriedrichs;
+		model->model_numerical_inlet =
+			model_surface_flow_hydrodynamic_LaxFriedrichs_inlet;
 		goto calculate;
 	case 3:
 		model->model_surface_flow = model_surface_flow_hydrodynamic_implicit;

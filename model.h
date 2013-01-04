@@ -162,6 +162,7 @@ struct _Model
 	void (*model_outlet)(struct _Model *model);
 	void (*model_surface_flow)(struct _Model *model);
 	void (*model_diffusion)(struct _Model *model);
+	void (*model_numerical_inlet)(struct _Model *model);
 	int type_surface_flow, type_diffusion, type_model;
 };
 
