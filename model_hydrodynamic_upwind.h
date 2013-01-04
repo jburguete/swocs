@@ -41,7 +41,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 // member functions
 
-void model_surface_flow_hydrodynamic_upwind(Model *model);
 void model_surface_flow_hydrodynamic_upwind_inlet(Model *model);
+void model_surface_flow_hydrodynamic_upwind(Model *model);
 
 #endif

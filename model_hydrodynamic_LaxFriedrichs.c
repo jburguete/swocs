@@ -43,6 +43,21 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "model_hydrodynamic_LaxFriedrichs.h"
 
 /**
+ * \fn void model_surface_flow_hydrodynamic_LaxFriedrichs_inlet(Model *model)
+ * \brief Function to make the surface flow inlet with the Lax-Friedrichs
+ *   numerical scheme.
+ * \param model
+ * \brief model struct.
+ */
+void model_surface_flow_hydrodynamic_LaxFriedrichs_inlet(Model *model)
+{
+	Node *node = model->mesh->node;
+	node->U[0] += model->inlet_contribution[0] / node->dx;
+	node->U[2] += model->inlet_contribution[2] / node->dx;
+	node_subcritical_discharge(node);
+}
+
+/**
  * \fn void model_surface_flow_hydrodynamic_LaxFriedrichs(Model *model)
  * \brief Function to make the surface flow with the Lax-Friedrichs numerical
  *   scheme.
@@ -93,19 +108,7 @@ void model_surface_flow_hydrodynamic_LaxFriedrichs(Model *model)
 			node[i + 1].U[j] -= model->dt * node[i].dFl[j] / node[i + 1].dx;
 		}
 	}
-}
-
-/**
- * \fn void model_surface_flow_hydrodynamic_LaxFriedrichs_inlet(Model *model)
- * \brief Function to make the surface flow inlet with the Lax-Friedrichs
- *   numerical scheme.
- * \param model
- * \brief model struct.
- */
-void model_surface_flow_hydrodynamic_LaxFriedrichs_inlet(Model *model)
-{
-	Node *node = model->mesh->node;
-	node->U[0] += model->inlet_contribution[0] / node->dx;
-	node->U[2] += model->inlet_contribution[2] / node->dx;
-	node_subcritical_discharge(node);
+	model->model_inlet(model);
+	model_surface_flow_hydrodynamic_LaxFriedrichs_inlet(model);
+	model->model_outlet(model);
 }

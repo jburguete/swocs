@@ -97,6 +97,11 @@ void model_surface_flow_hydrodynamic_implicit(Model *model)
 		D[3];
 	Mesh *mesh = model->mesh;
 	Node *node = mesh->node;
+	n1 = mesh->n - 1;
+	model->inlet_contribution[0] = - model->dt * node[0].U[1];
+	model->inlet_contribution[2] = - model->dt * node[0].T;
+	model->outlet_contribution[0] = model->dt * node[n1].U[1];
+	model->outlet_contribution[2] = model->dt * node[n1].T;
 	for (i = 0; i < mesh->n; ++i)
 		for (j = 0; j < 3; ++j) node[i].Un[j] = node[i].U[j];
 	for (i = 0; i < mesh->n; ++i)
@@ -132,7 +137,6 @@ void model_surface_flow_hydrodynamic_implicit(Model *model)
 		node[i].Jn[7] = node[i].Jn[1] * node[i].s;
 		node[i].Jn[8] = l3;
 	}
-	n1 = mesh->n - 1;
 	for (i = 0; i < n1; ++i)
 	{
 		model->node_flows(node + i);
@@ -210,12 +214,15 @@ void model_surface_flow_hydrodynamic_implicit(Model *model)
 		for (j = 0; j < 3; ++j) node[i].U[j] = node[i].Un[j] + node[i].dU[j];
 	}
 	i = n1;
-	for (j = 0; j < 9; ++j) B[j] = odt * node[i].Jn[j];
+	model_surface_flow_hydrodynamic_implicit_multiply(B, node[i].dU, D);
+	model->outlet_contribution[0] += D[0];
+	model->outlet_contribution[2] += D[2];
+	for (j = 0; j < 9; ++j) B[j] = - odt * node[i].Jn[j];
 	for (j = 0; j < 3; ++j) node[i].dU[j] = 0.;
 	while (--i >= 0)
 	{
 		model_surface_flow_hydrodynamic_implicit_multiply(B, node[i + 1].dU, D);
-		for (j = 0; j < 9; ++j) A[j] = B[j] = odt * node[i].Jp[j];
+		for (j = 0; j < 9; ++j) A[j] = B[j] = - odt * node[i].Jn[j];
 		A[0] += node[i].dx;
 		A[4] += node[i].dx;
 		A[8] += node[i].dx;
@@ -224,4 +231,11 @@ void model_surface_flow_hydrodynamic_implicit(Model *model)
 		model_surface_flow_hydrodynamic_implicit_multiply(C, D, node[i].dU);
 		for (j = 0; j < 3; ++j) node[i].U[j] += node[i].dU[j];
 	}
+	model_surface_flow_hydrodynamic_implicit_multiply(B, node[0].dU, D);
+	model->inlet_contribution[0] += D[0];
+	model->inlet_contribution[2] += D[2];
+	model->model_inlet(model);
+//	model_surface_flow_hydrodynamic_implicit_inlet(model);
+	model->model_outlet(model);
+//	model_surface_flow_hydrodynamic_implicit_outlet(model);
 }

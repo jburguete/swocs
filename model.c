@@ -183,9 +183,6 @@ void model_step(Model *model)
 	model->model_surface_flow(model);
 	model->model_diffusion(model);
 	model_infiltration(model);
-	model->model_inlet(model);
-	model->model_numerical_inlet(model);
-	model->model_outlet(model);
 	model_parameters(model);
 	model->t = model->t2;
 }
