@@ -53,7 +53,8 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * \param r
  * \brief resulting vector.
  */
-void model_surface_flow_zero_advection_implicit_multiply(double *m, double *v, double *r)
+void model_surface_flow_zero_advection_implicit_multiply
+	(double *m, double *v, double *r)
 {
 	r[0] = m[0] * v[0] + m[1] * v[1];
 	r[1] = m[3] * v[0] + m[4] * v[1];
@@ -61,7 +62,8 @@ void model_surface_flow_zero_advection_implicit_multiply(double *m, double *v, d
 }
 
 /**
- * \fn void model_surface_flow_zero_advection_implicit_invert(double *m, double *i)
+ * \fn void model_surface_flow_zero_advection_implicit_invert\
+ *   (double *m, double *i)
  * \brief Function to invert an implicit operator of the zero advection model.
  * \param m
  * \brief implicit operator to invert.

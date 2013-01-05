@@ -69,8 +69,8 @@ void node_discharge_right_zero_inertia_Manning(Node *node)
 	double dz;
 	dz = node->zs - (node + 1)->zs;
 	if (dz <= 0.) node->U[1] = 0.; else
-		node->U[1] = sqrt(dz / node->ix) * node->U[0] * pow(node->U[0] / node->P, 2./3.)
-			/ node->friction_coefficient[0];
+		node->U[1] = sqrt(dz / node->ix) * node->U[0]
+			* pow(node->U[0] / node->P, 2./3.) / node->friction_coefficient[0];
 }
 
 /**
@@ -105,8 +105,8 @@ void model_node_parameters_centre_zero_inertia(Model *model, Node *node)
 	node_perimeter(node);
 	if (node->U[0] <= 0.)
 	{
-		node->s = node->U[1] = node->u = node->T = node->Sf = node->Kx = node->KxA
-			= 0.;
+		node->s = node->U[1] = node->u = node->T = node->Sf = node->Kx
+			= node->KxA = 0.;
 	}
 	else if (node->h < model->minimum_depth)
 	{
