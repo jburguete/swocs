@@ -2,8 +2,9 @@ my $L=$ARGV[0];
 my $S0=$ARGV[1];
 my $Q=$ARGV[2];
 my $t=$ARGV[3];
-my $nm=$ARGV[4]; #numerical model
-my $pm=$ARGV[5]; #physical model
+my $cfl=$ARGV[4];
+my $nm=$ARGV[5]; #numerical model
+my $pm=$ARGV[6]; #physical model
 my $z0;
 
 $z0=$S0*$L; #zfinal es siempre cero
@@ -26,9 +27,9 @@ print <<END2;
 1
 END2
 
-printf "0 %g\n1\n0 %g\n1001 1\n", $Q,$Q; 
+printf "0 %g\n1\n0 %g\n1001 1\n", $Q, $Q; 
 
-printf "%g 0 0.9 0.01\n", $t; 
+printf "%g 0 %g 0.01\n", $t, $cfl; 
 
 printf "%d 2\n", $nm; 
 printf "%d\n\n", $pm; 

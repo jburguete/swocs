@@ -113,6 +113,9 @@ void node_subcritical_discharge(Node *node)
 double node_critical_depth(Node *node, double Q)
 {
 	double h[3], A[3], B[3], u[3], c[3];
+
+	// searching a subcritical depth
+
 	h[0] = 1.;
 	do
 	{
@@ -124,6 +127,9 @@ double node_critical_depth(Node *node, double Q)
 		u[0] = u[0] * u[0];
 	}
 	while (u[0] > c[0]);
+
+	// searching a supercritical depth
+
 	h[1] = h[0];
 	do
 	{
@@ -135,6 +141,9 @@ double node_critical_depth(Node *node, double Q)
 		u[1] = u[1] * u[1];
 	}
 	while (u[1] < c[1]);
+
+	// searching the critical depth by a middle point algorithm
+
 	do
 	{
 		h[2] = 0.5 * (h[0] + h[1]);
@@ -146,7 +155,7 @@ double node_critical_depth(Node *node, double Q)
 		if (u[2] < c[1]) h[0] = h[2]; else h[1] = h[2];
 
 	}
-	while (h[0]-h[1] > critical_depth_tolerance);
+	while (h[0] - h[1] > critical_depth_tolerance);
 	return 0.5 * (h[0] + h[1]);
 }
 
@@ -158,8 +167,9 @@ double node_critical_depth(Node *node, double Q)
  */
 void node_friction_Manning(Node *node)
 {
-	node->Sf = node->friction_coefficient[0] * node->friction_coefficient[0]
-		* node->u * fabs(node->u) * pow(node->P / node->U[0], 4./3.);
+	node->f = node->friction_coefficient[0] * node->friction_coefficient[0]
+		* pow(node->P / node->U[0], 4./3.) / (node->U[0] * node->U[0]);
+	node->Sf = node->f * node->U[1] * fabs(node->U[1]);
 }
 
 /**

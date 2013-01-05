@@ -81,6 +81,8 @@ int main(int argn, char **argc)
 
 	if (!model_read(model, argc[1])) return 2;
 
+	model->theta = 1.;
+
 	switch (model->type_model)
 	{
 	case 1:

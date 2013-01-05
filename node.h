@@ -66,6 +66,10 @@ struct _Node
  * \brief depth.
  * \var Sf
  * \brief friction slope.
+ * \var Sfn
+ * \brief former time step friction slope.
+ * \var f
+ * \brief friction factor (\f$S_f = f Q |Q|\f$).
  * \var zb
  * \brief bottom level.
  * \var zs
@@ -120,8 +124,8 @@ struct _Node
  * \brief conserved variables increment vector.
  */
 	double friction_coefficient[3], infiltration_coefficient[4],
-		diffusion_coefficient[1], x, dx, ix, U[5], s, si, h, Sf, zb, zs, P, B,
-		u, c, l1, l2, i, Pi, Z, B0, F, T, Kx, KxA, Kxi, KxiA,
+		diffusion_coefficient[1], x, dx, ix, U[5], s, si, h, f, Sf, Sfn, zb, zs,
+		P, B, u, c, l1, l2, i, Pi, Z, B0, F, T, Kx, KxA, Kxi, KxiA,
 		dF[3], dFl[3], dFr[3], nu, Jp[9], Jn[9], Un[3], dU[3];
 };
 

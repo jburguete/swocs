@@ -176,8 +176,8 @@ void model_step(Model *model)
 		for (i = 0, dtmax = 0; i < mesh->n; ++i)
 			dtmax = fmax(dtmax, model_node_diffusion_1dt_max(node + i));
 	}
-	dtmax = model->cfl / dtmax;
-	dtmax = fmin(dtmax, model->model_inlet_dtmax(model));
+	dtmax = 1. / dtmax;
+	dtmax = model->cfl * fmin(dtmax, model->model_inlet_dtmax(model));
 	model->t2 = fmin(model->tfinal, model->t + dtmax);
 	model->dt = model->t2 - model->t;
 	model->model_surface_flow(model);
@@ -401,6 +401,7 @@ void model_inlet(Model *model)
 	t2 = model->t2;
 	model->inlet_contribution[0] +=
 		hydrogram_integrate(model->channel->water_inlet, t, t2);
+	model->inlet_contribution[1] = 0.;
 	model->inlet_contribution[2] +=
 		hydrogram_integrate(model->channel->solute_inlet, t, t2);
 }
@@ -415,6 +416,9 @@ void model_outlet_closed(Model *model)
 {
 	Node *node = model->mesh->node + model->mesh->n - 1;
 	node->U[1] = 0.;
+	model->outlet_contribution[0] = - model->outlet_contribution[0];
+	model->outlet_contribution[1] = - model->outlet_contribution[1];
+	model->outlet_contribution[2] = - model->outlet_contribution[2];
 }
 
 /**
@@ -430,4 +434,6 @@ void model_outlet_open(Model *model)
 	node_width(node);
 	node_critical_velocity(node);
 	node->U[1] = fmax(node->U[1], node->U[0] * node->c);
+	model->outlet_contribution[0] = model->outlet_contribution[1] =
+		model->outlet_contribution[2] = 0.;
 }

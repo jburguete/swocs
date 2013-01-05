@@ -86,57 +86,35 @@ void model_surface_flow_hydrodynamic_implicit_invert(double *m, double *i)
 /**
  * \fn void model_surface_flow_hydrodynamic_implicit(Model *model)
  * \brief Function to make the surface flow with the upwind implicit numerical
- * 	scheme.
+ *   scheme.
  * \param model
  * \brief model struct.
  */
 void model_surface_flow_hydrodynamic_implicit(Model *model)
 {
-	int i, j, n1;
-	double c, u, s, l1, l2, l3, c2, sA1, sA2, k1, k2, odt, A[9], B[9], C[9],
-		D[3];
+	int i, j, n1, iteration;
+	double c, u, s, l1, l2, l3, c2, sA1, sA2, k1, k2, odt, godt, A[9], B[9],
+		C[9], D[3], inlet_contribution[3], outlet_contribution[3];
 	Mesh *mesh = model->mesh;
 	Node *node = mesh->node;
+
 	n1 = mesh->n - 1;
-	model->inlet_contribution[0] = - model->dt * node[0].U[1];
-	model->inlet_contribution[2] = - model->dt * node[0].T;
-	model->outlet_contribution[0] = model->dt * node[n1].U[1];
-	model->outlet_contribution[2] = model->dt * node[n1].T;
-	for (i = 0; i < mesh->n; ++i)
-		for (j = 0; j < 3; ++j) node[i].Un[j] = node[i].U[j];
+
+	// saving some former time step variables
+
 	for (i = 0; i < mesh->n; ++i)
 	{
-		if (node[i].h <= model->minimum_depth)
-		{
-			for (j = 0; j < 9; ++j) node[i].Jp[j] = node[i].Jn[j] = 0.;
-			continue;
-		}
-		c2 = 2. * node[i].c;
-		l1 = fmax(0., node[i].l1);
-		l2 = fmax(0., node[i].l2);
-		l3 = fmax(0., node[i].u);
-		node[i].Jp[0] = (node[i].l1 * l2 - node[i].l2 * l1) / c2;
-		node[i].Jp[1] = (l1 -l2) / c2;
-		node[i].Jp[2] = 0.;
-		node[i].Jp[3] = - node[i].l1 * node[i].l2 * node[i].Jp[1];
-		node[i].Jp[4] = (node[i].l1 * l1 - node[i].l2 * l2) / c2;
-		node[i].Jp[5] = 0.;
-		node[i].Jp[6] = (node[i].Jp[0] - l3) * node[i].s;
-		node[i].Jp[7] = node[i].Jp[1] * node[i].s;
-		node[i].Jp[8] = l3;
-		l1 = fmin(0., node[i].l1);
-		l2 = fmin(0., node[i].l2);
-		l3 = fmin(0., node[i].u);
-		node[i].Jn[0] = (node[i].l1 * l2 - node[i].l2 * l1) / c2;
-		node[i].Jn[1] = (l1 -l2) / c2;
-		node[i].Jn[2] = 0.;
-		node[i].Jn[3] = - node[i].l1 * node[i].l2 * node[i].Jn[1];
-		node[i].Jn[4] = (node[i].l1 * l1 - node[i].l2 * l2) / c2;
-		node[i].Jn[5] = 0.;
-		node[i].Jn[6] = (node[i].Jn[0] - l3) * node[i].s;
-		node[i].Jn[7] = node[i].Jn[1] * node[i].s;
-		node[i].Jn[8] = l3;
+		for (j = 0; j < 3; ++j) node[i].Un[j] = node[i].U[j];
+		node[i].Sfn = node[i].Sf;
 	}
+
+	// explicit part
+
+	inlet_contribution[0] = - model->dt * node[0].U[1];
+	inlet_contribution[2] = - model->dt * node[0].T;
+	outlet_contribution[0] = model->dt * node[n1].U[1];
+	outlet_contribution[2] = model->dt * node[n1].T;
+
 	for (i = 0; i < n1; ++i)
 	{
 		model->node_flows(node + i);
@@ -191,9 +169,54 @@ void model_surface_flow_hydrodynamic_implicit(Model *model)
 		}
 	}
 
+	// implicit part
+
+	iteration = 0;
+	odt = model->theta * model->dt;
+
+iterate:
+
+	model->inlet_contribution[0] = inlet_contribution[0];
+	model->inlet_contribution[2] = inlet_contribution[2];
+	model->outlet_contribution[0] = outlet_contribution[0];
+	model->outlet_contribution[2] = outlet_contribution[2];
+
+	for (i = 0; i < mesh->n; ++i)
+	{
+		if (node[i].h <= model->minimum_depth)
+		{
+			for (j = 0; j < 9; ++j) node[i].Jp[j] = node[i].Jn[j] = 0.;
+			continue;
+		}
+		c2 = 2. * node[i].c;
+		l1 = fmax(0., node[i].l1);
+		l2 = fmax(0., node[i].l2);
+		l3 = fmax(0., node[i].u);
+		node[i].Jp[0] = (node[i].l1 * l2 - node[i].l2 * l1) / c2;
+		node[i].Jp[1] = (l1 -l2) / c2;
+		node[i].Jp[2] = 0.;
+		node[i].Jp[3] = - node[i].l1 * node[i].l2 * node[i].Jp[1];
+		node[i].Jp[4] = (node[i].l1 * l1 - node[i].l2 * l2) / c2;
+		node[i].Jp[5] = 0.;
+		node[i].Jp[6] = (node[i].Jp[0] - l3) * node[i].s;
+		node[i].Jp[7] = node[i].Jp[1] * node[i].s;
+		node[i].Jp[8] = l3;
+		l1 = fmin(0., node[i].l1);
+		l2 = fmin(0., node[i].l2);
+		l3 = fmin(0., node[i].u);
+		node[i].Jn[0] = (node[i].l1 * l2 - node[i].l2 * l1) / c2;
+		node[i].Jn[1] = (l1 -l2) / c2;
+		node[i].Jn[2] = 0.;
+		node[i].Jn[3] = - node[i].l1 * node[i].l2 * node[i].Jn[1];
+		node[i].Jn[4] = (node[i].l1 * l1 - node[i].l2 * l2) / c2;
+		node[i].Jn[5] = 0.;
+		node[i].Jn[6] = (node[i].Jn[0] - l3) * node[i].s;
+		node[i].Jn[7] = node[i].Jn[1] * node[i].s;
+		node[i].Jn[8] = l3;
+	}
+
 	// variables updating
 
-	odt = model->theta * model->dt;
 	for (j = 0; j < 9; ++j) B[j] = odt * node[0].Jp[j];
 	for (j = 0; j < 3; ++j)
 	{
@@ -208,8 +231,7 @@ void model_surface_flow_hydrodynamic_implicit(Model *model)
 		A[4] += node[i].dx;
 		A[8] += node[i].dx;
 		model_surface_flow_hydrodynamic_implicit_invert(A, C);
-		for (j = 0; j < 3; ++j)
-			D[j] -= model->dt * node[i - 1].dFl[j] / node[i].dx;
+		for (j = 0; j < 3; ++j) D[j] -= model->dt * node[i - 1].dFl[j];
 		model_surface_flow_hydrodynamic_implicit_multiply(C, D, node[i].dU);
 		for (j = 0; j < 3; ++j) node[i].U[j] = node[i].Un[j] + node[i].dU[j];
 	}
@@ -227,15 +249,78 @@ void model_surface_flow_hydrodynamic_implicit(Model *model)
 		A[4] += node[i].dx;
 		A[8] += node[i].dx;
 		model_surface_flow_hydrodynamic_implicit_invert(A, C);
-		for (j = 0; j < 3; ++j) D[j] -= model->dt * node[i].dFr[j] / node[i].dx;
+		for (j = 0; j < 3; ++j) D[j] -= model->dt * node[i].dFr[j];
 		model_surface_flow_hydrodynamic_implicit_multiply(C, D, node[i].dU);
 		for (j = 0; j < 3; ++j) node[i].U[j] += node[i].dU[j];
 	}
 	model_surface_flow_hydrodynamic_implicit_multiply(B, node[0].dU, D);
 	model->inlet_contribution[0] += D[0];
 	model->inlet_contribution[2] += D[2];
+
+	// boundary conditions
+
 	model->model_inlet(model);
-//	model_surface_flow_hydrodynamic_implicit_inlet(model);
+	for (j = 0; j < 9; ++j) A[j] = B[j] = odt * node[0].Jp[j];
+	A[0] += node[0].dx;
+	A[4] += node[0].dx;
+	A[8] += node[0].dx;
+	model_surface_flow_hydrodynamic_implicit_invert(A, C);
+	model_surface_flow_hydrodynamic_implicit_multiply
+		(C, model->inlet_contribution, node[0].dU);
+	for (j = 0; j < 3; ++j) node[0].U[j] += node[0].dU[j];
+	for (i = 0; ++i <= n1;)
+	{
+		model_surface_flow_hydrodynamic_implicit_multiply(B, node[i - 1].dU, D);
+		for (j = 0; j < 9; ++j) A[j] = B[j] = odt * node[i].Jp[j];
+		A[0] += node[i].dx;
+		A[4] += node[i].dx;
+		A[8] += node[i].dx;
+		model_surface_flow_hydrodynamic_implicit_invert(A, C);
+		model_surface_flow_hydrodynamic_implicit_multiply(C, D, node[i].dU);
+		for (j = 0; j < 3; ++j) node[i].U[j] += node[i].dU[j];
+	}
 	model->model_outlet(model);
-//	model_surface_flow_hydrodynamic_implicit_outlet(model);
+	if (model->outlet_contribution[0] == 0.
+		&& model->outlet_contribution[2] == 0.) return;
+	i = n1;
+	for (j = 0; j < 9; ++j) A[j] = B[j] = - odt * node[i].Jn[j];
+	A[0] += node[i].dx;
+	A[4] += node[i].dx;
+	A[8] += node[i].dx;
+	model_surface_flow_hydrodynamic_implicit_invert(A, C);
+	model_surface_flow_hydrodynamic_implicit_multiply
+		(C, model->outlet_contribution, node[i].dU);
+	for (j = 0; j < 3; ++j) node[i].U[j] += node[i].dU[j];
+	while (--i >= 0)
+	{
+		model_surface_flow_hydrodynamic_implicit_multiply(B, node[i + 1].dU, D);
+		for (j = 0; j < 9; ++j) A[j] = B[j] = - odt * node[i].Jn[j];
+		A[0] += node[i].dx;
+		A[4] += node[i].dx;
+		A[8] += node[i].dx;
+		model_surface_flow_hydrodynamic_implicit_invert(A, C);
+		model_surface_flow_hydrodynamic_implicit_multiply(C, D, node[i].dU);
+		for (j = 0; j < 3; ++j) node[i].U[j] += node[i].dU[j];
+	}
+
+	model_parameters(model);
+
+	if (++iteration < 2) goto iterate;
+
+	// implicit source term
+
+	godt = G * odt;
+	for (i = 0; ++i < n1;)
+	{
+		node[i].U[1] += godt * ((node[i].U[0] - node[i].Un[0])
+			* (node[i + 1].zb - node[i - 1].zb)
+			/ (node[i + 1].x - node[i - 1].x)
+			+ node[i].Un[0] * node[i].Sfn);
+		if (node[i].f == 0.) continue;
+		k1 = godt * node[i].f;
+		if (node[i].U[1] > 0.)
+			node[i].U[1] = (sqrt(1. + 4 * k1 * node[i].U[1]) - 1.) / (2 * k1);
+		else
+			node[i].U[1] = (1. - sqrt(1. - 4 * k1 * node[i].U[1])) / (2 * k1);
+	}
 }

@@ -58,13 +58,13 @@ void model_node_parameters_hydrodynamic(Model *model, Node *node)
 	node_critical_velocity(node);
 	if (node->U[0] <= 0.)
 	{
-		node->s = node->U[1] = node->u = node->Sf = node->F = node->T = node->Kx
-			= node->KxA = 0.;
+		node->s = node->U[1] = node->u = node->f = node->Sf = node->F = node->T
+			= node->Kx = node->KxA = 0.;
 	}
 	else if (node->h < model->minimum_depth)
 	{
 		node->s = node->U[2] / node->U[0];
-		node->U[1] = node->u = node->Sf = node->F = node->T = node->Kx
+		node->U[1] = node->u = node->f = node->Sf = node->F = node->T = node->Kx
 			= node->KxA = 0.;
 	}
 	else
