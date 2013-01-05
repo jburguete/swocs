@@ -40,22 +40,8 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "node.h"
 #include "mesh.h"
 #include "model.h"
+#include "model_hydrodynamic.h"
 #include "model_hydrodynamic_upwind.h"
-
-/**
- * \fn void model_surface_flow_hydrodynamic_upwind_inlet(Model *model)
- * \brief Function to make the surface flow inlet with the upwind numerical
- *   scheme.
- * \param model
- * \brief model struct.
- */
-void model_surface_flow_hydrodynamic_upwind_inlet(Model *model)
-{
-	Node *node = model->mesh->node;
-	node->U[0] += model->inlet_contribution[0] / node->dx;
-	node->U[2] += model->inlet_contribution[2] / node->dx;
-	node_subcritical_discharge(node);
-}
 
 /**
  * \fn void model_surface_flow_hydrodynamic_upwind(Model *model)
@@ -75,8 +61,8 @@ void model_surface_flow_hydrodynamic_upwind(Model *model)
 	for (i = 0; i < n1; ++i)
 	{
 		model->node_flows(node + i);
-		node[i].dFr[0] = node[i].dFr[1] = node[i].dFr[2] = node[i].dFl[0] =
-			node[i].dFl[1] = node[i].dFl[2] = 0;
+		node[i].dFr[0] = node[i].dFr[1] = node[i].dFr[2] = node[i].dFl[0]
+			= node[i].dFl[1] = node[i].dFl[2] = 0;
 		if (node[i].h <= model->minimum_depth &&
 			node[i + 1].h <= model->minimum_depth)
 				continue;
@@ -137,6 +123,8 @@ void model_surface_flow_hydrodynamic_upwind(Model *model)
 		}
 	}
 	model->model_inlet(model);
-	model_surface_flow_hydrodynamic_upwind_inlet(model);
+	node[0].U[0] += model->inlet_contribution[0] / node[0].dx;
+	node[0].U[2] += model->inlet_contribution[2] / node[0].dx;
+	node_subcritical_discharge(node);
 	model->model_outlet(model);
 }

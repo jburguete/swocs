@@ -58,19 +58,21 @@ void model_node_parameters_zero_advection(Model *model, Node *node)
 	node_critical_velocity(node);
 	if (node->U[0] <= 0.)
 	{
-		node->s = node->U[1] = node->u = node->f = node->Sf = node->T = node->Kx
-			= node->KxA = 0.;
+		node->s = node->U[1] = node->u = node->f = node->Sf = node->F = node->T
+			= node->Kx = node->KxA = 0.;
 	}
 	else if (node->h < model->minimum_depth)
 	{
 		node->s = node->U[2] / node->U[0];
-		node->U[1] = node->u = node->f = node->Sf = node->T = node->Kx
+		node->U[1] = node->u = node->f = node->Sf = node->F = node->T = node->Kx
 			= node->KxA = 0.;
 	}
 	else
 	{
 		node->s = node->U[2] / node->U[0];
 		node->u = node->U[1] / node->U[0];
+		node->F = G * node->h * node->h
+			* (0.5 * node->B0 + 1./3. * node->Z * node->h);
 		node->T = node->U[1] * node->s;
 		model->node_friction(node);
 		model->node_diffusion(node);
@@ -105,8 +107,8 @@ void node_flows_zero_advection(Node *node1)
 {
 	Node *node2 = node1 + 1;
 	node1->dF[0] = node2->U[1] - node1->U[1];
-	node1->dF[1] = G * 0.5 * (node2->U[0] + node1->U[0])
-		* (node2->zs - node1->zs + 0.5 * (node2->Sf + node1->Sf) * node1->ix);
+	node1->dF[1] = node2->F - node1->F + G * 0.5 * (node2->U[0] + node1->U[0])
+		* (node2->zb - node1->zb + 0.5 * (node2->Sf + node1->Sf) * node1->ix);
 	node1->dF[2] = node2->T - node1->T;
 }
 

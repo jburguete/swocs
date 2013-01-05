@@ -52,11 +52,11 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 void model_surface_flow_zero_advection_LaxFriedrichs(Model *model)
 {
 	int i, j, n1;
-	double k1, k2, inlet_water_contribution, inlet_solute_contribution;
+	double k1, k2;
 	Mesh *mesh = model->mesh;
 	Node *node = mesh->node;
-	inlet_water_contribution = model->dt * node[0].U[1];
-	inlet_solute_contribution = model->dt * node[0].T;
+	model->inlet_contribution[0] = - model->dt * node[0].U[1];
+	model->inlet_contribution[2] = - model->dt * node[0].T;
 	n1 = mesh->n - 1;
 	for (i = 0; i < n1; ++i)
 	{
@@ -93,6 +93,9 @@ void model_surface_flow_zero_advection_LaxFriedrichs(Model *model)
 			node[i + 1].U[j] -= model->dt * node[i].dFl[j] / node[i + 1].dx;
 		}
 	}
-	node[0].U[0] -= inlet_water_contribution / node[0].dx;
-	node[0].U[2] -= inlet_solute_contribution / node[0].dx;
+	model->model_inlet(model);
+	node[0].U[0] += model->inlet_contribution[0] / node[0].dx;
+	node[0].U[2] += model->inlet_contribution[2] / node[0].dx;
+	node_subcritical_discharge(node);
+	model->model_outlet(model);
 }

@@ -71,7 +71,8 @@ void model_node_parameters_hydrodynamic(Model *model, Node *node)
 	{
 		node->s = node->U[2] / node->U[0];
 		node->u = node->U[1] / node->U[0];
-		node->F = node->U[0] * node->u * node->u;
+		node->F = node->U[0] * node->u * node->u + G * node->h * node->h
+			* (0.5 * node->B0 + 1./3. * node->Z * node->h);
 		node->T = node->U[1] * node->s;
 		model->node_friction(node);
 		model->node_diffusion(node);
@@ -109,7 +110,7 @@ void node_flows_hydrodynamic(Node *node1)
 	Node *node2 = node1 + 1;
 	node1->dF[0] = node2->U[1] - node1->U[1];
 	node1->dF[1] = node2->F - node1->F + G * 0.5 * (node2->U[0] + node1->U[0])
-		* (node2->zs - node1->zs + 0.5 * (node2->Sf + node1->Sf) * node1->ix);
+		* (node2->zb - node1->zb + 0.5 * (node2->Sf + node1->Sf) * node1->ix);
 	node1->dF[2] = node2->T - node1->T;
 }
 

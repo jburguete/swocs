@@ -27,20 +27,22 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 /**
- * \file model_hydrodynamic_upwind.h
- * \brief Header file to define the first order upwind explicit numerical model 
- *   applied to the hydrodynamic model.
+ * \file model_zero_advection_implicit.h
+ * \brief Header file to define the first order upwind implicit numerical model 
+ *   applied to the zero advection model.
  * \author Javier Burguete Tolosa.
  * \copyright Copyright 2011-2012, Javier Burguete Tolosa.
  */
 
 // in order to prevent multiple definitions
-
-#ifndef MODEL_HYDRODYNAMIC_UPWIND__H
-#define MODEL_HYDRODYNAMIC_UPWIND__H 1
+#ifndef MODEL_ZERO_ADVECTION_IMPLICIT__H
+#define MODEL_ZERO_ADVECTION_IMPLICIT__H 1
 
 // member functions
 
-void model_surface_flow_hydrodynamic_upwind(Model *model);
+void model_surface_flow_zero_advection_implicit_multiply
+	(double *m, double *v, double *r);
+void model_surface_flow_zero_advection_implicit_invert(double *m, double *i);
+void model_surface_flow_zero_advection_implicit(Model *model);
 
 #endif

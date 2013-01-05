@@ -53,6 +53,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //#include "model_zero_inertia_LaxFriedrichs.h"
 //#include "model_kinematic_LaxFriedrichs.h"
 #include "model_hydrodynamic_implicit.h"
+#include "model_zero_advection_implicit.h"
 
 /**
  * \var critical_depth_tolerance
@@ -177,6 +178,9 @@ zero_advection:
 	case 2:
 		model->model_surface_flow =
 			model_surface_flow_zero_advection_LaxFriedrichs;
+		goto calculate;
+	case 3:
+		model->model_surface_flow = model_surface_flow_zero_advection_implicit;
 		goto calculate;
 	default:
 		printf("model: bad surface flow type\n");
