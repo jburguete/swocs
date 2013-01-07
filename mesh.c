@@ -42,6 +42,12 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "mesh.h"
 
 /**
+ * \define DEBUG_MESH
+ * \brief Macro to debug the mesh functions.
+ */
+#define DEBUG_MESH 0
+
+/**
  * \fn int mesh_open(Mesh *mesh, Channel *channel)
  * \brief Function to open a mesh.
  * \param mesh
@@ -58,7 +64,7 @@ int mesh_open(Mesh *mesh, Channel *channel)
 	mesh->node = node = (Node*)malloc(mesh->n * sizeof(Node));
 	if (!mesh->node)
 	{
-		printf("mesh: not enough memory\n");
+		print_error("mesh: not enough memory");
 		return 0;
 	}
 	ix = channel->length / (mesh->n - 1);
@@ -79,9 +85,9 @@ int mesh_open(Mesh *mesh, Channel *channel)
 	}
 	node[0].dx = node[mesh->n - 1].dx = 0.5 * ix;
 	for (i = 0; ++i < mesh->n - 1;) node[i].dx = ix;
-#if DEBUG_MESH_OPEN
+#if DEBUG_MESH
 	for (i=0; i < mesh->n; ++i)
-		printf("node:\nx=%lf ix=%lf dx=%lf\nzb=%lf B0=%lf Z=%lf\n",
+		printf("node:\nx=%lg ix=%lg dx=%lg\nzb=%lg B0=%lg Z=%lg\n",
 			node[i].x,
 			node[i].ix,
 			node[i].dx,
@@ -122,7 +128,7 @@ int mesh_initial_conditions_profile(Mesh *mesh, FILE *file)
 	Node *node = mesh->node;
 	if (fscanf(file, "%d", &n) != 1 || n < 1)
 	{
-		msg = "mesh initial conditions profile: bad points number\n";
+		msg = "mesh initial conditions profile: bad points number";
 		goto bad2;
 	}
 	x = (double*)malloc(n * sizeof(double));
@@ -131,7 +137,7 @@ int mesh_initial_conditions_profile(Mesh *mesh, FILE *file)
 	s = (double*)malloc(n * sizeof(double));
 	if (!x || !A || !Q || !s)
 	{
-		msg = "mesh initial conditions profile: not enough memory\n";
+		msg = "mesh initial conditions profile: not enough memory";
 		goto bad;
 	}
 	for (i = 0; i < n; ++i)
@@ -139,15 +145,19 @@ int mesh_initial_conditions_profile(Mesh *mesh, FILE *file)
 		if (fscanf(file, "%lf%lf%lf%lf", x + i, A + i, Q + i, s + i) != 4 ||
 			A[i] < 0. || s[i] < 0.)
 		{
-			msg = "mesh initial conditions profile: bad defined\n";
+			msg = "mesh initial conditions profile: bad defined";
 			goto bad;
 		}
 		if (i > 0 && x[i] < x[i - 1])
 		{
-			msg = "mesh initial conditions profile: bad order\n";
+			msg = "mesh initial conditions profile: bad order";
 			goto bad;
 		}
 	} 
+#if DEBUG_MESH
+	for (i=0; i < n; ++i)
+		printf("i=%d x=%lg A=%lg Q=%lg s=%lg\n", i, x[i], A[i], Q[i], s[i]);
+#endif
 	--n;
 	for (i = j = 0; i < mesh->n; ++i)
 	{
@@ -169,20 +179,28 @@ int mesh_initial_conditions_profile(Mesh *mesh, FILE *file)
 		}
 		else
 		{
-			dx = (node[i].x - x[j]) / (x[j + 1] - x[j]);
-			node[i].U[0] = A[j] + dx * (A[j+1] - A[j]);
-			node[i].U[1] = Q[j] + dx * (Q[j+1] - Q[j]);
-			node[i].U[2] = node[i].U[0] * (s[j] + dx * (s[j+1] - s[j]));
+			dx = (node[i].x - x[j]) / (x[j - 1] - x[j]);
+			node[i].U[0] = A[j] + dx * (A[j - 1] - A[j]);
+			node[i].U[1] = Q[j] + dx * (Q[j - 1] - Q[j]);
+			node[i].U[2] = node[i].U[0] * (s[j] + dx * (s[j - 1] - s[j]));
 		}
 		node[i].U[3] = node[i].U[4] = 0.;
 	}
+#if DEBUG_MESH
+	for (i=0; i < mesh->n; ++i)
+		printf("node:\nx=%lg A=%lg Q=%lg As=%lg\n",
+			node[i].x,
+			node[i].U[0],
+			node[i].U[1],
+			node[i].U[2]);
+#endif
 	return 1;
 
 bad:
 	free(x), free(A), free(Q), free(s);
 
 bad2:
-	printf(msg);
+	print_error(msg);
 	return 0;
 }
 
@@ -202,12 +220,12 @@ int mesh_read(Mesh *mesh, Channel *channel, FILE *file)
 	char *msg;
 	if (fscanf(file, "%d%d", &mesh->n, &mesh->type) != 2)
 	{
-		msg = "mesh: bad defined\n";
+		msg = "mesh: bad defined";
 		goto bad;
 	}
 	if (mesh->n < 3)
 	{
-		msg = "mesh: bad nodes number\n";
+		msg = "mesh: bad nodes number";
 		goto bad;
 	}
 #if DEBUG_MODEL_READ
@@ -223,13 +241,13 @@ int mesh_read(Mesh *mesh, Channel *channel, FILE *file)
 		if (!mesh_initial_conditions_profile(mesh, file)) return 0;
 		break;
 	default:
-		msg = "mesh: bad type\n";
+		msg = "mesh: bad type";
 		goto bad;
 	}
 	return 1;
 
 bad:
-	printf(msg);
+	print_error(msg);
 	return 0;
 }
 

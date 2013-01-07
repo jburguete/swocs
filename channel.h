@@ -52,7 +52,7 @@ struct _Hydrogram
  * \brief number of points defining the hydrogram.
  */
 	double *t, *Q;
-	int n;
+	unsigned int n;
 };
 
 /**
@@ -70,12 +70,12 @@ struct _Geometry
  * \var x
  * \brief array of point x-coordinates.
  * \var zb
- * \brief array of point y-coordinates.
+ * \brief array of point z-coordinates.
  * \var n
  * \brief number of points defining the channel geometry.
  */
 	double *x, *zb;
-	int n;
+	unsigned int n;
 };
 
 /**
@@ -123,7 +123,8 @@ struct _Channel
 	Geometry geometry[1];
 	double friction_coefficient[3], infiltration_coefficient[4],
 		diffusion_coefficient[1], length, bottom_width, wall_slope, height;
-	int type_outlet, friction_model, infiltration_model, diffusion_model;
+	unsigned int type_outlet, friction_model, infiltration_model,
+		diffusion_model;
 };
 
 /**
@@ -132,6 +133,8 @@ struct _Channel
 typedef struct _Channel Channel;
 
 // member functions
+
+void print_error(char *msg);
 
 double interpolate(double x, double x1, double x2, double y1, double y2);
 

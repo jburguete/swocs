@@ -27,9 +27,9 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 /**
- * \file model_zero_inertia_implicit.c
+ * \file model_kinematic_implicit.c
  * \brief Source file to define the first order upwind implicit numerical model 
- *   applied to the zero inertia model.
+ *   applied to the kinematic model.
  * \author Javier Burguete Tolosa.
  * \copyright Copyright 2011-2012, Javier Burguete Tolosa.
  */
@@ -40,12 +40,12 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "node.h"
 #include "mesh.h"
 #include "model.h"
-#include "model_zero_inertia_implicit.h"
+#include "model_kinematic_implicit.h"
 
 /**
- * \fn void model_surface_flow_zero_inertia_implicit_multiply\
+ * \fn void model_surface_flow_kinematic_implicit_multiply\
  *   (double *m, double *v, double *r)
- * \brief Function to multiply a matrix by a vector of the zero inertia model.
+ * \brief Function to multiply a matrix by a vector of the kinematic model.
  * \param m
  * \brief multiplying matrix.
  * \param v
@@ -53,7 +53,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * \param r
  * \brief resulting vector.
  */
-void model_surface_flow_zero_inertia_implicit_multiply
+void model_surface_flow_kinematic_implicit_multiply
 	(double *m, double *v, double *r)
 {
 	r[0] = m[0] * v[0];
@@ -61,15 +61,15 @@ void model_surface_flow_zero_inertia_implicit_multiply
 }
 
 /**
- * \fn void model_surface_flow_zero_inertia_implicit_invert\
+ * \fn void model_surface_flow_kinematic_implicit_invert\
  *   (double *m, double *i)
- * \brief Function to invert an implicit operator of the zero inertia model.
+ * \brief Function to invert an implicit operator of the kinematic model.
  * \param m
  * \brief implicit operator to invert.
  * \param i
  * \brief invert operator.
  */
-void model_surface_flow_zero_inertia_implicit_invert(double *m, double *i)
+void model_surface_flow_kinematic_implicit_invert(double *m, double *i)
 {
 	double d;
 	d = m[0] * m[3];
@@ -80,13 +80,13 @@ void model_surface_flow_zero_inertia_implicit_invert(double *m, double *i)
 }
 
 /**
- * \fn void model_surface_flow_zero_inertia_implicit(Model *model)
+ * \fn void model_surface_flow_kinematic_implicit(Model *model)
  * \brief Function to make the surface flow with the upwind implicit numerical
  *   scheme.
  * \param model
  * \brief model struct.
  */
-void model_surface_flow_zero_inertia_implicit(Model *model)
+void model_surface_flow_kinematic_implicit(Model *model)
 {
 	int i, j, n1, iteration;
 	double l1, odt, A[9], B[9], C[9], D[3],
@@ -148,20 +148,20 @@ void model_surface_flow_zero_inertia_implicit(Model *model)
 		node[0].U[2] = node[0].Un[2];
 		for (i = 0; ++i <= n1;)
 		{
-			model_surface_flow_zero_inertia_implicit_multiply
+			model_surface_flow_kinematic_implicit_multiply
 				(B, node[i - 1].dU, D);
 			for (j = 0; j < 4; ++j) A[j] = B[j] = odt * node[i].Jp[j];
 			A[0] += node[i].dx;
 			A[3] += node[i].dx;
-			model_surface_flow_zero_inertia_implicit_invert(A, C);
+			model_surface_flow_kinematic_implicit_invert(A, C);
 			D[0] -= model->dt * node[i - 1].dF[0];
 			D[2] -= model->dt * node[i - 1].dF[2];
-			model_surface_flow_zero_inertia_implicit_multiply(C, D, node[i].dU);
+			model_surface_flow_kinematic_implicit_multiply(C, D, node[i].dU);
 			node[i].U[0] = node[i].Un[0] + node[i].dU[0];
 			node[i].U[2] = node[i].Un[2] + node[i].dU[2];
 		}
 		i = n1;
-		model_surface_flow_zero_inertia_implicit_multiply(B, node[i].dU, D);
+		model_surface_flow_kinematic_implicit_multiply(B, node[i].dU, D);
 		model->outlet_contribution[0] += D[0];
 		model->outlet_contribution[2] += D[2];
 
@@ -171,20 +171,20 @@ void model_surface_flow_zero_inertia_implicit(Model *model)
 		for (j = 0; j < 4; ++j) A[j] = B[j] = odt * node[0].Jp[j];
 		A[0] += node[0].dx;
 		A[3] += node[0].dx;
-		model_surface_flow_zero_inertia_implicit_invert(A, C);
-		model_surface_flow_zero_inertia_implicit_multiply
+		model_surface_flow_kinematic_implicit_invert(A, C);
+		model_surface_flow_kinematic_implicit_multiply
 			(C, model->inlet_contribution, node[0].dU);
 		node[0].U[0] += node[0].dU[0];
 		node[0].U[2] += node[0].dU[2];
 		for (i = 0; ++i <= n1;)
 		{
-			model_surface_flow_zero_inertia_implicit_multiply
+			model_surface_flow_kinematic_implicit_multiply
 				(B, node[i - 1].dU, D);
 			for (j = 0; j < 4; ++j) A[j] = B[j] = odt * node[i].Jp[j];
 			A[0] += node[i].dx;
 			A[3] += node[i].dx;
-			model_surface_flow_zero_inertia_implicit_invert(A, C);
-			model_surface_flow_zero_inertia_implicit_multiply(C, D, node[i].dU);
+			model_surface_flow_kinematic_implicit_invert(A, C);
+			model_surface_flow_kinematic_implicit_multiply(C, D, node[i].dU);
 			node[i].U[0] += node[i].dU[0];
 			node[i].U[2] += node[i].dU[2];
 		}

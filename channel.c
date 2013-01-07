@@ -38,6 +38,23 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "channel.h"
 
 /**
+ * \define DEBUG_CHANNEL
+ * \brief Macro to debug the channel struct functions.
+ */
+#define DEBUG_CHANNEL 0
+
+/**
+ * void print_error(char *msg)
+ * \brief Function to print an error message.
+ * \param msg
+ * \brief error message.
+ */
+void print_error(char *msg)
+{
+	printf("ERROR!\n%s\n", msg);
+}
+
+/**
  * \fn double interpolate(double x, double x1, double x2, double y1, double y2)
  * \brief Function to calculate an interpolation.
  * \param x
@@ -72,34 +89,34 @@ int hydrogram_read(Hydrogram *hydrogram, FILE *file)
 	char *msg;
 	if (fscanf(file, "%d", &hydrogram->n) != 1 || hydrogram->n < 1)
 	{
-		msg = "hydrogram: bad points number\n";
+		msg = "hydrogram: bad points number";
 		goto bad;
 	}
-#if DEBUG_MODEL_READ
+#if DEBUG_CHANNEL
 	printf("hydrogram: n=%d\n", hydrogram->n);
 #endif
 	hydrogram->t = (double*)malloc(hydrogram->n * sizeof(double));
 	hydrogram->Q = (double*)malloc(hydrogram->n * sizeof(double));
 	if (!hydrogram->t || !hydrogram->Q)
 	{
-		msg = "hydrogram: not enough memory\n";
+		msg = "hydrogram: not enough memory";
 		goto bad;
 	}
 	for (i = 0; i < hydrogram->n; ++i)
 	{
 		if (fscanf(file, "%lf%lf", hydrogram->t + i, hydrogram->Q + i) != 2)
 		{
-			msg = "hydrogram: bad defined\n";
+			msg = "hydrogram: bad defined";
 			goto bad;
 		}
-#if DEBUG_MODEL_READ
-		printf("hydrogram: t=%lf Q=%lf\n", hydrogram->t[i], hydrogram->Q[i]);
+#if DEBUG_CHANNEL
+		printf("hydrogram: t=%lg Q=%lg\n", hydrogram->t[i], hydrogram->Q[i]);
 #endif
 	}
 	return 1;
 
 bad:
-	printf(msg);
+	print_error(msg);
 	return 0;
 }
 
@@ -193,34 +210,34 @@ int geometry_read(Geometry *geometry, FILE *file)
 	char *msg;
 	if (fscanf(file, "%d", &geometry->n) != 1 || geometry->n < 1)
 	{
-		msg = "geometry: bad points number\n";
+		msg = "geometry: bad points number";
 		goto bad;
 	}
-#if DEBUG_MODEL_READ
+#if DEBUG_CHANNEL
 	printf("geometry: n=%d\n", geometry->n);
 #endif
 	geometry->x = (double*)malloc(geometry->n * sizeof(double));
 	geometry->zb = (double*)malloc(geometry->n * sizeof(double));
 	if (!geometry->x || !geometry->zb)
 	{
-		msg = "geometry: not enough memory\n";
+		msg = "geometry: not enough memory";
 		goto bad;
 	}
 	for (i = 0; i < geometry->n; ++i)
 	{
 		if (fscanf(file, "%lf%lf", geometry->x + i, geometry->zb + i) != 2)
 		{
-			msg = "geometry: bad defined\n";
+			msg = "geometry: bad defined";
 			goto bad;
 		}
-#if DEBUG_MODEL_READ
-		printf("geometry: t=%lf Q=%lf\n", geometry->x[i], geometry->zb[i]);
+#if DEBUG_CHANNEL
+		printf("geometry: t=%lg Q=%lg\n", geometry->x[i], geometry->zb[i]);
 #endif
 	}
 	return 1;
 
 bad:
-	printf(msg);
+	print_error(msg);
 	return 0;
 }
 
@@ -258,11 +275,11 @@ int channel_friction_read_Manning(Channel *channel, FILE *file)
 	if (fscanf(file, "%lf", channel->friction_coefficient) != 1
 		|| channel->friction_coefficient[0] < 0.)
 	{
-		printf("channel friction: bad defined\n");
+		print_error("channel friction: bad defined");
 		return 0;;
 	}
-#if DEBUG_MODEL_READ
-	printf("channel friction: coefficient1=%lf\n",
+#if DEBUG_CHANNEL
+	printf("channel friction: coefficient1=%lg\n",
 		channel->friction_coefficient[0]);
 #endif
 	return 1;
@@ -289,15 +306,15 @@ int channel_infiltration_read_KostiakovLewis(Channel *channel, FILE *file)
 		|| channel->infiltration_coefficient[1] < 0.
 		|| channel->infiltration_coefficient[3] <= 0.)
 	{
-		printf("channel infiltration: bad defined\n");
+		print_error("channel infiltration: bad defined");
 		return 0;;
 	}
-#if DEBUG_MODEL_READ
+#if DEBUG_CHANNEL
 	printf("channel infiltration:\n"
-		"coefficient1=%lf\n"
-		"coefficient2=%lf\n"
-		"coefficient3=%lf\n"
-		"coefficient4=%lf\n",
+		"coefficient1=%lg\n"
+		"coefficient2=%lg\n"
+		"coefficient3=%lg\n"
+		"coefficient4=%lg\n",
 		channel->infiltration_coefficient[0],
 		channel->infiltration_coefficient[1],
 		channel->infiltration_coefficient[2],
@@ -320,7 +337,7 @@ int channel_diffusion_read_Rutherford(Channel *channel, FILE *file)
 	if (fscanf(file, "%lf", channel->diffusion_coefficient) != 1
 		|| channel->diffusion_coefficient[0] < 0.)
 	{
-		printf("channel diffusion: bad defined\n");
+		print_error("channel diffusion: bad defined");
 		return 0;;
 	}
 	return 1;
@@ -351,11 +368,11 @@ int channel_read(Channel *channel, FILE *file)
 		msg = "channel: bad defined\n";
 		goto bad;
 	}
-#if DEBUG_MODEL_READ
+#if DEBUG_CHANNEL
 	printf("channel:\n"
-		"length=%lf\n"
-		"bottom_width=%lf wall_slope=%lf\n"
-		"height=%lf type_outlet=%d\n"
+		"length=%lg\n"
+		"bottom_width=%lg wall_slope=%lg\n"
+		"height=%lg type_outlet=%d\n"
 		"friction_model=%d infiltration_model=%d diffusion_model=%d\n",
 		channel->length,
 		channel->bottom_width,
@@ -368,27 +385,27 @@ int channel_read(Channel *channel, FILE *file)
 #endif
 	if (channel->length <= 0.)
 	{
-		msg = "channel: bad length\n";
+		msg = "channel: bad length";
 		goto bad;
 	}
 	if (channel->bottom_width < 0.)
 	{
-		msg= "channel: bad bottom width\n";
+		msg= "channel: bad bottom width";
 		goto bad;
 	}
 	if (channel->wall_slope < 0.)
 	{
-		msg = "channel: bad wall slope\n";
+		msg = "channel: bad wall slope";
 		goto bad;
 	}
 	if (channel->height <= 0.)
 	{
-		msg = "channel: bad height\n";
+		msg = "channel: bad height";
 		goto bad;
 	}
 	if (!geometry_read(channel->geometry, file))
 	{
-		msg = "channel: geometry\n";
+		msg = "channel: geometry";
 		goto bad;
 	}
 	switch (channel->type_outlet)
@@ -397,7 +414,7 @@ int channel_read(Channel *channel, FILE *file)
 	case 2:
 		break;
 	default:
-		msg = "channel: bad outlet\n";
+		msg = "channel: bad outlet";
 		goto bad;
 	}
 	switch (channel->friction_model)
@@ -406,7 +423,7 @@ int channel_read(Channel *channel, FILE *file)
 		if (!channel_friction_read_Manning(channel, file)) return 0;
 		break;
 	default:
-		msg = "channel: bad friction model\n";
+		msg = "channel: bad friction model";
 		goto bad;
 	}
 	switch (channel->infiltration_model)
@@ -415,7 +432,7 @@ int channel_read(Channel *channel, FILE *file)
 		if (!channel_infiltration_read_KostiakovLewis(channel, file)) return 0;
 		break;
 	default:
-		msg = "channel: bad infiltration model\n";
+		msg = "channel: bad infiltration model";
 		goto bad;
 	}
 	switch (channel->diffusion_model)
@@ -424,23 +441,22 @@ int channel_read(Channel *channel, FILE *file)
 		if (!channel_diffusion_read_Rutherford(channel, file)) return 0;
 		break;
 	default:
-		msg = "channel: bad diffusion model\n";
+		msg = "channel: bad diffusion model";
 		goto bad;
 	}
 	if (!hydrogram_read(channel->water_inlet, file))
 	{
-		msg = "channel: inlet\n";
+		msg = "channel: inlet";
 		goto bad;
 	}
 	if (!hydrogram_read(channel->solute_inlet, file))
 	{
-		msg = "channel: outlet\n";
+		msg = "channel: outlet";
 		goto bad;
 	}
 	return 1;
 
 bad:
-	printf(msg);
+	print_error(msg);
 	return 0;
 }
-

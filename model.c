@@ -204,7 +204,7 @@ int model_read(Model *model, char *file_name)
 	file = fopen(file_name, "r");
 	if (!file)
 	{
-		msg = "model: unable to open the input file\n";
+		msg = "model: unable to open the input file";
 		goto bad;
 	}
 
@@ -246,12 +246,12 @@ int model_read(Model *model, char *file_name)
 		&model->type_diffusion,
 		&model->type_model) != 7)
 	{
-		msg = "model: bad data\n";
+		msg = "model: bad data";
 		goto bad;
 	}
 #if DEBUG_MODEL_READ
 	printf("model:\n"
-		"tfinal=%lf interval=%lf cfl=%lf\n"
+		"tfinal=%lg interval=%lg cfl=%lg\n"
 		"type_surface_flow=%d type_model=%d\n",
 		model->tfinal,
 		model->interval,
@@ -265,7 +265,7 @@ int model_read(Model *model, char *file_name)
 
 bad:
 	if (file) fclose(file);
-	printf(msg);
+	print_error(msg);
 	return 0;
 }
 
@@ -329,7 +329,7 @@ int model_probes_read(Model *model, char *name)
 	file = fopen(name, "r");
 	if (!file)
 	{
-		msg = "probes: unable to open the input file\n";
+		msg = "probes: unable to open the input file";
 		goto bad2;
 	}
 	if (fscanf(file, "%d", &probes->n) != 1) goto bad;
@@ -354,11 +354,11 @@ int model_probes_read(Model *model, char *name)
 	return 1;
 
 bad:
-	msg = "probes: bad data\n";
+	msg = "probes: bad data";
 	fclose(file);
 
 bad2:
-	printf(msg);
+	print_error(msg);
 	return 0;
 }
 

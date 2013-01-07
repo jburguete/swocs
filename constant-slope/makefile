@@ -1,7 +1,7 @@
-all: bateria retraso
+all: retraso bateria
 
-bateria: bateria-2.c gen_bateria.pl makefile
-	gcc bateria-2.c -lm -Os -Wall -o bateria
+bateria: bateria.c gen_bateria.pl makefile
+	gcc bateria.c -lm -Os -Wall -o bateria
 	rm i-* o-* f-* a-*
 	./bateria
 
@@ -10,4 +10,4 @@ retraso: retraso.c makefile
 	rm r-*
 
 clean:
-	rm i-* o-* f-* a-* r-* script-1* script-2* script-r*
+	rm i-* o-* f-* a-* r-* script-* bateria retraso

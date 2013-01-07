@@ -37,7 +37,7 @@
 \title
 {
 	{\bf \Large Manual de usuario del programa \emph{SWOCS}}\\
-	{\large	versión 1.2}
+	{\large	versión 1.4}
 }
 \author
 {
@@ -66,15 +66,14 @@
 
 \chapter{Introducción}
 
-El programa {\swocs} ({\it Shallow Water Open Channel Simulator}) está diseñado para resolver numéricamente flujos
-transitorios unidimensionales y transporte con difusión de solutos en un canal
-o surco, con presencia de infiltración. 
-Existen versiones para sistemas operativos Unix y Windows. Windows es una 
-marca registrada de Microsoft Corporation.
+El programa {\swocs} ({\it Shallow Water Open Channel Simulator}) está diseñado
+para resolver numéricamente flujos transitorios unidimensionales y transporte
+con difusión de solutos en un canal o surco, con presencia de infiltración.
+Existen versiones para sistemas operativos Unix y Windows. Windows es una marca
+registrada de Microsoft Corporation.
 
-El código ha sido escrito en lenguaje C. El programa se distribuye junto con 
-el código fuente, siendo de libre uso y distribución bajo una licencia de tipo BSD.  
-
+El código ha sido escrito en lenguaje C. El programa se distribuye junto con el
+código fuente, siendo de libre uso y distribución bajo una licencia de tipo BSD.  
 \section{Internacionalización}
 
 El programa {\swocs} está escrito en inglés. Para evitar problemas con
@@ -106,7 +105,7 @@ tipo de fichero o proyecto para compilar el conjunto de ficheros.
 
 La instalación de este programa en Unix consta de los siguientes pasos:
   \begin{enumerate}
-	\item Descomprima el fichero \emph{swocs-src-1-0.zip}. \\
+	\item Descomprima el fichero \emph{swocs-src-1-4.zip}. \\
 		Al descomprimir el archivo aparecen archivos con extensiones {\tt .c},
 		{\tt .h} y un archivo de compilación ({\tt makefile}) en formato
 		\emph{GNU make}.
@@ -115,11 +114,11 @@ La instalación de este programa en Unix consta de los siguientes pasos:
 	\item También pueden descargarse:
 		\begin{itemize}
 			\item el manual de usuario en español
-				({\it swocs-manual-usuario-1-0.pdf})
+				({\it swocs-manual-usuario-1-4.pdf})
 			\item el manual de usuario en inglés
-				({\it swocs-user-manual-1-0.pdf})
+				({\it swocs-user-manual-1-4.pdf})
 			\item y un manual de referencia del programador\\
-				({\it swocs-reference-manual-1-0.pdf}). 
+				({\it swocs-reference-manual-1-4.pdf}). 
 		\end{itemize}
   \end{enumerate}
 
@@ -130,24 +129,28 @@ Para realizar la instalación en Windows sólo necesita un paso:
 	\item Descargue el ejecutable \emph{swocs.exe}. \\
 		Si descarga este fichero no necesitará realizar la compilación de los
 		códigos fuente. Si desea compilar a partir de los códigos fuente
-		descargue y descomprima el fichero \emph{swocs-src-1-0.zip} y proceda
+		descargue y descomprima el fichero \emph{swocs-src-1-4.zip} y proceda
 		igual que la compilación en Unix descrita en la sección anterior.
   \end{enumerate}
 
 \section{Ejecución del programa}
 
-En sistemas Microsoft Windows, para ejecutar el programa vaya al modo de comandos:
+En sistemas Microsoft Windows, para ejecutar el programa vaya al modo de
+comandos:
 \begin{description}
 \item[Inicio$\rightarrow$Programas$\rightarrow$Accesorios$\rightarrow$Símbolo del sistema]
 \end{description}
-Después acceda usando la orden \emph{cd} al directorio donde se ubica el ejecutable.
+Después acceda usando la orden \emph{cd} al directorio donde se ubica el
+ejecutable.
 \begin{description}
 \item[Ejemplo:] cd C:$\backslash$Programas$\backslash$Swocs
 \end{description}
 
-La sintaxis de ejecución, tanto en sistemas Unix como en Microsoft Windows, de una simulación es la siguiente:
+La sintaxis de ejecución, tanto en sistemas Unix como en Microsoft Windows, de
+una simulación es la siguiente:
 \begin{description}
-\item \emph{swocs}  \emph{fichero1} \emph{fichero2} \emph{fichero3} \emph{fichero4} \emph{fichero5} \emph{fichero6}
+\item \emph{swocs}  \emph{fichero1} \emph{fichero2} \emph{fichero3}
+	\emph{fichero4} \emph{fichero5} \emph{fichero6}
 \end{description}
 donde los ficheros son:
 \begin{description}
@@ -163,10 +166,12 @@ El formato de cada uno de los 6 ficheros se explica en el capítulo posterior.
 
 \chapter{Formato de los ficheros de entrada y salida}
 
-Todos ficheros de entrada y salida utilizan codificación ASCII, pudiéndose crear y modificar 
-con una gran variedad de editores de texto ({\tt notepad}, {\tt vim}).
+Todos ficheros de entrada y salida utilizan codificación ASCII, pudiéndose
+crear y modificar  con una gran variedad de editores de texto ({\tt notepad},
+{\tt vim}, {\tt gedit}, ...).
 
 \section{Formato del fichero de entrada del cauce}
+
 Se muestra en primer lugar un ejemplo de un fichero de entrada del cauce:
 
 {\footnotesize
@@ -198,6 +203,8 @@ Cada valor tiene la siguiente correspondencia:
 (longitud) (pendiente fondo) (anchura fondo) (pendiente pared) (profundidad)
 (tipo de salida)
 (modelo de fricción) (modelo de infiltración) (modelo de difusión)
+(cotas de fondo) ...
+(condiciones iniciales) ...
 (coeficientes de fricción) ...
 (coeficientes de infiltración) ...
 (coeficientes de difusión) ...
@@ -215,13 +222,22 @@ Cada valor tiene la siguiente correspondencia:
 }
 
 \subsection{Tipo de salida}
+
 \begin{verbatimtab}
 	1: Cerrada.
 	2: Abierta.
 \end{verbatimtab}
 
+\subsection{Cotas del fondo}
+
+\subsection{Condiciones iniciales}
+
 \subsection{Modelos y coeficientes de fricción}
-En la versión actual sólo se encuentra disponible el modelo de fricción de Gauckler-Manning. El único coeficiente de fricción necesario para este modelo es el número de Gauckler-Manning, $n$. Nuevos modelos de fricción podrían necesitar más de un único coeficiente de fricción.
+
+En la versión actual sólo se encuentra disponible el modelo de fricción de
+Gauckler-Manning. El único coeficiente de fricción necesario para este modelo es
+el número de Gauckler-Manning, $n$. Nuevos modelos de fricción podrían necesitar
+más de un único coeficiente de fricción.
 \begin{verbatimtab}[4]
 (modelo de fricción): 
 		1: Gauckler-Manning.
@@ -230,15 +246,22 @@ En la versión actual sólo se encuentra disponible el modelo de fricción de Ga
 \vspace{-0.60cm}
 \hspace{1.8cm}$n$
 
-En el caso de Gauckler-Manning la formulación empleada es la siguiente (\cite{JaviSurcos1}):
+En el caso de Gauckler-Manning la formulación empleada es la siguiente
+(\cite{JaviSurcos1}):
 \begin{equation}
 S_f=\frac{n^2 Q|Q|P^{4/3}}{A^{10/3}}
 \end{equation}
-\noindent donde $S_f$ es la pendiente de fricción, $Q$ es el caudal superficial, $P$ es el perímetro mojado de la 
-sección transversal superficial y $A$ es el área mojada de la sección transversal superficial. 
+\noindent donde $S_f$ es la pendiente de fricción, $Q$ es el caudal superficial,
+$P$ es el perímetro mojado de la sección transversal superficial y $A$ es el
+área mojada de la sección transversal superficial. 
 
 \subsection{Modelos y coeficientes de infiltración}
-En la versión actual sólo se encuentra disponible el modelo de infiltración de Kostiakov-Lewis. Para este modelo son necesarios 4 coeficientes de infiltración. Nuevos modelos de infiltración podrían necesitar un número distinto de coeficientes de infiltración.
+
+En la versión actual sólo se encuentra disponible el modelo de infiltración de
+Kostiakov-Lewis en la versión modificada para surcos en (\cite{JaviSurcos1}).
+Para este modelo son necesarios 4 coeficientes de infiltración. Nuevos modelos
+de infiltración podrían necesitar un número distinto de coeficientes de
+infiltración.
 \begin{verbatimtab}[4]
 (modelo de infiltración): 
 		1: Kostiakov-Lewis.
@@ -247,13 +270,19 @@ En la versión actual sólo se encuentra disponible el modelo de infiltración d
 \vspace{-0.5cm}
 \hspace{1.8cm}$K$\hspace{0.9cm}$a$\hspace{0.9cm}$i_c$\hspace{0.9cm}$D$
 
-La formulación del modelo de Kostiakov-Lewis (\cite{JaviSurcos1}):
+La formulación del modelo de Kostiakov-Lewis modificado para surcos es
+(\cite{JaviSurcos1}):
 \begin{equation}
-\frac{d\alpha}{dt}=P\left[ i_c + Ka \left( \frac{\alpha}{DK} \right)^{a-1/a} \right]
+\frac{d\alpha}{dt}=
+P\left[ i_c + Ka \left( \frac{\alpha}{DK} \right)^{a-1/a} \right]
 \end{equation}
-\noindent donde $\alpha$ es el área infiltrada, $t$ es la coordenada temporal, $i_c$ es la velocidad de infiltración en suelo saturado, $K$ es el parámetro de infiltración de Kostiakov, $a$ es el coeficiente de infiltración de Kostiakov y $D$ es la distancia entre surcos.
+\noindent donde $\alpha$ es el área infiltrada, $t$ es la coordenada temporal,
+$i_c$ es la velocidad de infiltración en suelo saturado, $K$ es el parámetro de
+infiltración de Kostiakov, $a$ es el coeficiente de infiltración de Kostiakov y
+$D$ es la distancia entre surcos.
 
 \subsection{Modelos y coeficientes de difusión}
+
 En la versión actual sólo se encuentra disponible el modelo de difusión de Rutherford. El único coeficiente de difusión necesario para este modelo
 es el coeficiente adimensional de difusión superficial, $D_x$.
 \begin{verbatimtab}[4]

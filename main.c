@@ -54,6 +54,9 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //#include "model_kinematic_LaxFriedrichs.h"
 #include "model_hydrodynamic_implicit.h"
 #include "model_zero_advection_implicit.h"
+#include "model_zero_inertia_implicit.h"
+#include "model_kinematic_implicit.h"
+#include "model_hydrodynamic_tvd.h"
 
 /**
  * \var critical_depth_tolerance
@@ -164,6 +167,9 @@ hydrodynamic:
 	case 3:
 		model->model_surface_flow = model_surface_flow_hydrodynamic_implicit;
 		goto calculate;
+	case 4:
+		model->model_surface_flow = model_surface_flow_hydrodynamic_tvd;
+		goto calculate;
 	default:
 		printf("model: bad surface flow type\n");
 		return 2;
@@ -196,6 +202,10 @@ zero_inertia:
 //	case 2:
 //		model->model_surface_flow = model_surface_flow_zero_inertia_LaxFriedrichs;
 //		break;
+	case 3:
+		model->model_surface_flow = model_surface_flow_zero_inertia_implicit;
+		model->node_1dt_max = node_1dt_max_hydrodynamic;
+		goto calculate;
 	default:
 		printf("model: bad surface flow type\n");
 		return 2;
@@ -210,6 +220,9 @@ kinematic:
 //	case 2:
 //		model->model_surface_flow = model_surface_flow_kinematic_LaxFriedrichs;
 //		break;
+	case 3:
+		model->model_surface_flow = model_surface_flow_kinematic_implicit;
+		goto calculate;
 	default:
 		printf("model: bad surface flow type\n");
 		return 2;

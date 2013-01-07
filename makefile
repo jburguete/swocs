@@ -3,7 +3,9 @@ headers = config.h channel.c node.h mesh.h model.h model_hydrodynamic.h \
 	model_hydrodynamic_LaxFriedrichs.h model_zero_advection_LaxFriedrichs.h  \
 	model_zero_inertia_upwind.h model_kinematic_upwind.h \
 	model_hydrodynamic_upwind.h model_zero_advection_upwind.h  \
-	model_hydrodynamic_implicit.h model_zero_advection_implicit.h
+	model_hydrodynamic_implicit.h model_zero_advection_implicit.h \
+	model_zero_inertia_implicit.h model_kinematic_implicit.h \
+	model_hydrodynamic_tvd.h
 #	model_zero_inertia_LaxFriedrichs.h model_kinematic_LaxFriedrichs.h
 
 sources = main.c channel.c node.c mesh.c model.c model_hydrodynamic.c \
@@ -11,7 +13,9 @@ sources = main.c channel.c node.c mesh.c model.c model_hydrodynamic.c \
 	model_hydrodynamic_LaxFriedrichs.c model_zero_advection_LaxFriedrichs.c  \
 	model_zero_inertia_upwind.c model_kinematic_upwind.c \
 	model_hydrodynamic_upwind.c model_zero_advection_upwind.c \
-	model_hydrodynamic_implicit.c model_zero_advection_implicit.c
+	model_hydrodynamic_implicit.c model_zero_advection_implicit.c \
+	model_zero_inertia_implicit.c model_kinematic_implicit.c \
+	model_hydrodynamic_tvd.c
 #	model_zero_inertia_LaxFriedrichs.c model_kinematic_LaxFriedrichs.c
 
 objects = main.o channel.o node.o mesh.o model.o model_hydrodynamic.o \
@@ -19,7 +23,9 @@ objects = main.o channel.o node.o mesh.o model.o model_hydrodynamic.o \
 	model_hydrodynamic_LaxFriedrichs.o model_zero_advection_LaxFriedrichs.o  \
 	model_zero_inertia_upwind.o model_kinematic_upwind.o \
 	model_hydrodynamic_upwind.o model_zero_advection_upwind.o \
-	model_hydrodynamic_implicit.o model_zero_advection_implicit.o
+	model_hydrodynamic_implicit.o model_zero_advection_implicit.o \
+	model_zero_inertia_implicit.o model_kinematic_implicit.o \
+	model_hydrodynamic_tvd.o
 #	model_zero_inertia_LaxFriedrichs.o model_kinematic_LaxFriedrichs.o
 
 manuals = reference-manual.pdf swocs-manuals/english/user-manual.pdf \
@@ -55,8 +61,8 @@ mesh.o: mesh.c mesh.h node.h channel.h config.h makefile
 model.o: model.c model.h mesh.h node.h channel.h config.h makefile
 	$(compiler) model.c -o model.o
 
-model_hydrodynamic.o: model_hydrodynamic.c model_hydrodynamic.h model.h node.h channel.h \
-	config.h makefile
+model_hydrodynamic.o: model_hydrodynamic.c model_hydrodynamic.h model.h node.h \
+	channel.h config.h makefile
 	$(compiler) model_hydrodynamic.c -o model_hydrodynamic.o
 
 model_zero_advection.o: model_zero_advection.c model_zero_advection.h model.h \
@@ -83,22 +89,6 @@ model_zero_advection_LaxFriedrichs.o: model_zero_advection_LaxFriedrichs.c \
 	$(compiler) model_zero_advection_LaxFriedrichs.c \
 		-o model_zero_advection_LaxFriedrichs.o
 
-model_zero_inertia_upwind.o: model_zero_inertia_upwind.c \
-	model_zero_inertia_upwind.h model.h node.h channel.h config.h makefile
-	$(compiler) model_zero_inertia_upwind.c -o model_zero_inertia_upwind.o
-
-model_kinematic_upwind.o: model_kinematic_upwind.c model_kinematic_upwind.h \
-	model.h node.h channel.h config.h makefile
-	$(compiler) model_kinematic_upwind.c -o model_kinematic_upwind.o
-
-model_hydrodynamic_upwind.o: model_hydrodynamic_upwind.c \
-	model_hydrodynamic_upwind.h model.h node.h channel.h config.h makefile
-	$(compiler) model_hydrodynamic_upwind.c -o model_hydrodynamic_upwind.o
-
-model_zero_advection_upwind.o: model_zero_advection_upwind.c \
-	model_zero_advection_upwind.h model.h node.h channel.h config.h makefile
-	$(compiler) model_zero_advection_upwind.c -o model_zero_advection_upwind.o
-
 #model_zero_inertia_LaxFriedrichs.o: model_zero_inertia_LaxFriedrichs.c \
 #	model_zero_inertia_LaxFriedrichs.h model.h node.h channel.h config.h \
 #	makefile
@@ -111,6 +101,22 @@ model_zero_advection_upwind.o: model_zero_advection_upwind.c \
 #	$(compiler) model_kinematic_LaxFriedrichs.c \
 #		-o model_kinematic_LaxFriedrichs.o
 
+model_hydrodynamic_upwind.o: model_hydrodynamic_upwind.c \
+	model_hydrodynamic_upwind.h model.h node.h channel.h config.h makefile
+	$(compiler) model_hydrodynamic_upwind.c -o model_hydrodynamic_upwind.o
+
+model_zero_advection_upwind.o: model_zero_advection_upwind.c \
+	model_zero_advection_upwind.h model.h node.h channel.h config.h makefile
+	$(compiler) model_zero_advection_upwind.c -o model_zero_advection_upwind.o
+
+model_zero_inertia_upwind.o: model_zero_inertia_upwind.c \
+	model_zero_inertia_upwind.h model.h node.h channel.h config.h makefile
+	$(compiler) model_zero_inertia_upwind.c -o model_zero_inertia_upwind.o
+
+model_kinematic_upwind.o: model_kinematic_upwind.c model_kinematic_upwind.h \
+	model.h node.h channel.h config.h makefile
+	$(compiler) model_kinematic_upwind.c -o model_kinematic_upwind.o
+
 model_hydrodynamic_implicit.o: model_hydrodynamic_implicit.c \
 	model_hydrodynamic_implicit.h model.h node.h channel.h config.h makefile
 	$(compiler) model_hydrodynamic_implicit.c -o model_hydrodynamic_implicit.o
@@ -119,6 +125,18 @@ model_zero_advection_implicit.o: model_zero_advection_implicit.c \
 	model_zero_advection_implicit.h model.h node.h channel.h config.h makefile
 	$(compiler) model_zero_advection_implicit.c \
 		-o model_zero_advection_implicit.o
+
+model_zero_inertia_implicit.o: model_zero_inertia_implicit.c \
+	model_zero_inertia_implicit.h model.h node.h channel.h config.h makefile
+	$(compiler) model_zero_inertia_implicit.c -o model_zero_inertia_implicit.o
+
+model_kinematic_implicit.o: model_kinematic_implicit.c \
+	model_kinematic_implicit.h model.h node.h channel.h config.h makefile
+	$(compiler) model_kinematic_implicit.c -o model_kinematic_implicit.o
+
+model_hydrodynamic_tvd.o: model_hydrodynamic_tvd.c model_hydrodynamic_tvd.h \
+	model.h node.h channel.h config.h makefile
+	$(compiler) model_hydrodynamic_tvd.c -o model_hydrodynamic_tvd.o
 
 main.o: $(headers) makefile
 	$(compiler) main.c -o main.o
