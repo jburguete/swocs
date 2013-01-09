@@ -58,7 +58,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 int mesh_open(Mesh *mesh, Channel *channel)
 {
-	int i;
+	unsigned int i;
 	double ix, Z;
 	Node *node;
 	mesh->node = node = (Node*)malloc(mesh->n * sizeof(Node));
@@ -106,10 +106,11 @@ int mesh_open(Mesh *mesh, Channel *channel)
  */
 void mesh_initial_conditions_dry(Mesh *mesh)
 {
-	int i;
+	unsigned int i;
 	Node *node = mesh->node;
 	for (i = 0; i < mesh->n; ++i)
-		node[i].U[0] = node[i].U[1] = node[i].U[2] = node[i].U[3] = node[i].U[4] = 0.; 
+		node[i].U[0] = node[i].U[1] = node[i].U[2] = node[i].U[3] = node[i].U[4]
+			= 0.; 
 }
 
 /**
@@ -122,11 +123,11 @@ void mesh_initial_conditions_dry(Mesh *mesh)
  */
 int mesh_initial_conditions_profile(Mesh *mesh, FILE *file)
 {
-	int i, j, n;
+	unsigned int i, j, n;
 	double dx, *x, *A, *Q, *s;
 	char *msg;
 	Node *node = mesh->node;
-	if (fscanf(file, "%d", &n) != 1 || n < 1)
+	if (fscanf(file, "%u", &n) != 1 || n < 1)
 	{
 		msg = "mesh initial conditions profile: bad points number";
 		goto bad2;
@@ -156,7 +157,7 @@ int mesh_initial_conditions_profile(Mesh *mesh, FILE *file)
 	} 
 #if DEBUG_MESH
 	for (i=0; i < n; ++i)
-		printf("i=%d x=%lg A=%lg Q=%lg s=%lg\n", i, x[i], A[i], Q[i], s[i]);
+		printf("i=%u x=%lg A=%lg Q=%lg s=%lg\n", i, x[i], A[i], Q[i], s[i]);
 #endif
 	--n;
 	for (i = j = 0; i < mesh->n; ++i)
@@ -218,7 +219,7 @@ bad2:
 int mesh_read(Mesh *mesh, Channel *channel, FILE *file)
 {
 	char *msg;
-	if (fscanf(file, "%d%d", &mesh->n, &mesh->type) != 2)
+	if (fscanf(file, "%u%u", &mesh->n, &mesh->type) != 2)
 	{
 		msg = "mesh: bad defined";
 		goto bad;
@@ -229,7 +230,7 @@ int mesh_read(Mesh *mesh, Channel *channel, FILE *file)
 		goto bad;
 	}
 #if DEBUG_MODEL_READ
-	printf("mesh: n=%d type=%d\n", mesh->n, mesh->type);
+	printf("mesh: n=%u type=%u\n", mesh->n, mesh->type);
 #endif
 	if (!mesh_open(mesh, channel)) return 0;
 	switch (mesh->type)
@@ -261,7 +262,7 @@ bad:
  */
 void mesh_write_variables(Mesh *mesh, FILE *file)
 {
-	int i;
+	unsigned int i;
 	Node *node;
 	for (i = 0; i < mesh->n; ++i)
 	{
@@ -286,7 +287,7 @@ void mesh_write_variables(Mesh *mesh, FILE *file)
  */
 void mesh_write_flows(Mesh *mesh, FILE *file)
 {
-	int i, n1;
+	unsigned int i, n1;
 	Node *node = mesh->node;
 	n1 = mesh->n - 1;
 	for (i = 0; i < n1; ++i)
@@ -313,7 +314,7 @@ void mesh_write_flows(Mesh *mesh, FILE *file)
  */
 double mesh_water_mass(Mesh *mesh)
 {
-	int i;
+	unsigned int i;
 	double mass = 0.;
 	Node *node = mesh->node;
 	for (i = 0; i < mesh->n; ++i)
@@ -330,7 +331,7 @@ double mesh_water_mass(Mesh *mesh)
  */
 double mesh_solute_mass(Mesh *mesh)
 {
-	int i;
+	unsigned int i;
 	double mass = 0.;
 	Node *node = mesh->node;
 	for (i = 0; i < mesh->n; ++i)

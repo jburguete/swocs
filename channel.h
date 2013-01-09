@@ -110,6 +110,8 @@ struct _Channel
  * \brief slope of the lateral walls.
  * \var height
  * \brief channel height.
+ * \var type_inlet
+ * \brief type of inlet (1 subcritical, 2 supercritical).
  * \var type_outlet
  * \brief type of outlet (1 closed, 2 open).
  * \var friction_model
@@ -123,7 +125,7 @@ struct _Channel
 	Geometry geometry[1];
 	double friction_coefficient[3], infiltration_coefficient[4],
 		diffusion_coefficient[1], length, bottom_width, wall_slope, height;
-	unsigned int type_outlet, friction_model, infiltration_model,
+	unsigned int type_inlet, type_outlet, friction_model, infiltration_model,
 		diffusion_model;
 };
 

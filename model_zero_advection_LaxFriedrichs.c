@@ -40,6 +40,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "node.h"
 #include "mesh.h"
 #include "model.h"
+#include "model_zero_advection.h"
 #include "model_zero_advection_LaxFriedrichs.h"
 
 /**
@@ -51,7 +52,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 void model_surface_flow_zero_advection_LaxFriedrichs(Model *model)
 {
-	int i, j, n1;
+	unsigned int i, j, n1;
 	double k1, k2;
 	Mesh *mesh = model->mesh;
 	Node *node = mesh->node;
@@ -62,7 +63,7 @@ void model_surface_flow_zero_advection_LaxFriedrichs(Model *model)
 	n1 = mesh->n - 1;
 	for (i = 0; i < n1; ++i)
 	{
-		model->node_flows(node + i);
+		node_flows_zero_advection(node + i);
 		node[i].dFr[0] = node[i].dFr[1] = node[i].dFr[2] = node[i].dFl[0]
 			= node[i].dFl[1] = node[i].dFl[2] = 0;
 		if (node[i].h <= model->minimum_depth &&
@@ -101,6 +102,6 @@ void model_surface_flow_zero_advection_LaxFriedrichs(Model *model)
 	model->model_inlet(model);
 	node[0].U[0] += model->inlet_contribution[0] / node[0].dx;
 	node[0].U[2] += model->inlet_contribution[2] / node[0].dx;
-	node_subcritical_discharge(node);
+	if (model->channel->type_inlet == 1) node_subcritical_discharge(node);
 	model->model_outlet(model);
 }

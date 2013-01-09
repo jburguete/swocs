@@ -85,15 +85,15 @@ double interpolate(double x, double x1, double x2, double y1, double y2)
  */
 int hydrogram_read(Hydrogram *hydrogram, FILE *file)
 {
-	int i;
+	unsigned int i;
 	char *msg;
-	if (fscanf(file, "%d", &hydrogram->n) != 1 || hydrogram->n < 1)
+	if (fscanf(file, "%u", &hydrogram->n) != 1 || hydrogram->n < 1)
 	{
 		msg = "hydrogram: bad points number";
 		goto bad;
 	}
 #if DEBUG_CHANNEL
-	printf("hydrogram: n=%d\n", hydrogram->n);
+	printf("hydrogram: n=%u\n", hydrogram->n);
 #endif
 	hydrogram->t = (double*)malloc(hydrogram->n * sizeof(double));
 	hydrogram->Q = (double*)malloc(hydrogram->n * sizeof(double));
@@ -131,9 +131,9 @@ bad:
  */
 double hydrogram_discharge(Hydrogram *hydrogram, double t)
 {
-	int i, n1;
+	unsigned int i, n1;
 	n1 = hydrogram->n - 1;
-	if (t <= hydrogram->t[0]) return hydrogram->Q[0];
+	if (n1 == 0 || t <= hydrogram->t[0]) return hydrogram->Q[0];
 	if (t >= hydrogram->t[n1]) return hydrogram->Q[n1];
 	for (i = 0; t > hydrogram->t[i];) ++i;
 	return interpolate(t, hydrogram->t[i], hydrogram->t[i - 1],
@@ -153,10 +153,10 @@ double hydrogram_discharge(Hydrogram *hydrogram, double t)
  */
 double hydrogram_integrate(Hydrogram *hydrogram, double t1, double t2)
 {
-	int i, j, n1;
+	unsigned int i, j, n1;
 	double Q1, Q2, I;
 	n1 = hydrogram->n - 1;
-	if (t2 <= hydrogram->t[0]) return hydrogram->Q[0] * (t2 - t1);
+	if (n1 == 0 || t2 <= hydrogram->t[0]) return hydrogram->Q[0] * (t2 - t1);
 	if (t1 >= hydrogram->t[n1]) return hydrogram->Q[n1] * (t2 - t1);
 	for (i = 0; t1 > hydrogram->t[i];) ++i;
 	for (j = i; j < hydrogram->n && t2 > hydrogram->t[j];) ++j;
@@ -206,15 +206,15 @@ double hydrogram_integrate(Hydrogram *hydrogram, double t1, double t2)
  */
 int geometry_read(Geometry *geometry, FILE *file)
 {
-	int i;
+	unsigned int i;
 	char *msg;
-	if (fscanf(file, "%d", &geometry->n) != 1 || geometry->n < 1)
+	if (fscanf(file, "%u", &geometry->n) != 1 || geometry->n < 1)
 	{
 		msg = "geometry: bad points number";
 		goto bad;
 	}
 #if DEBUG_CHANNEL
-	printf("geometry: n=%d\n", geometry->n);
+	printf("geometry: n=%u\n", geometry->n);
 #endif
 	geometry->x = (double*)malloc(geometry->n * sizeof(double));
 	geometry->zb = (double*)malloc(geometry->n * sizeof(double));
@@ -252,9 +252,9 @@ bad:
  */
 double geometry_level(Geometry *geometry, double x)
 {
-	int i, n1;
+	unsigned int i, n1;
 	n1 = geometry->n - 1;
-	if (x <= geometry->x[0]) return geometry->zb[0];
+	if (n1 == 0 || x <= geometry->x[0]) return geometry->zb[0];
 	if (x >= geometry->x[n1]) return geometry->zb[n1];
 	for (i = 0; x > geometry->x[i];) ++i;
 	return interpolate(x, geometry->x[i], geometry->x[i - 1],
@@ -355,29 +355,30 @@ int channel_diffusion_read_Rutherford(Channel *channel, FILE *file)
 int channel_read(Channel *channel, FILE *file)
 {
 	char *msg;
-	if (fscanf(file, "%lf%lf%lf%lf%d%d%d%d",
+	if (fscanf(file, "%lf%lf%lf%lf%u%u%u%u%u",
 		&channel->length,
 		&channel->bottom_width,
 		&channel->wall_slope,
 		&channel->height,
+		&channel->type_inlet,
 		&channel->type_outlet,
 		&channel->friction_model,
 		&channel->infiltration_model,
-		&channel->diffusion_model) != 8)
+		&channel->diffusion_model) != 9)
 	{
 		msg = "channel: bad defined\n";
 		goto bad;
 	}
 #if DEBUG_CHANNEL
 	printf("channel:\n"
-		"length=%lg\n"
-		"bottom_width=%lg wall_slope=%lg\n"
-		"height=%lg type_outlet=%d\n"
-		"friction_model=%d infiltration_model=%d diffusion_model=%d\n",
+		"length=%lg\n bottom_width=%lg wall_slope=%lg height=%lg\n"
+		"type_inlet=%u type_outlet=%u\n"
+		"friction_model=%u infiltration_model=%u diffusion_model=%u\n",
 		channel->length,
 		channel->bottom_width,
 		channel->wall_slope,
 		channel->height,
+		channel->type_inlet,
 		channel->type_outlet,
 		channel->friction_model,
 		channel->infiltration_model,

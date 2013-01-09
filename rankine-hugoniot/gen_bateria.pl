@@ -1,33 +1,51 @@
-my $L=$ARGV[0];
-my $S0=$ARGV[1];
-my $Q=$ARGV[2];
-my $t=$ARGV[3];
-my $cfl=$ARGV[4];
-my $nm=$ARGV[5]; #numerical model
-my $pm=$ARGV[6]; #physical model
+my $B0=$ARGV[0];
+my $Z=$ARGV[1];
+my $S0=$ARGV[2];
+my $r=$ARGV[3];
+my $h1=$ARGV[4];
+my $Q1=$ARGV[5];
+my $h2=$ARGV[6];
+my $Q2=$ARGV[7];
+my $cfl=$ARGV[8];
+my $nm=$ARGV[9]; #numerical model
+my $pm=$ARGV[10]; #physical model
+my $L;
 my $z0;
+my $A1;
+my $A2;
+my $t;
+my $U;
 
+$L=100;
 $z0=$S0*$L; #zfinal es siempre cero
+$A1=($B0+$Z*$h1)*$h1;
+$A2=($B0+$Z*$h2)*$h2;
+$U=($Q1-$Q2)/($A1-$A2);
+$t=0.5*$L/$U;
 
-printf "%g 1 0 1\n", $L; 
+printf "%g %g %g 1\n", $L, $B0, $Z; 
 
 print <<END1;
-1 1
+2 2
 1 1 1
 2
 END1
 
 printf "0 %g\n", $z0; 
 printf "%g 0\n", $L; 
+printf "%g\n", $r;
 
 print <<END2;
-0.03
 0 1 0 1
-10
-1
+0
 END2
 
-printf "0 %g\n1\n0 %g\n1001 1\n", $Q, $Q; 
+printf "1\n0 %g\n1\n0 %g\n1001 2\n4\n", $Q1, $Q1; 
+
+printf "0 %g %g %g\n", $A1, $Q1, $A1; 
+printf "%g %g %g %g\n", 0.25*$L, $A1, $Q1, $A1; 
+printf "%g %g %g 0\n", 0.25*$L, $A2, $Q2; 
+printf "%g %g %g 0\n", $L, $A2, $Q2; 
 
 printf "%g 0 %g 0.01\n", $t, $cfl; 
 
@@ -36,7 +54,7 @@ printf "%d\n\n", $pm;
 
 print <<END3;
 (channel length) (bottom width) (wall slope) (channel depth)
-(inlet type) (outlet type)
+(inlet tupe) (outlet type)
 (friction model) (infiltration model) (diffusion model)
 (points number of geometry)
 (x-coordinate of the geometry point) (z-coordinate of the geometry point)

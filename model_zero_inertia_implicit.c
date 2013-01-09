@@ -40,6 +40,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "node.h"
 #include "mesh.h"
 #include "model.h"
+#include "model_zero_inertia.h"
 #include "model_zero_inertia_implicit.h"
 
 /**
@@ -88,11 +89,12 @@ void model_surface_flow_zero_inertia_implicit_invert(double *m, double *i)
  */
 void model_surface_flow_zero_inertia_implicit(Model *model)
 {
-	int i, j, n1, iteration;
-	double l1, odt, A[9], B[9], C[9], D[3],
-		inlet_contribution[3], outlet_contribution[3];
+	unsigned int i, j, n1, iteration;
 	Mesh *mesh = model->mesh;
 	Node *node = mesh->node;
+	double k, l1, l2, odt, A[9], B[9], C[9], D[3],
+		inlet_contribution[3], outlet_contribution[3],
+		CC[mesh->n], DD[mesh->n], EE[mesh->n], HH[mesh->n];
 
 	n1 = mesh->n - 1;
 
@@ -111,6 +113,8 @@ void model_surface_flow_zero_inertia_implicit(Model *model)
 	outlet_contribution[0] = model->dt * node[n1].U[1];
 	outlet_contribution[2] = model->dt * node[n1].T;
 
+	for (i = 0; i < n1; ++i) node_flows_zero_inertia(node + i);
+
 	// implicit part
 
 	iteration = 0;
@@ -126,18 +130,24 @@ void model_surface_flow_zero_inertia_implicit(Model *model)
 
 		for (i = 0; i < mesh->n; ++i)
 		{
-			if (node[i].h <= model->minimum_depth)
+			if (node[i].h <= model->minimum_depth || node[i].U[1] == 0.)
 			{
 				for (j = 0; j < 4; ++j) node[i].Jp[j] = 0.;
+				node[i].Jn[0] = 0.;
 				continue;
 			}
 			l1 = node[i].U[1] * (5./3. / node[i].U[0]
 				- 4./3. * sqrt(1 + node[i].Z * node[i].Z)
 				/ (node[i].B * node[i].P));
-			node[i].Jp[0] = l1;
-			node[i].Jp[1] = (l1 - node[i].u) * node[i].s;
-			node[i].Jp[2] = 0.;
+			l2 = 0.5 * node[i].U[0] * node[i].U[0]
+				* pow(node[i].U[0] / node[i].P, 4./3.)
+				/ (node[i].U[1] * node[i].friction_coefficient[0]
+				* node[i].friction_coefficient[0] * node[i].B * node[i].dx);
+			node[i].Jp[0] = l1 + l2;
+			node[i].Jp[1] = 0.;
+			node[i].Jp[2] = (l1 - node[i].u) * node[i].s;
 			node[i].Jp[3] = node[i].u;
+			node[i].Jn[0] = - l2;
 		}
 
 		// variables updating
@@ -165,6 +175,37 @@ void model_surface_flow_zero_inertia_implicit(Model *model)
 		model->outlet_contribution[0] += D[0];
 		model->outlet_contribution[2] += D[2];
 
+/*
+		for (i = 0; i < mesh->n; ++i)
+		{
+			DD[i] = node[i].dx;
+			HH[i] = node[i].U[0] * node[i].dx;
+		}
+		for (i = 0; i < n1; ++i)
+		{
+			k = odt * fmin(node[i + 1].Jn[0], node[i].Jn[0]);
+			CC[i] = EE[i] = k;
+			DD[i] -= k;
+			DD[i + 1] -= k;
+		}
+		for (i = 0; i < n1; ++i)
+		{
+			if (DD[i] == 0.) k = 0; else k = CC[i] / DD[i];
+			DD[i + 1] -= k * EE[i];
+			HH[i + 1] -= k * HH[i];
+		}
+		if (DD[i] == 0.) HH[i] = 0; else HH[i] /= DD[i];
+		node[i].U[0] = HH[i];
+		do
+		{
+			--i;
+			if (DD[i] == 0.) HH[i] = 0;
+			else HH[i] = (HH[i] - EE[i] * HH[i+1]) / DD[i];
+			node[i].U[2] = HH[i];
+		}
+		while (i > 0);
+*/
+
 		// boundary conditions
 
 		model->model_inlet(model);
@@ -188,6 +229,7 @@ void model_surface_flow_zero_inertia_implicit(Model *model)
 			node[i].U[0] += node[i].dU[0];
 			node[i].U[2] += node[i].dU[2];
 		}
+		if (model->channel->type_inlet == 1) node_subcritical_discharge(node);
 		model->model_outlet(model);
 		i = n1;
 		node[i].U[0] += model->outlet_contribution[0] / node[i].dx;

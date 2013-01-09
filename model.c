@@ -49,7 +49,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 void model_parameters(Model *model)
 {
-	int i, n1;
+	unsigned int i, n1;
 	Mesh *mesh = model->mesh;
 	Node *node = mesh->node;
 	model->model_node_parameters_right(model, node);
@@ -67,7 +67,7 @@ void model_parameters(Model *model)
  */
 void model_infiltration(Model *model)
 {
-	int i;
+	unsigned int i;
 	double Pidt;
 	Mesh *mesh = model->mesh;
 	Node *node = mesh->node;
@@ -90,7 +90,7 @@ void model_infiltration(Model *model)
  */
 void model_diffusion_explicit(Model *model)
 {
-	int i, n1;
+	unsigned int i, n1;
 	double dD;
 	Mesh *mesh = model->mesh;
 	Node *node = mesh->node;
@@ -112,7 +112,7 @@ void model_diffusion_explicit(Model *model)
  */
 void model_diffusion_implicit(Model *model)
 {
-	int i, n1;
+	unsigned int i, n1;
 	Mesh *mesh = model->mesh;
 	Node *node = mesh->node;
 	double k, C[mesh->n], D[mesh->n], E[mesh->n], H[mesh->n];
@@ -137,11 +137,13 @@ void model_diffusion_implicit(Model *model)
 	}
 	if (D[i] == 0.) H[i] = 0; else H[i] /= D[i];
 	node[i].U[2] = H[i] * node[i].U[0];
-	while (--i >= 0)
+	do
 	{
+		--i;
 		if (D[i] == 0.) H[i] = 0; else H[i] = (H[i] - E[i] * H[i+1]) / D[i];
 		node[i].U[2] = H[i] * node[i].U[0];
 	}
+	while (i > 0);
 }
 
 /**
@@ -165,7 +167,7 @@ double model_node_diffusion_1dt_max(Node *node)
  */
 void model_step(Model *model)
 {
-	int i;
+	unsigned int i;
 	double dtmax;
 	Mesh *mesh = model->mesh;
 	Node *node = mesh->node;
@@ -237,7 +239,7 @@ int model_read(Model *model, char *file_name)
 		model->model_outlet = model_outlet_open;
 	}
 
-	if (fscanf(file, "%lf%lf%lf%lf%d%d%d",
+	if (fscanf(file, "%lf%lf%lf%lf%u%u%u",
 		&model->tfinal,
 		&model->interval,
 		&model->cfl,
@@ -252,7 +254,7 @@ int model_read(Model *model, char *file_name)
 #if DEBUG_MODEL_READ
 	printf("model:\n"
 		"tfinal=%lg interval=%lg cfl=%lg\n"
-		"type_surface_flow=%d type_model=%d\n",
+		"type_surface_flow=%u type_model=%u\n",
 		model->tfinal,
 		model->interval,
 		model->cfl,
@@ -270,17 +272,17 @@ bad:
 }
 
 /**
- * \fn void model_print(Model *model, int nsteps)
+ * \fn void model_print(Model *model, unsigned int nsteps)
  * \brief Function to print a model stat.
  * \param model
  * \brief model struct.
  * \param nsteps
  * \brief number of time steps.
  */
-void model_print(Model *model, int nsteps)
+void model_print(Model *model, unsigned int nsteps)
 {
 	printf(
-		"main: steps number=%d t=%.14lg water mass=%.14lg solute mass=%.14lg\n",
+		"main: steps number=%u t=%.14lg water mass=%.14lg solute mass=%.14lg\n",
 		nsteps,
 		model->t,
 		mesh_water_mass(model->mesh),
@@ -297,7 +299,7 @@ void model_print(Model *model, int nsteps)
  */
 void model_write_advance(Model *model, FILE *file)
 {
-	int i;
+	unsigned int i;
 	Mesh *mesh = model->mesh;
 	Node *node;
 	for (i = 0; i < mesh->n; ++i)
@@ -320,7 +322,7 @@ void model_write_advance(Model *model, FILE *file)
  */
 int model_probes_read(Model *model, char *name)
 {
-	int i, j, k;
+	unsigned int i, j, k;
 	double d, dmin, *x;
 	char *msg;
 	FILE *file;
@@ -332,9 +334,9 @@ int model_probes_read(Model *model, char *name)
 		msg = "probes: unable to open the input file";
 		goto bad2;
 	}
-	if (fscanf(file, "%d", &probes->n) != 1) goto bad;
+	if (fscanf(file, "%u", &probes->n) != 1) goto bad;
 	probes->x = x = (double*)malloc(probes->n * sizeof(double));
-	probes->node = (int*)malloc(probes->n * sizeof(int));
+	probes->node = (unsigned int*)malloc(probes->n * sizeof(int));
 	for (i = 0; i < probes->n; ++i)
 	{
 		if (fscanf(file, "%lf", x + i) != 1) goto bad;
@@ -372,7 +374,7 @@ bad2:
  */
 void model_write_probes(Model *model, FILE *file)
 {
-int i;
+	unsigned int i;
 	Probes *probes = model->probes;
 	Node *node;
 

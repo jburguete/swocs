@@ -40,6 +40,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "node.h"
 #include "mesh.h"
 #include "model.h"
+#include "model_zero_advection.h"
 #include "model_zero_advection_implicit.h"
 
 /**
@@ -94,7 +95,7 @@ void model_surface_flow_zero_advection_implicit_invert(double *m, double *i)
  */
 void model_surface_flow_zero_advection_implicit(Model *model)
 {
-	int i, j, n1, iteration;
+	unsigned int i, j, n1, iteration;
 	double c, s, l3, sA1, sA2, k1, k2, odt, godt, A[9], B[9], C[9], D[3],
 		inlet_contribution[3], outlet_contribution[3];
 	Mesh *mesh = model->mesh;
@@ -119,7 +120,7 @@ void model_surface_flow_zero_advection_implicit(Model *model)
 
 	for (i = 0; i < n1; ++i)
 	{
-		model->node_flows(node + i);
+		node_flows_zero_advection(node + i);
 		node[i].dFr[0] = node[i].dFr[1] = node[i].dFr[2] = node[i].dFl[0]
 			= node[i].dFl[1] = node[i].dFl[2] = 0;
 		if (node[i].h <= model->minimum_depth &&
@@ -213,8 +214,9 @@ void model_surface_flow_zero_advection_implicit(Model *model)
 		model->outlet_contribution[2] += D[2];
 		for (j = 0; j < 9; ++j) B[j] = - odt * node[i].Jn[j];
 		for (j = 0; j < 3; ++j) node[i].dU[j] = 0.;
-		while (--i >= 0)
+		do
 		{
+			--i;
 			model_surface_flow_zero_advection_implicit_multiply
 				(B, node[i + 1].dU, D);
 			for (j = 0; j < 9; ++j) A[j] = B[j] = - odt * node[i].Jn[j];
@@ -227,6 +229,7 @@ void model_surface_flow_zero_advection_implicit(Model *model)
 				(C, D, node[i].dU);
 			for (j = 0; j < 3; ++j) node[i].U[j] += node[i].dU[j];
 		}
+		while (i > 0);
 		model_surface_flow_zero_advection_implicit_multiply(B, node[0].dU, D);
 		model->inlet_contribution[0] += D[0];
 		model->inlet_contribution[2] += D[2];
@@ -255,6 +258,7 @@ void model_surface_flow_zero_advection_implicit(Model *model)
 				(C, D, node[i].dU);
 			for (j = 0; j < 3; ++j) node[i].U[j] += node[i].dU[j];
 		}
+		if (model->channel->type_inlet == 1) node_subcritical_discharge(node);
 		model->model_outlet(model);
 		i = n1;
 		for (j = 0; j < 9; ++j) A[j] = B[j] = - odt * node[i].Jn[j];
@@ -265,8 +269,9 @@ void model_surface_flow_zero_advection_implicit(Model *model)
 		model_surface_flow_zero_advection_implicit_multiply
 			(C, model->outlet_contribution, node[i].dU);
 		for (j = 0; j < 3; ++j) node[i].U[j] += node[i].dU[j];
-		while (--i >= 0)
+		do
 		{
+			--i;
 			model_surface_flow_zero_advection_implicit_multiply
 				(B, node[i + 1].dU, D);
 			for (j = 0; j < 9; ++j) A[j] = B[j] = - odt * node[i].Jn[j];
@@ -278,6 +283,7 @@ void model_surface_flow_zero_advection_implicit(Model *model)
 				(C, D, node[i].dU);
 			for (j = 0; j < 3; ++j) node[i].U[j] += node[i].dU[j];
 		}
+		while (i > 0);
 
 		model_parameters(model);
 	}

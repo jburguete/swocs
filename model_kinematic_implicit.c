@@ -40,6 +40,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "node.h"
 #include "mesh.h"
 #include "model.h"
+#include "model_kinematic.h"
 #include "model_kinematic_implicit.h"
 
 /**
@@ -88,7 +89,7 @@ void model_surface_flow_kinematic_implicit_invert(double *m, double *i)
  */
 void model_surface_flow_kinematic_implicit(Model *model)
 {
-	int i, j, n1, iteration;
+	unsigned int i, j, n1, iteration;
 	double l1, odt, A[9], B[9], C[9], D[3],
 		inlet_contribution[3], outlet_contribution[3];
 	Mesh *mesh = model->mesh;
@@ -110,6 +111,8 @@ void model_surface_flow_kinematic_implicit(Model *model)
 	inlet_contribution[2] = - model->dt * node[0].T;
 	outlet_contribution[0] = model->dt * node[n1].U[1];
 	outlet_contribution[2] = model->dt * node[n1].T;
+
+	for (i = 0; i < n1; ++i) node_flows_kinematic(node + i);
 
 	// implicit part
 
@@ -135,8 +138,8 @@ void model_surface_flow_kinematic_implicit(Model *model)
 				- 4./3. * sqrt(1 + node[i].Z * node[i].Z)
 				/ (node[i].B * node[i].P));
 			node[i].Jp[0] = l1;
-			node[i].Jp[1] = (l1 - node[i].u) * node[i].s;
-			node[i].Jp[2] = 0.;
+			node[i].Jp[1] = 0.;
+			node[i].Jp[2] = (l1 - node[i].u) * node[i].s;
 			node[i].Jp[3] = node[i].u;
 		}
 
@@ -188,6 +191,7 @@ void model_surface_flow_kinematic_implicit(Model *model)
 			node[i].U[0] += node[i].dU[0];
 			node[i].U[2] += node[i].dU[2];
 		}
+		if (model->channel->type_inlet == 1) node_subcritical_discharge(node);
 		model->model_outlet(model);
 		i = n1;
 		node[i].U[0] += model->outlet_contribution[0] / node[i].dx;

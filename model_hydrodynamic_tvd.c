@@ -69,7 +69,7 @@ double model_surface_flow_hydrodynamic_limiter(double dW1, double dW2)
  */
 void model_surface_flow_hydrodynamic_tvd(Model *model)
 {
-	int i, j, n1;
+	unsigned int i, j, n1;
 	double c, u, s, l1, l2, sA1, sA2, k1, k2, dt2, lp[3], ln[3];
 	Mesh *mesh = model->mesh;
 	Node *node = mesh->node;
@@ -80,7 +80,7 @@ void model_surface_flow_hydrodynamic_tvd(Model *model)
 	n1 = mesh->n - 1;
 	for (i = 0; i < n1; ++i)
 	{
-		model->node_flows(node + i);
+		node_flows_hydrodynamic(node + i);
 		node[i].dFr[0] = node[i].dFr[1] = node[i].dFr[2] = node[i].dFl[0]
 			= node[i].dFl[1] = node[i].dFl[2] = node[i].dWr[0] = node[i].dWr[1]
 		   	= node[i].dWr[2] = node[i].dWl[0] = node[i].dWl[1] = node[i].dWl[2]
@@ -205,6 +205,6 @@ void model_surface_flow_hydrodynamic_tvd(Model *model)
 	model->model_inlet(model);
 	node[0].U[0] += model->inlet_contribution[0] / node[0].dx;
 	node[0].U[2] += model->inlet_contribution[2] / node[0].dx;
-	node_subcritical_discharge(node);
+	if (model->channel->type_inlet == 1) node_subcritical_discharge(node);
 	model->model_outlet(model);
 }

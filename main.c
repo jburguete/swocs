@@ -70,7 +70,7 @@ double critical_depth_tolerance = 0.001;
  */
 int main(int argn, char **argc)
 {
-	int i;
+	unsigned int i;
 	FILE *file, *file_advance, *file_probes;
 	clock_t cpu;
 	Model model[1];
@@ -95,7 +95,6 @@ int main(int argn, char **argc)
 			= model->model_node_parameters_left
 			= model_node_parameters_hydrodynamic;
 		model->node_1dt_max = node_1dt_max_hydrodynamic;
-		model->node_flows = node_flows_hydrodynamic;
 		model->model_inlet_dtmax = model_inlet_dtmax_hydrodynamic;
 		goto hydrodynamic;
 	case 2:
@@ -104,7 +103,6 @@ int main(int argn, char **argc)
 			= model->model_node_parameters_left
 			= model_node_parameters_zero_advection;
 		model->node_1dt_max = node_1dt_max_zero_advection;
-		model->node_flows = node_flows_zero_advection;
 		model->model_inlet_dtmax = model_inlet_dtmax_zero_advection;
 		goto zero_advection;
 	case 3:
@@ -125,7 +123,6 @@ int main(int argn, char **argc)
 				= model_node_parameters_left_zero_inertia;
 		}
 		model->node_1dt_max = node_1dt_max_zero_inertia;
-		model->node_flows = node_flows_zero_inertia;
 		model->model_inlet_dtmax = model_inlet_dtmax_zero_inertia;
 		goto zero_inertia;
 	case 4:
@@ -146,7 +143,6 @@ int main(int argn, char **argc)
 				= model_node_parameters_left_kinematic;
 		}
 		model->node_1dt_max = node_1dt_max_kinematic;
-		model->node_flows = node_flows_kinematic;
 		model->model_inlet_dtmax = model_inlet_dtmax_kinematic;
 		goto kinematic;
 	default:

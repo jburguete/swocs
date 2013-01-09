@@ -53,7 +53,7 @@ struct _Probes
  * \brief number of probes.
  */
 	double *x;
-	int *node, n;
+	unsigned int *node, n;
 };
 
 /**
@@ -109,8 +109,6 @@ struct _Model
  * \var model_inlet_dtmax
  * \brief pointer to the function calculating the maximum allowed time at the
  *   inlet
- * \var node_flows
- * \brief pointer to the function calculating the node flows.
  * \var node_discharge_centre
  * \brief pointer to the function calculating the node discharge in a centred
  *   form.
@@ -151,7 +149,6 @@ struct _Model
 	void (*model_node_parameters_left)(struct _Model *model, Node *node);
 	double (*node_1dt_max)(Node *node);
 	double (*model_inlet_dtmax)(struct _Model *model);
-	void (*node_flows)(Node *node1);
 	void (*node_discharge_centre)(Node *node);
 	void (*node_discharge_right)(Node *node);
 	void (*node_discharge_left)(Node *node);
@@ -162,7 +159,7 @@ struct _Model
 	void (*model_outlet)(struct _Model *model);
 	void (*model_surface_flow)(struct _Model *model);
 	void (*model_diffusion)(struct _Model *model);
-	int type_surface_flow, type_diffusion, type_model;
+	unsigned int type_surface_flow, type_diffusion, type_model;
 };
 
 /**
@@ -179,7 +176,7 @@ void model_diffusion_implicit(Model *model);
 double model_node_diffusion_1dt_max(Node *node);
 void model_step(Model *model);
 int model_read(Model *model, char *file_name);
-void model_print(Model *model, int nsteps);
+void model_print(Model *model, unsigned int nsteps);
 void model_write_advance(Model *model, FILE *file);
 int model_probes_read(Model *model, char *name);
 void model_write_probes(Model *model, FILE *file);
