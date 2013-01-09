@@ -51,6 +51,7 @@ void node_depth(Node *node)
 	else
 		node->h = (sqrt(node->B0 * node->B0 + 4. * node->U[0] * node->Z)
 			- node->B0) / (2 * node->Z);
+	node->zs = node->zb + node->h;
 }
 
 /**

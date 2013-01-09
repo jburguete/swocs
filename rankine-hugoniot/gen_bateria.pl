@@ -23,7 +23,7 @@ $A2=($B0+$Z*$h2)*$h2;
 $U=($Q1-$Q2)/($A1-$A2);
 $t=0.5*$L/$U;
 
-printf "%g %g %g 1\n", $L, $B0, $Z; 
+printf "%.17lg %.17lg %.17lg 1\n", $L, $B0, $Z; 
 
 print <<END1;
 2 2
@@ -31,23 +31,23 @@ print <<END1;
 2
 END1
 
-printf "0 %g\n", $z0; 
-printf "%g 0\n", $L; 
-printf "%g\n", $r;
+printf "0 %.17lg\n", $z0; 
+printf "%.17lg 0\n", $L; 
+printf "%.17lg\n", $r;
 
 print <<END2;
 0 1 0 1
 0
 END2
 
-printf "1\n0 %g\n1\n0 %g\n1001 2\n4\n", $Q1, $Q1; 
+printf "1\n0 %.17lg\n1\n0 %.17lg\n101 2\n4\n", $Q1, $Q1; 
 
-printf "0 %g %g %g\n", $A1, $Q1, $A1; 
-printf "%g %g %g %g\n", 0.25*$L, $A1, $Q1, $A1; 
-printf "%g %g %g 0\n", 0.25*$L, $A2, $Q2; 
-printf "%g %g %g 0\n", $L, $A2, $Q2; 
+printf "0 %.17lg %.17lg %.17lg\n", $A1, $Q1, $A1; 
+printf "%.17lg %.17lg %.17lg %.17lg\n", 0.25*$L, $A1, $Q1, $A1; 
+printf "%.17lg %.17lg %.17lg 0\n", 0.25*$L, $A2, $Q2; 
+printf "%.17lg %.17lg %.17lg 0\n", $L, $A2, $Q2; 
 
-printf "%g 0 %g 0.01\n", $t, $cfl; 
+printf "%.17lg 0 %.17lg 0.01\n", $t, $cfl; 
 
 printf "%d 2\n", $nm; 
 printf "%d\n\n", $pm; 

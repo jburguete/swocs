@@ -44,6 +44,22 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "model_zero_inertia_implicit.h"
 
 /**
+ * \fn double node_area_with_level(Node *node, double zs)
+ * \brief Function to calculate the wetted area on a mesh node.
+ * \param node
+ * \brief mesh node struct.
+ * \param zs
+ * \brief surface level.
+ * \return wetted area.
+ */
+double node_area_with_level(Node *node, double zs)
+{
+	double h;
+	h = zs - node->zb;
+	return h * (node->B0 + node->Z * h);
+}
+
+/**
  * \fn void model_surface_flow_zero_inertia_implicit_multiply\
  *   (double *m, double *v, double *r)
  * \brief Function to multiply a matrix by a vector of the zero inertia model.
@@ -81,6 +97,56 @@ void model_surface_flow_zero_inertia_implicit_invert(double *m, double *i)
 }
 
 /**
+ * \fn void model_surface_flow_zero_inertia_stabilize(Model *model)
+ * \brief Function to stabilize the numerical results of the zero inertia\
+ *   surface flow model.
+ * \param model
+ * \brief model struct.
+ */
+void model_surface_flow_zero_inertia_stabilize(Model *model)
+{
+	unsigned int i, k;
+	double zmax, dA, dA2;
+	Mesh *mesh = model->mesh;
+	Node *node = mesh->node;
+
+	zmax = node[0].zs;
+	for (i = k = 0; ++i < mesh->n;)
+	{
+		if (node[i].zs > node[i - 1].zs)
+		{
+			dA = node[i].U[0] - node_area_with_level(node + i, node[i - 1].zs);
+			dA2 = node_area_with_level(node + i - 1, zmax) - node[i - 1].U[0];
+			if (dA > dA2)
+			{
+				node[i - 1].U[0] += dA2;
+				dA -= dA2;
+				node[i].U[0] -= dA;
+				if (i < mesh->n - 1)
+				{
+					node[i + 1].U[0] += dA - dA2;
+					node_depth(node + i + 1);
+				}
+			}
+			else
+			{
+				node[i - 1].U[0] += dA;
+				node[i].U[0] -= dA;
+			}
+			node_depth(node + i - 1);
+			node_depth(node + i);
+			k = 1;
+		}
+		zmax = node[i - 1].zs;
+	}
+	if (k)
+	{
+		model_parameters(model);
+for (i = 0; i < mesh->n; ++i) printf("i=%u zs=%lg\n", i, node[i].zs);
+	}
+}
+
+/**
  * \fn void model_surface_flow_zero_inertia_implicit(Model *model)
  * \brief Function to make the surface flow with the upwind implicit numerical
  *   scheme.
@@ -94,7 +160,7 @@ void model_surface_flow_zero_inertia_implicit(Model *model)
 	Node *node = mesh->node;
 	double k, l1, l2, odt, A[9], B[9], C[9], D[3],
 		inlet_contribution[3], outlet_contribution[3],
-		CC[mesh->n], DD[mesh->n], EE[mesh->n], HH[mesh->n];
+		CC[mesh->n], DD[mesh->n], EE[mesh->n];
 
 	n1 = mesh->n - 1;
 
@@ -143,11 +209,12 @@ void model_surface_flow_zero_inertia_implicit(Model *model)
 				* pow(node[i].U[0] / node[i].P, 4./3.)
 				/ (node[i].U[1] * node[i].friction_coefficient[0]
 				* node[i].friction_coefficient[0] * node[i].B * node[i].dx);
-			node[i].Jp[0] = l1 + l2;
+			node[i].Jp[0] = l1;
 			node[i].Jp[1] = 0.;
 			node[i].Jp[2] = (l1 - node[i].u) * node[i].s;
 			node[i].Jp[3] = node[i].u;
 			node[i].Jn[0] = - l2;
+//			node[i].Jn[0] = 0.;
 		}
 
 		// variables updating
@@ -167,7 +234,7 @@ void model_surface_flow_zero_inertia_implicit(Model *model)
 			D[0] -= model->dt * node[i - 1].dF[0];
 			D[2] -= model->dt * node[i - 1].dF[2];
 			model_surface_flow_zero_inertia_implicit_multiply(C, D, node[i].dU);
-			node[i].U[0] = node[i].Un[0] + node[i].dU[0];
+//			node[i].U[0] = node[i].Un[0] + node[i].dU[0];
 			node[i].U[2] = node[i].Un[2] + node[i].dU[2];
 		}
 		i = n1;
@@ -175,11 +242,10 @@ void model_surface_flow_zero_inertia_implicit(Model *model)
 		model->outlet_contribution[0] += D[0];
 		model->outlet_contribution[2] += D[2];
 
-/*
 		for (i = 0; i < mesh->n; ++i)
 		{
 			DD[i] = node[i].dx;
-			HH[i] = node[i].U[0] * node[i].dx;
+			node[i].dU[0] *= node[i].dx;
 		}
 		for (i = 0; i < n1; ++i)
 		{
@@ -192,19 +258,19 @@ void model_surface_flow_zero_inertia_implicit(Model *model)
 		{
 			if (DD[i] == 0.) k = 0; else k = CC[i] / DD[i];
 			DD[i + 1] -= k * EE[i];
-			HH[i + 1] -= k * HH[i];
+			node[i + 1].dU[0] -= k * node[i].dU[0];
 		}
-		if (DD[i] == 0.) HH[i] = 0; else HH[i] /= DD[i];
-		node[i].U[0] = HH[i];
+		if (DD[i] == 0.) node[i].dU[0] = 0; else node[i].dU[0] /= DD[i];
+		node[i].U[0] = node[i].Un[0] + node[i].dU[0];
 		do
 		{
 			--i;
-			if (DD[i] == 0.) HH[i] = 0;
-			else HH[i] = (HH[i] - EE[i] * HH[i+1]) / DD[i];
-			node[i].U[2] = HH[i];
+			if (DD[i] == 0.) node[i].dU[0] = 0;
+			else node[i].dU[0] = (node[i].dU[0] - EE[i] * node[i+1].dU[0])
+				/ DD[i];
+			node[i].U[0] = node[i].Un[0] + node[i].dU[0];
 		}
 		while (i > 0);
-*/
 
 		// boundary conditions
 
@@ -236,6 +302,8 @@ void model_surface_flow_zero_inertia_implicit(Model *model)
 		node[i].U[2] += model->outlet_contribution[2] / node[i].dx;
 
 		model_parameters(model);
+
+		model_surface_flow_zero_inertia_stabilize(model);
 	}
-	while (++iteration < 2);
+	while (++iteration < 1);
 }

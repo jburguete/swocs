@@ -66,17 +66,28 @@ int main()
 	};
 	const char *orden1[METHODS] =
 	{
-		"perl gen_bateria.pl %lg %lg %lg %lg %lg %lg %lg %lg %lg 1 1 > i-1-1-%d",
-		"perl gen_bateria.pl %lg %lg %lg %lg %lg %lg %lg %lg %lg 2 1 > i-2-1-%d",
-		"perl gen_bateria.pl %lg %lg %lg %lg %lg %lg %lg %lg %lg 3 1 > i-3-1-%d",
-		"perl gen_bateria.pl %lg %lg %lg %lg %lg %lg %lg %lg %lg 4 1 > i-4-1-%d",
-		"perl gen_bateria.pl %lg %lg %lg %lg %lg %lg %lg %lg %lg 1 2 > i-1-2-%d",
-		"perl gen_bateria.pl %lg %lg %lg %lg %lg %lg %lg %lg %lg 2 2 > i-2-2-%d",
-		"perl gen_bateria.pl %lg %lg %lg %lg %lg %lg %lg %lg %lg 3 2 > i-3-2-%d",
-		"perl gen_bateria.pl %lg %lg %lg %lg %lg %lg %lg %lg %lg 1 3 > i-1-3-%d",
-		"perl gen_bateria.pl %lg %lg %lg %lg %lg %lg %lg %lg %lg 3 3 > i-3-3-%d",
-		"perl gen_bateria.pl %lg %lg %lg %lg %lg %lg %lg %lg %lg 1 4 > i-1-4-%d",
-		"perl gen_bateria.pl %lg %lg %lg %lg %lg %lg %lg %lg %lg 3 4 > i-3-4-%d"
+		"perl gen_bateria.pl %.17lg %.17lg %.17lg %.17lg %.17lg %.17lg %.17lg "
+		"%.17lg %.17lg 1 1 > i-1-1-%d",
+		"perl gen_bateria.pl %.17lg %.17lg %.17lg %.17lg %.17lg %.17lg %.17lg "
+		"%.17lg %.17lg 2 1 > i-2-1-%d",
+		"perl gen_bateria.pl %.17lg %.17lg %.17lg %.17lg %.17lg %.17lg %.17lg "
+		"%.17lg %.17lg 3 1 > i-3-1-%d",
+		"perl gen_bateria.pl %.17lg %.17lg %.17lg %.17lg %.17lg %.17lg %.17lg "
+		"%.17lg %.17lg 4 1 > i-4-1-%d",
+		"perl gen_bateria.pl %.17lg %.17lg %.17lg %.17lg %.17lg %.17lg %.17lg "
+		"%.17lg %.17lg 1 2 > i-1-2-%d",
+		"perl gen_bateria.pl %.17lg %.17lg %.17lg %.17lg %.17lg %.17lg %.17lg "
+		"%.17lg %.17lg 2 2 > i-2-2-%d",
+		"perl gen_bateria.pl %.17lg %.17lg %.17lg %.17lg %.17lg %.17lg %.17lg "
+		"%.17lg %.17lg 3 2 > i-3-2-%d",
+		"perl gen_bateria.pl %.17lg %.17lg %.17lg %.17lg %.17lg %.17lg %.17lg "
+		"%.17lg %.17lg 1 3 > i-1-3-%d",
+		"perl gen_bateria.pl %.17lg %.17lg %.17lg %.17lg %.17lg %.17lg %.17lg "
+		"%.17lg %.17lg 3 3 > i-3-3-%d",
+		"perl gen_bateria.pl %.17lg %.17lg %.17lg %.17lg %.17lg %.17lg %.17lg "
+		"%.17lg %.17lg 1 4 > i-1-4-%d",
+		"perl gen_bateria.pl %.17lg %.17lg %.17lg %.17lg %.17lg %.17lg %.17lg "
+		"%.17lg %.17lg 3 4 > i-3-4-%d"
 	};
 	const char *orden2[METHODS] =
 	{
@@ -123,21 +134,21 @@ int main()
 		A2[i] = H2[i] * (B0[i] + Z[i] * H2[i]);
 		U = (Q1[i] - Q2[i]) / (A1[i] - A2[i]);
 		T = 50. / U;
-		fprintf(file[METHODS + i], "0 %lg %lg 1 %lg %lg 1\n",
+		fprintf(file[METHODS + i], "0 %.17lg %.17lg 1 %.17lg %.17lg 1\n",
 			A1[i], Q1[i], A1[i], Q1[i]);
-		fprintf(file[METHODS + i], "25 %lg %lg 1 %lg %lg 1\n",
+		fprintf(file[METHODS + i], "25 %.17lg %.17lg 1 %.17lg %.17lg 1\n",
 			A1[i], Q1[i], A1[i], Q1[i]);
-		fprintf(file[METHODS + i], "25 %lg %lg 1 %lg %lg 0\n",
+		fprintf(file[METHODS + i], "25 %.17lg %.17lg 1 %.17lg %.17lg 0\n",
 			A1[i], Q1[i], A2[i], Q2[i]);
-		fprintf(file[METHODS + i], "%lg %lg %lg 1 %lg %lg 0\n",
+		fprintf(file[METHODS + i], "%.17lg %.17lg %.17lg 1 %.17lg %.17lg 0\n",
 			T * Q1[i] / A1[i], A1[i], Q1[i], A2[i], Q2[i]);
-		fprintf(file[METHODS + i], "%lg %lg %lg 0 %lg %lg 0\n",
+		fprintf(file[METHODS + i], "%.17lg %.17lg %.17lg 0 %.17lg %.17lg 0\n",
 			T * Q1[i] / A1[i], A1[i], Q1[i], A2[i], Q2[i]);
-		fprintf(file[METHODS + i], "75 %lg %lg 0 %lg %lg 1\n",
+		fprintf(file[METHODS + i], "75 %.17lg %.17lg 0 %.17lg %.17lg 1\n",
 			A1[i], Q1[i], A2[i], Q2[i]);
-		fprintf(file[METHODS + i], "75 %lg %lg 0 %lg %lg 0\n",
+		fprintf(file[METHODS + i], "75 %.17lg %.17lg 0 %.17lg %.17lg 0\n",
 			A2[i], Q2[i], A2[i], Q2[i]);
-		fprintf(file[METHODS + i], "100 %lg %lg 0 %lg %lg 0\n",
+		fprintf(file[METHODS + i], "100 %.17lg %.17lg 0 %.17lg %.17lg 0\n",
 			A2[i], Q2[i], A2[i], Q2[i]);
 	}
 	for (j = 0; j < METHODS + TESTS; ++j) fclose(file[j]);

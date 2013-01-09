@@ -52,6 +52,7 @@ void model_parameters(Model *model)
 	unsigned int i, n1;
 	Mesh *mesh = model->mesh;
 	Node *node = mesh->node;
+	for (i = 0; i < mesh->n; ++i) node_depth(node + i);
 	model->model_node_parameters_right(model, node);
 	n1 = mesh->n - 1;
 	for (i = 0; ++i < n1;)

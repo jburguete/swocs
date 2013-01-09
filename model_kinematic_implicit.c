@@ -199,5 +199,5 @@ void model_surface_flow_kinematic_implicit(Model *model)
 
 		model_parameters(model);
 	}
-	while (++iteration < 2);
+	while (++iteration < 1);
 }

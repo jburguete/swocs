@@ -138,7 +138,7 @@ model_hydrodynamic_tvd.o: model_hydrodynamic_tvd.c model_hydrodynamic_tvd.h \
 	model.h node.h channel.h config.h makefile
 	$(compiler) model_hydrodynamic_tvd.c -o model_hydrodynamic_tvd.o
 
-main.o: $(headers) makefile
+main.o: main.c $(headers) makefile
 	$(compiler) main.c -o main.o
 
 manuals: $(manuals)

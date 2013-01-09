@@ -93,7 +93,6 @@ void node_discharge_left_kinematic_Manning(Node *node)
  */
 void model_node_parameters_centre_kinematic(Model *model, Node *node)
 {
-	node_depth(node);
 	node_width(node);
 	node_perimeter(node);
 	if (node->U[0] <= 0.)
@@ -116,7 +115,6 @@ void model_node_parameters_centre_kinematic(Model *model, Node *node)
 		model->node_diffusion(node);
 		node->KxA = node->Kx * node->U[0];
 	}
-	node->zs = node->zb + node->h;
 	model->node_infiltration(node);
 	node->Pi = node->P * node->i;
 }
@@ -132,7 +130,6 @@ void model_node_parameters_centre_kinematic(Model *model, Node *node)
  */
 void model_node_parameters_right_kinematic(Model *model, Node *node)
 {
-	node_depth(node);
 	node_width(node);
 	node_perimeter(node);
 	if (node->U[0] <= 0.)
@@ -153,7 +150,6 @@ void model_node_parameters_right_kinematic(Model *model, Node *node)
 		model->node_diffusion(node);
 		node->KxA = node->Kx * node->U[0];
 	}
-	node->zs = node->zb + node->h;
 	model->node_infiltration(node);
 	node->Pi = node->P * node->i;
 }
@@ -169,7 +165,6 @@ void model_node_parameters_right_kinematic(Model *model, Node *node)
  */
 void model_node_parameters_left_kinematic(Model *model, Node *node)
 {
-	node_depth(node);
 	node_width(node);
 	node_perimeter(node);
 	if (node->U[0] <= 0.)
@@ -190,7 +185,6 @@ void model_node_parameters_left_kinematic(Model *model, Node *node)
 		model->node_diffusion(node);
 		node->KxA = node->Kx * node->U[0];
 	}
-	node->zs = node->zb + node->h;
 	model->node_infiltration(node);
 	node->Pi = node->P * node->i;
 }

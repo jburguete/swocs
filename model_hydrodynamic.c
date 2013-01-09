@@ -52,7 +52,6 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 void model_node_parameters_hydrodynamic(Model *model, Node *node)
 {
-	node_depth(node);
 	node_width(node);
 	node_perimeter(node);
 	node_critical_velocity(node);
@@ -78,7 +77,6 @@ void model_node_parameters_hydrodynamic(Model *model, Node *node)
 		model->node_diffusion(node);
 		node->KxA = node->Kx * node->U[0];
 	}
-	node->zs = node->zb + node->h;
 	node->l1 = node->u + node->c;
 	node->l2 = node->u - node->c;
 	model->node_infiltration(node);

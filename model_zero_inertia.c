@@ -50,10 +50,12 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 void node_discharge_centre_zero_inertia_Manning(Node *node)
 {
-	double dz;
-	dz = (node - 1)->zs - (node + 1)->zs;
-	if (dz <= 0.) node->U[1] = 0.; else
-		node->U[1] = sqrt(dz / ((node - 1)->ix + node->ix)) * node->U[0]
+	double dz, dz2;
+	dz = (node->zs - (node + 1)->zs) / node->ix;
+	dz2 = ((node - 1)->zs - node->zs) / (node - 1)->ix;
+	if (dz * dz2 <= 0. || dz <= 0.) node->U[1] = 0.;
+	else
+		node->U[1] = sqrt(fmin(dz, dz2)) * node->U[0]
 			* pow(node->U[0] / node->P, 2./3.) / node->friction_coefficient[0];
 }
 
@@ -100,7 +102,6 @@ void node_discharge_left_zero_inertia_Manning(Node *node)
  */
 void model_node_parameters_centre_zero_inertia(Model *model, Node *node)
 {
-	node_depth(node);
 	node_width(node);
 	node_perimeter(node);
 	if (node->U[0] <= 0.)
@@ -123,7 +124,6 @@ void model_node_parameters_centre_zero_inertia(Model *model, Node *node)
 		model->node_diffusion(node);
 		node->KxA = node->Kx * node->U[0];
 	}
-	node->zs = node->zb + node->h;
 	model->node_infiltration(node);
 	node->Pi = node->P * node->i;
 }
@@ -139,7 +139,6 @@ void model_node_parameters_centre_zero_inertia(Model *model, Node *node)
  */
 void model_node_parameters_right_zero_inertia(Model *model, Node *node)
 {
-	node_depth(node);
 	node_width(node);
 	node_perimeter(node);
 	if (node->U[0] <= 0.)
@@ -160,7 +159,6 @@ void model_node_parameters_right_zero_inertia(Model *model, Node *node)
 		model->node_diffusion(node);
 		node->KxA = node->Kx * node->U[0];
 	}
-	node->zs = node->zb + node->h;
 	model->node_infiltration(node);
 	node->Pi = node->P * node->i;
 }
@@ -176,7 +174,6 @@ void model_node_parameters_right_zero_inertia(Model *model, Node *node)
  */
 void model_node_parameters_left_zero_inertia(Model *model, Node *node)
 {
-	node_depth(node);
 	node_width(node);
 	node_perimeter(node);
 	if (node->U[0] <= 0.)
@@ -191,12 +188,12 @@ void model_node_parameters_left_zero_inertia(Model *model, Node *node)
 	else
 	{
 		node->s = node->U[2] / node->U[0];
+		model->node_discharge_left(node);
 		node->u = node->U[1] / node->U[0];
 		node->T = node->U[1] * node->s;
 		model->node_diffusion(node);
 		node->KxA = node->Kx * node->U[0];
 	}
-	node->zs = node->zb + node->h;
 	model->node_infiltration(node);
 	node->Pi = node->P * node->i;
 }
