@@ -139,11 +139,7 @@ void model_surface_flow_zero_inertia_stabilize(Model *model)
 		}
 		zmax = node[i - 1].zs;
 	}
-	if (k)
-	{
-		model_parameters(model);
-for (i = 0; i < mesh->n; ++i) printf("i=%u zs=%lg\n", i, node[i].zs);
-	}
+	if (k) model_parameters(model);
 }
 
 /**
