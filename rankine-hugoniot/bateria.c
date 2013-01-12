@@ -141,9 +141,9 @@ int main()
 		fprintf(file[METHODS + i], "25 %.17lg %.17lg 1 %.17lg %.17lg 0\n",
 			A1[i], Q1[i], A2[i], Q2[i]);
 		fprintf(file[METHODS + i], "%.17lg %.17lg %.17lg 1 %.17lg %.17lg 0\n",
-			T * Q1[i] / A1[i], A1[i], Q1[i], A2[i], Q2[i]);
+			25. + T * Q1[i] / A1[i], A1[i], Q1[i], A2[i], Q2[i]);
 		fprintf(file[METHODS + i], "%.17lg %.17lg %.17lg 0 %.17lg %.17lg 0\n",
-			T * Q1[i] / A1[i], A1[i], Q1[i], A2[i], Q2[i]);
+			25. + T * Q1[i] / A1[i], A1[i], Q1[i], A2[i], Q2[i]);
 		fprintf(file[METHODS + i], "75 %.17lg %.17lg 0 %.17lg %.17lg 1\n",
 			A1[i], Q1[i], A2[i], Q2[i]);
 		fprintf(file[METHODS + i], "75 %.17lg %.17lg 0 %.17lg %.17lg 0\n",

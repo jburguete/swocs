@@ -57,7 +57,9 @@ double model_surface_flow_hydrodynamic_limiter(double dW1, double dW2)
 	double r;
 	if (dW1 * dW2 <= 0.) return 0.;
 	r = dW1 / dW2;
-	return fmax(fmin(2. * r, 1.), fmin(r, 2.));
+	if (r >=3. ) return 2.;
+	if (r <= 1./3.) return r + r;
+	return 0.5 * (r + 1.);
 }
 
 /**
@@ -70,7 +72,7 @@ double model_surface_flow_hydrodynamic_limiter(double dW1, double dW2)
 void model_surface_flow_hydrodynamic_tvd(Model *model)
 {
 	unsigned int i, j, n1;
-	double c, u, s, l1, l2, sA1, sA2, k1, k2, dt2, lp[3], ln[3];
+	double c, u, s, l1, l2, sA1, sA2, k1, k2, dh, dt2, lp[3], ln[3];
 	Mesh *mesh = model->mesh;
 	Node *node = mesh->node;
 
@@ -91,8 +93,9 @@ void model_surface_flow_hydrodynamic_tvd(Model *model)
 
 		// Roe's averages
 
-		c = sqrt(G * (node[i + 1].U[0] + node[i].U[0]) /
-			(node[i + 1].B + node[i].B));
+		dh = node[i + 1].h - node[i].h;
+		c = sqrt(G * (node[i + 1].U[0] + node[i].U[0]
+			- 1./3. * node[i].Z * dh * dh) / (node[i + 1].B + node[i].B));
 		sA1 = sqrt(node[i].U[0]);
 		sA2 = sqrt(node[i + 1].U[0]);
 		k2 = sA1 + sA2;

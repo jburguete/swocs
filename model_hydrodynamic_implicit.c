@@ -94,8 +94,8 @@ void model_surface_flow_hydrodynamic_implicit_invert(double *m, double *i)
 void model_surface_flow_hydrodynamic_implicit(Model *model)
 {
 	unsigned int i, j, n1, iteration;
-	double c, u, s, l1, l2, l3, c2, sA1, sA2, k1, k2, odt, godt, A[9], B[9],
-		C[9], D[3], inlet_contribution[3], outlet_contribution[3];
+	double c, u, s, l1, l2, l3, c2, sA1, sA2, k1, k2, dh, odt, godt,
+		A[9], B[9], C[9], D[3], inlet_contribution[3], outlet_contribution[3];
 	Mesh *mesh = model->mesh;
 	Node *node = mesh->node;
 
@@ -127,8 +127,9 @@ void model_surface_flow_hydrodynamic_implicit(Model *model)
 
 		// Roe's averages
 
-		c = sqrt(G * (node[i + 1].U[0] + node[i].U[0])
-			/ (node[i + 1].B + node[i].B));
+		dh = node[i + 1].h - node[i].h;
+		c = sqrt(G * (node[i + 1].U[0] + node[i].U[0]
+			- 1./3. * node[i].Z * dh * dh) / (node[i + 1].B + node[i].B));
 		sA1 = sqrt(node[i].U[0]);
 		sA2 = sqrt(node[i + 1].U[0]);
 		k2 = sA1 + sA2;

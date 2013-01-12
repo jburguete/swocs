@@ -98,8 +98,8 @@ double node_1dt_max_hydrodynamic(Node *node)
 
 /**
  * \fn void node_flows_hydrodynamic(Node *node1)
- * \brief Function to calculate the flux differences in a node with the hydrodynamic
- *   model.
+ * \brief Function to calculate the flux differences in a node with the
+ *   hydrodynamic model.
  * \param node1
  * \brief node struct.
  */

@@ -42,8 +42,8 @@ END2
 
 printf "1\n0 %.17lg\n1\n0 %.17lg\n101 2\n4\n", $Q1, $Q1; 
 
-printf "0 %.17lg %.17lg %.17lg\n", $A1, $Q1, $A1; 
-printf "%.17lg %.17lg %.17lg %.17lg\n", 0.25*$L, $A1, $Q1, $A1; 
+printf "0 %.17lg %.17lg 1\n", $A1, $Q1; 
+printf "%.17lg %.17lg %.17lg 1\n", 0.25*$L, $A1, $Q1, $A1; 
 printf "%.17lg %.17lg %.17lg 0\n", 0.25*$L, $A2, $Q2; 
 printf "%.17lg %.17lg %.17lg 0\n", $L, $A2, $Q2; 
 
