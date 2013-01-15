@@ -23,7 +23,7 @@ $A2=($B0+$Z*$h2)*$h2;
 $U=($Q1-$Q2)/($A1-$A2);
 $t=0.5*$L/$U;
 
-printf "%.17lg %.17lg %.17lg 1\n", $L, $B0, $Z; 
+printf "%.17lg 1\n", $L; 
 
 print <<END1;
 2 2
@@ -31,8 +31,8 @@ print <<END1;
 2
 END1
 
-printf "0 %.17lg\n", $z0; 
-printf "%.17lg 0\n", $L; 
+printf "0 %.17lg %.17lg %.17lg\n", $z0, $B0, $Z; 
+printf "%.17lg 0 %.17lg %.17lg\n", $L, $B0, $Z;
 printf "%.17lg\n", $r;
 
 print <<END2;

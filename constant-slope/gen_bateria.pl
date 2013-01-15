@@ -9,7 +9,7 @@ my $z0;
 
 $z0=$S0*$L; #zfinal es siempre cero
 
-printf "%g 1 0 1\n", $L; 
+printf "%g 1\n", $L; 
 
 print <<END1;
 1 1
@@ -17,8 +17,8 @@ print <<END1;
 2
 END1
 
-printf "0 %g\n", $z0; 
-printf "%g 0\n", $L; 
+printf "0 %g 1 0\n", $z0; 
+printf "%g 0 1 0\n", $L; 
 
 print <<END2;
 0.03

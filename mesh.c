@@ -59,7 +59,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 int mesh_open(Mesh *mesh, Channel *channel)
 {
 	unsigned int i;
-	double ix, Z;
+	double ix;
 	Node *node;
 	mesh->node = node = (Node*)malloc(mesh->n * sizeof(Node));
 	if (!mesh->node)
@@ -68,14 +68,13 @@ int mesh_open(Mesh *mesh, Channel *channel)
 		return 0;
 	}
 	ix = channel->length / (mesh->n - 1);
-	Z = channel->wall_slope;
 	for (i = 0; i < mesh->n; ++i)
 	{
 		node[i].ix = ix;
 		node[i].x = i * ix;
 		node[i].zb = geometry_level(channel->geometry, node[i].x);
-		node[i].B0 = channel->bottom_width;
-		node[i].Z = Z;
+		node[i].B0 = geometry_bottom_width(channel->geometry, node[i].x);
+		node[i].Z = geometry_lateral_slope(channel->geometry, node[i].x);
 		memcpy(node[i].friction_coefficient, channel->friction_coefficient,
 			3 * sizeof(double));
 		memcpy(node[i].infiltration_coefficient,

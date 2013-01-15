@@ -71,10 +71,14 @@ struct _Geometry
  * \brief array of point x-coordinates.
  * \var zb
  * \brief array of point z-coordinates.
+ * \var B0
+ * \brief array of bottom widths.
+ * \var Z
+ * \brief array of lateral slopes.
  * \var n
  * \brief number of points defining the channel geometry.
  */
-	double *x, *zb;
+	double *x, *zb, *B0, *Z;
 	unsigned int n;
 };
 
@@ -104,10 +108,6 @@ struct _Channel
  * \brief array of diffusion coefficients.
  * \var length
  * \brief channel length.
- * \var bottom_width
- * \brief bottom width.
- * \var wall_slope
- * \brief slope of the lateral walls.
  * \var height
  * \brief channel height.
  * \var type_inlet
@@ -124,7 +124,7 @@ struct _Channel
 	Hydrogram water_inlet[1], solute_inlet[1];
 	Geometry geometry[1];
 	double friction_coefficient[3], infiltration_coefficient[4],
-		diffusion_coefficient[1], length, bottom_width, wall_slope, height;
+		diffusion_coefficient[1], length, height;
 	unsigned int type_inlet, type_outlet, friction_model, infiltration_model,
 		diffusion_model;
 };
@@ -146,6 +146,8 @@ double hydrogram_integrate(Hydrogram *hydrogram, double t1, double t2);
 
 int geometry_read(Geometry *geometry, FILE *file);
 double geometry_level(Geometry *geometry, double x);
+double geometry_bottom_width(Geometry *geometry, double x);
+double geometry_lateral_slope(Geometry *geometry, double x);
 
 int channel_friction_read_Manning(Channel *channel, FILE *file);
 int channel_infiltration_read_KostiakovLewis(Channel *channel, FILE *file);
