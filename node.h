@@ -74,6 +74,8 @@ struct _Node
  * \brief bottom level.
  * \var zs
  * \brief surface level.
+ * \var zmax
+ * \brief maximum level.
  * \var P
  * \brief wetted perimeter.
  * \var B
@@ -131,7 +133,7 @@ struct _Node
  */
 	double friction_coefficient[3], infiltration_coefficient[4],
 		diffusion_coefficient[1], x, dx, ix, U[5], s, si, h, f, Sf, Sfn, zb, zs,
-		P, B, u, c, l1, l2, i, Pi, Z, B0, F, T, Kx, KxA, Kxi, KxiA,
+		zmax, P, B, u, c, l1, l2, i, Pi, Z, B0, F, T, Kx, KxA, Kxi, KxiA,
 		dF[3], dFl[3], dFr[3], nu, Jp[9], Jn[9], Un[3], dU[3], dWl[3], dWr[3],
 		l[3];
 };
@@ -147,6 +149,7 @@ extern double critical_depth_tolerance;
 
 // member functions
 
+void node_init(Node *node, Geometry *geometry);
 void node_depth(Node *node);
 void node_width(Node *node);
 void node_perimeter(Node *node);

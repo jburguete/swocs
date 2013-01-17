@@ -208,7 +208,7 @@ int geometry_read(Geometry *geometry, FILE *file)
 {
 	unsigned int i;
 	char *msg;
-	if (fscanf(file, "%u", &geometry->n) != 1 || geometry->n < 1)
+	if (fscanf(file, "%u", &geometry->n) != 1 || geometry->n < 2)
 	{
 		msg = "geometry: bad points number";
 		goto bad;
@@ -220,92 +220,46 @@ int geometry_read(Geometry *geometry, FILE *file)
 	geometry->zb = (double*)malloc(geometry->n * sizeof(double));
 	geometry->B0 = (double*)malloc(geometry->n * sizeof(double));
 	geometry->Z = (double*)malloc(geometry->n * sizeof(double));
-	if (!geometry->x || !geometry->zb || !geometry->B0 || !geometry->Z)
+	geometry->zmax = (double*)malloc(geometry->n * sizeof(double));
+	if (!geometry->x || !geometry->zb || !geometry->B0 || !geometry->Z
+		|| ! geometry->zmax)
 	{
 		msg = "geometry: not enough memory";
 		goto bad;
 	}
 	for (i = 0; i < geometry->n; ++i)
 	{
-		if (fscanf(file, "%lf%lf%lf%lf",
+		if (fscanf(file, "%lf%lf%lf%lf%lf",
 			geometry->x + i,
 			geometry->zb + i,
 			geometry->B0 + i,
-			geometry->Z + i) != 4)
+			geometry->Z + i,
+			geometry->zmax + i) != 5)
 		{
 			msg = "geometry: bad defined";
 			goto bad;
 		}
 #if DEBUG_CHANNEL
-		printf("geometry: x=%lg zb=%lg B0=%lg Z=%lg\n",
-			geometry->x[i], geometry->zb[i], geometry->B0[i], geometry->Z[i]);
+		printf("geometry: x=%lg zb=%lg B0=%lg Z=%lg zmax=%lg\n",
+			geometry->x[i], geometry->zb[i], geometry->B0[i], geometry->Z[i],
+			geometry->zmax[i]);
 #endif
+		if (geometry->zmax[i] <= geometry->zb[i])
+		{
+			msg = "geometry: bad zmax";
+			goto bad;
+		}
+		if (i > 0 && geometry->x[i] < geometry->x[i - 1])
+		{
+			msg = "geometry: bad x";
+			goto bad;
+		}
 	}
 	return 1;
 
 bad:
 	print_error(msg);
 	return 0;
-}
-
-/**
- * \fn double geometry_level(Geometry *geometry, double x)
- * \brief Function to calculate the level in a geometry.
- * \param geometry
- * \brief geometry struct.
- * \param x
- * \brief x-coordinate.
- * \return level.
- */
-double geometry_level(Geometry *geometry, double x)
-{
-	unsigned int i, n1;
-	n1 = geometry->n - 1;
-	if (n1 == 0 || x <= geometry->x[0]) return geometry->zb[0];
-	if (x >= geometry->x[n1]) return geometry->zb[n1];
-	for (i = 0; x > geometry->x[i];) ++i;
-	return interpolate(x, geometry->x[i], geometry->x[i - 1],
-		geometry->zb[i], geometry->zb[i - 1]);
-}
-
-/**
- * \fn double geometry_bottom_width(Geometry *geometry, double x)
- * \brief Function to calculate the bottom width in a geometry.
- * \param geometry
- * \brief geometry struct.
- * \param x
- * \brief x-coordinate.
- * \return bottom_width.
- */
-double geometry_bottom_width(Geometry *geometry, double x)
-{
-	unsigned int i, n1;
-	n1 = geometry->n - 1;
-	if (n1 == 0 || x <= geometry->x[0]) return geometry->B0[0];
-	if (x >= geometry->x[n1]) return geometry->B0[n1];
-	for (i = 0; x > geometry->x[i];) ++i;
-	return interpolate(x, geometry->x[i], geometry->x[i - 1],
-		geometry->B0[i], geometry->B0[i - 1]);
-}
-
-/**
- * \fn double geometry_lateral_slope(Geometry *geometry, double x)
- * \brief Function to calculate the lateral_slope in a geometry.
- * \param geometry
- * \brief geometry struct.
- * \param x
- * \brief x-coordinate.
- * \return lateral_slope.
- */
-double geometry_lateral_slope(Geometry *geometry, double x)
-{
-	unsigned int i, n1;
-	n1 = geometry->n - 1;
-	if (n1 == 0 || x <= geometry->x[0]) return geometry->Z[0];
-	if (x >= geometry->x[n1]) return geometry->Z[n1];
-	for (i = 0; x > geometry->x[i];) ++i;
-	return interpolate(x, geometry->x[i], geometry->x[i - 1],
-		geometry->Z[i], geometry->Z[i - 1]);
 }
 
 /**
@@ -402,44 +356,36 @@ int channel_diffusion_read_Rutherford(Channel *channel, FILE *file)
 int channel_read(Channel *channel, FILE *file)
 {
 	char *msg;
-	if (fscanf(file, "%lf%lf%u%u%u%u%u",
-		&channel->length,
-		&channel->height,
+	if (fscanf(file, "%u%u%u%u%u",
 		&channel->type_inlet,
 		&channel->type_outlet,
 		&channel->friction_model,
 		&channel->infiltration_model,
-		&channel->diffusion_model) != 7)
+		&channel->diffusion_model) != 5)
 	{
 		msg = "channel: bad defined\n";
 		goto bad;
 	}
 #if DEBUG_CHANNEL
 	printf("channel:\n"
-		"length=%lg\n height=%lg\n"
 		"type_inlet=%u type_outlet=%u\n"
 		"friction_model=%u infiltration_model=%u diffusion_model=%u\n",
-		channel->length,
-		channel->height,
 		channel->type_inlet,
 		channel->type_outlet,
 		channel->friction_model,
 		channel->infiltration_model,
 		channel->diffusion_model);
 #endif
-	if (channel->length <= 0.)
-	{
-		msg = "channel: bad length";
-		goto bad;
-	}
-	if (channel->height <= 0.)
-	{
-		msg = "channel: bad height";
-		goto bad;
-	}
 	if (!geometry_read(channel->geometry, file))
 	{
 		msg = "channel: geometry";
+		goto bad;
+	}
+	channel->length = channel->geometry->x[channel->geometry->n - 1]
+		- channel->geometry->x[0];
+	if (channel->length <= 0.)
+	{
+		msg = "channel: bad length";
 		goto bad;
 	}
 	switch (channel->type_outlet)

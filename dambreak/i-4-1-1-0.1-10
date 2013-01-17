@@ -1,9 +1,8 @@
-100 2
 1 1
 1 1 1
 2
-0 0 10 0
-100 0 10 0
+0 0 10 0 2
+100 0 10 0 2
 0
 0 1 0 1
 0
@@ -21,11 +20,11 @@
 4 2
 1
 
-(channel length) (bottom width) (wall slope) (channel depth)
-(outlet type)
+
+(inlet type) (outlet type)
 (friction model) (infiltration model) (diffusion model)
 (points number of geometry)
-(x-coordinate of the geometry point) (z-coordinate of the geometry point)
+(x-coordinate) (bed level) (bottom width) (lateral slope) (maximum level)
 ...
 (friction coefficients) ...
 (infiltration coefficients) ...

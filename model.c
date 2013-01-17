@@ -42,6 +42,12 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "model.h"
 
 /**
+ * \define DEBUG_MODEL
+ * \brief Macro to debug the model functions.
+ */
+#define DEBUG_MODEL 0
+
+/**
  * \fn void model_parameters(Model *model)
  * \brief Function to calculate the model parameters.
  * \param model
@@ -183,10 +189,29 @@ void model_step(Model *model)
 	dtmax = model->cfl * fmin(dtmax, model->model_inlet_dtmax(model));
 	model->t2 = fmin(model->tfinal, model->t + dtmax);
 	model->dt = model->t2 - model->t;
+#if DEBUG_MODEL
+	printf("tmax=%lg t=%lg dt=%lg\n", model->t2, model->t, model->dt);
+#endif
 	model->model_surface_flow(model);
+#if DEBUG_MODEL
+	printf("SURFACE FLOW mass: water=%lg solute=%lg\n",
+		mesh_water_mass(mesh), mesh_solute_mass(mesh));
+#endif
 	model->model_diffusion(model);
+#if DEBUG_MODEL
+	printf("DIFFUSION mass: water=%lg solute=%lg\n",
+		mesh_water_mass(mesh), mesh_solute_mass(mesh));
+#endif
 	model_infiltration(model);
+#if DEBUG_MODEL
+	printf("INFILTRATION mass: water=%lg solute=%lg\n",
+		mesh_water_mass(mesh), mesh_solute_mass(mesh));
+#endif
 	model_parameters(model);
+#if DEBUG_MODEL
+	printf("PARAMETERS mass: water=%lg solute=%lg\n",
+		mesh_water_mass(mesh), mesh_solute_mass(mesh));
+#endif
 	model->t = model->t2;
 }
 

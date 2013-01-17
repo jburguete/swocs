@@ -72,9 +72,7 @@ int mesh_open(Mesh *mesh, Channel *channel)
 	{
 		node[i].ix = ix;
 		node[i].x = i * ix;
-		node[i].zb = geometry_level(channel->geometry, node[i].x);
-		node[i].B0 = geometry_bottom_width(channel->geometry, node[i].x);
-		node[i].Z = geometry_lateral_slope(channel->geometry, node[i].x);
+		node_init(node + i, channel->geometry);
 		memcpy(node[i].friction_coefficient, channel->friction_coefficient,
 			3 * sizeof(double));
 		memcpy(node[i].infiltration_coefficient,
@@ -86,13 +84,14 @@ int mesh_open(Mesh *mesh, Channel *channel)
 	for (i = 0; ++i < mesh->n - 1;) node[i].dx = ix;
 #if DEBUG_MESH
 	for (i=0; i < mesh->n; ++i)
-		printf("node:\nx=%lg ix=%lg dx=%lg\nzb=%lg B0=%lg Z=%lg\n",
+		printf("node:\nx=%lg ix=%lg dx=%lg\nzb=%lg B0=%lg Z=%lg zmax=%lg\n",
 			node[i].x,
 			node[i].ix,
 			node[i].dx,
 			node[i].zb,
 			node[i].B0,
-			node[i].Z);
+			node[i].Z,
+			node[i].zmax);
 #endif
 	return 1;
 }
@@ -228,7 +227,7 @@ int mesh_read(Mesh *mesh, Channel *channel, FILE *file)
 		msg = "mesh: bad nodes number";
 		goto bad;
 	}
-#if DEBUG_MODEL_READ
+#if DEBUG_MESH
 	printf("mesh: n=%u type=%u\n", mesh->n, mesh->type);
 #endif
 	if (!mesh_open(mesh, channel)) return 0;
@@ -244,6 +243,10 @@ int mesh_read(Mesh *mesh, Channel *channel, FILE *file)
 		msg = "mesh: bad type";
 		goto bad;
 	}
+#if DEBUG_MESH
+	printf("mass: water=%lg solute=%lg\n",
+		mesh_water_mass(mesh), mesh_solute_mass(mesh));
+#endif
 	return 1;
 
 bad:
@@ -266,13 +269,14 @@ void mesh_write_variables(Mesh *mesh, FILE *file)
 	for (i = 0; i < mesh->n; ++i)
 	{
 		node = mesh->node + i;
-		fprintf(file, "%.14le %.14le %.14le %.14le %.14le %.14le\n",
+		fprintf(file, "%.14le %.14le %.14le %.14le %.14le %.14le %.14le\n",
 			node->x,
 			node->U[0],
 			node->U[1],
 			node->U[2],
 			node->U[3],
-			node->U[4]);
+			node->U[4],
+			node->zb);
 	}
 }
 

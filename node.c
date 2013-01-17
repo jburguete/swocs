@@ -39,6 +39,49 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "node.h"
 
 /**
+ * \fn void node_init(Node *node, Geometry *geometry)
+ * \brief Function to calculate the initial parameters of a mesh node.
+ * \param node
+ * \brief node struct.
+ * \param geometry
+ * \brief geometry struct.
+ */
+void node_init(Node *node, Geometry *geometry)
+{
+	unsigned int i, i2, n1;
+	double x, dx;
+	x = node->x;
+	n1 = geometry->n - 1;
+	if (x <= geometry->x[0])
+	{
+		node->zb = geometry->zb[0];
+		node->B0 = geometry->B0[0];
+		node->Z = geometry->Z[0];
+		node->zmax = geometry->zmax[0];
+		return;
+	}
+	if (x >= geometry->x[n1])
+	{
+		node->zb = geometry->zb[n1];
+		node->B0 = geometry->B0[n1];
+		node->Z = geometry->Z[n1];
+		node->zmax = geometry->zmax[n1];
+		return;
+	}
+	for (i = 0; i < n1 - 1;)
+	{
+		i2 = (i + n1) / 2;
+		if (x > geometry->x[i2]) i = i2; else n1 = i2;
+	}
+	dx = (x - geometry->x[i]) / (geometry->x[i + 1] - geometry->x[i]);
+	node->zb = geometry->zb[i] + dx * (geometry->zb[i + 1] - geometry->zb[i]);
+	node->B0 = geometry->B0[i] + dx * (geometry->B0[i + 1] - geometry->B0[i]);
+	node->Z = geometry->Z[i] + dx * (geometry->Z[i + 1] - geometry->Z[i]);
+	node->zmax = geometry->zmax[i]
+		+ dx * (geometry->zmax[i + 1] - geometry->zmax[i]);
+}
+
+/**
  * \fn void node_depth(Node *node)
  * \brief Function to calculate the depth in a mesh node.
  * \param node
