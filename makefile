@@ -35,14 +35,14 @@ libraries = -lm
 
 flags = -O2 -Wall
 
-compiler = gcc -c $(flags)
-#compiler = i586-mingw32msvc-gcc -c $(flags)
+prefix =
+exe =
+#prefix =i586-mingw32msvc-
+#exe =.exe
 
-linker = gcc $(flags)
-#linker = i586-mingw32msvc-gcc $(flags)
-
-swocs = swocs
-#swocs = swocs.exe
+compiler = $(prefix)gcc -c $(flags)
+linker = $(prefix)gcc $(flags)
+swocs = swocs$(exe)
 
 all: $(swocs) $(translate-1-2)
 

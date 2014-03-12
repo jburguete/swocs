@@ -184,6 +184,8 @@ void model_surface_flow_hydrodynamic_implicit(Model *model)
 		model->outlet_contribution[0] = outlet_contribution[0];
 		model->outlet_contribution[2] = outlet_contribution[2];
 
+		// implicit operators
+
 		for (i = 0; i < mesh->n; ++i)
 		{
 			if (node[i].h <= model->minimum_depth)

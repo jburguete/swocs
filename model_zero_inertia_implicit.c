@@ -190,6 +190,8 @@ void model_surface_flow_zero_inertia_implicit(Model *model)
 		model->outlet_contribution[0] = outlet_contribution[0];
 		model->outlet_contribution[2] = outlet_contribution[2];
 
+		// implicit operators
+
 		for (i = 0; i < mesh->n; ++i)
 		{
 			if (node[i].h <= model->minimum_depth || node[i].U[1] == 0.)
@@ -230,7 +232,7 @@ void model_surface_flow_zero_inertia_implicit(Model *model)
 			D[0] -= model->dt * node[i - 1].dF[0];
 			D[2] -= model->dt * node[i - 1].dF[2];
 			model_surface_flow_zero_inertia_implicit_multiply(C, D, node[i].dU);
-//			node[i].U[0] = node[i].Un[0] + node[i].dU[0];
+			node[i].U[0] = node[i].Un[0] + node[i].dU[0];
 			node[i].U[2] = node[i].Un[2] + node[i].dU[2];
 		}
 		i = n1;

@@ -84,7 +84,8 @@ int mesh_open(Mesh *mesh, Channel *channel)
 	for (i = 0; ++i < mesh->n - 1;) node[i].dx = ix;
 #if DEBUG_MESH
 	for (i=0; i < mesh->n; ++i)
-		printf("node:\nx=%lg ix=%lg dx=%lg\nzb=%lg B0=%lg Z=%lg zmax=%lg\n",
+		printf("node %u:\nx=%lg ix=%lg dx=%lg\nzb=%lg B0=%lg Z=%lg zmax=%lg\n",
+			i,
 			node[i].x,
 			node[i].ix,
 			node[i].dx,
