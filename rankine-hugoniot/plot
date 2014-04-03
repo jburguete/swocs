@@ -1,0 +1,38 @@
+set term pos enh eps 10
+set size 0.5,0.5
+set xlabel 'x (m)'
+set ylabel 'H (m)'
+set key bottom left
+set out 'case1.eps'
+plot [130:170][0.9:1.2] 'o1-1-1' u 1:($2/10) t'Hydrodynamic upwind' w p,\
+	'o1-4-1' u 1:($2/10) t'Hydrodynamic TVD' w p pt 6,\
+	'sol1' t'Analytical' w l lt 1
+set out 'case2.eps'
+plot [100:170][0:1.1] 'o2-1-1' u 1:($2/10) t'Hydrodynamic upwind' w p,\
+	'o2-4-1' u 1:($2/10) t'Hydrodynamic TVD' w p pt 6,\
+	'sol2' t'Analytical' w l lt 1
+set out 'case3.eps'
+plot [130:170][0.9:1.2] 'o3-1-1' u 1:($2/10) t'Hydrodynamic upwind' w p,\
+	'o3-4-1' u 1:($2/10) t'Hydrodynamic TVD' w p pt 6,\
+	'sol1' t'Analytical' w l lt 1
+set out 'case4.eps'
+plot [100:170][0:1.1] 'o4-1-1' u 1:($2/10) t'Hydrodynamic upwind' w p,\
+	'o4-4-1' u 1:($2/10) t'Hydrodynamic TVD' w p pt 6,\
+	'sol2' t'Analytical' w l lt 1
+h(A,Z)=sqrt(A/Z)
+set out 'case5.eps'
+plot [100:180][0.9:1.2] 'o5-1-1' u 1:(h($2,10)) t'Hydrodynamic upwind' w p,\
+	'o5-4-1' u 1:(h($2,10)) t'Hydrodynamic TVD' w p pt 6,\
+	'sol3' t'Analytical' w l lt 1
+set out 'case6.eps'
+plot [100:200][0:1.1] 'o6-1-1' u 1:(h($2,10)) t'Hydrodynamic upwind' w p,\
+	'o6-4-1' u 1:(h($2,10)) t'Hydrodynamic TVD' w p pt 6,\
+	'sol4' t'Analytical' w l lt 1
+set out 'case7.eps'
+plot [100:180][0.9:1.2] 'o7-1-1' u 1:(h($2,10)) t'Hydrodynamic upwind' w p,\
+	'o7-4-1' u 1:(h($2,10)) t'Hydrodynamic TVD' w p pt 6,\
+	'sol3' t'Analytical' w l lt 1
+set out 'case8.eps'
+plot [100:200][0:1.1] 'o8-1-1' u 1:(h($2,10)) t'Hydrodynamic upwind' w p,\
+	'o8-4-1' u 1:(h($2,10)) t'Hydrodynamic TVD' w p pt 6,\
+	'sol4' t'Analytical' w l lt 1

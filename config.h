@@ -43,17 +43,4 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #define G 9.81
 
-// debug defines
-
-/**
- * \def DEBUG_MODEL_READ
- * \brief Macro to debug the function model_read().
- */
-#define DEBUG_MODEL_READ	0
-/**
- * \def DEBUG_MESH_OPEN
- * \brief Macro to debug the function mesh_open().
- */
-#define DEBUG_MESH_OPEN		0
-
 #endif

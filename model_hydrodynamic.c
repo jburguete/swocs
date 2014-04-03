@@ -115,8 +115,8 @@ void node_flows_hydrodynamic(Node *node1)
 	Node *node2 = node1 + 1;
 	node1->dF[0] = node2->U[1] - node1->U[1];
 	Am = 0.5 * (node2->U[0] + node1->U[0]);
-	dh = node2->h - node1->h;
-	Am -= 1./12. * (node2->Z + node1->Z) * dh * dh;
+//	dh = node2->h - node1->h;
+//	Am -= 1./12. * (node2->Z + node1->Z) * dh * dh;
 	node1->dF[1] = node2->F - node1->F + G * (Am * (node2->zb - node1->zb)
 		+ 0.5 * (node2->Sf * node2->U[0] + node1->Sf * node1->U[0])
 		* node1->ix);
