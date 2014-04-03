@@ -1,0 +1,40 @@
+1 2 2 1 1
+2
+0 1.70515346173207 10 0 10
+200 0 10 0 10
+0.02
+0 1 0 1
+0
+1
+0 54.11585826302053
+1
+0 54.11585826302053
+201 2
+4
+0 11 54.11585826302053 1
+50 11 54.11585826302053 1
+50 10 46.16754083948037 0
+200 10 46.16754083948037 0
+12.5812791149778 0 0.90000000000000000 0.01 1 2 1
+
+(channel length) (bottom width) (wall slope) (channel depth)
+(inlet tupe) (outlet type)
+(friction model) (infiltration model) (diffusion model)
+(points number of geometry)
+(x-coordinate of the geometry point) (z-coordinate of the geometry point)
+...
+(friction coefficients) ...
+(infiltration coefficients) ...
+(diffusion coefficients) ...
+(points number of the inlet water hydrogam)
+(time of the inlet water hydrogam) (discharge of the inlet water hydrogram)
+...
+(points number of the inlet solute hydrogam)
+(time of the inlet solute hydrogam) (discharge of the inlet solute hydrogram)
+...
+(number of mesh nodes) (initial conditions type)
+(initial conditions parameters)
+...
+(final time) (interval time of measures) (cfl number) (minimum_depth)
+(numerical model of surface flow) (numerical model of diffusion)
+(model of surface flow)

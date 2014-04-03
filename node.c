@@ -38,6 +38,8 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "channel.h"
 #include "node.h"
 
+double (*node_normal_discharge)(Node *node, double S);
+
 /**
  * \fn void node_init(Node *node, Geometry *geometry)
  * \brief Function to calculate the initial parameters of a mesh node.
@@ -214,6 +216,41 @@ void node_friction_Manning(Node *node)
 	node->f = node->friction_coefficient[0] * node->friction_coefficient[0]
 		* pow(node->P / node->U[0], 4./3.) / (node->U[0] * node->U[0]);
 	node->Sf = node->f * node->U[1] * fabs(node->U[1]);
+	node->beta = 1.;
+}
+
+double node_normal_discharge_Manning(Node *node, double S)
+{
+	return sqrt(S) * node->U[0] * pow(node->U[0] / node->P, 2./3.)
+		/ node->friction_coefficient[0];
+}
+
+/**
+ * \fn void node_friction_Manning_minimizing_losses(Node *node)
+ * \brief Function to calculate the friction slope with the Manning model and
+ *   minimizing energy losses velocity distribution in the cross section.
+ * \param node
+ * \brief node struct.
+ */
+void node_friction_Manning_minimizing_losses(Node *node)
+{
+	double k;
+	node->f1 = node->B0 + node->Z * node->h;
+	node->f2 = node->B0 + 0.75 * node->Z * node->h;
+	node->f3 = node->B0 + 0.6 * node->Z * node->h;
+	k = node->friction_coefficient[0] * node->f1 / (node->f2 * node->U[0]);
+	node->f = pow(node->h, -4./3.) * k * k;
+	node->Sf = node->f * node->U[1] * fabs(node->U[1]);
+	node->beta = 49/48. * node->f1 * node->f3 / (node->f2 * node->f2);
+}
+
+double node_normal_discharge_Manning_minimizing_losses(Node *node, double S)
+{
+	double f1, f2;
+	f1 = node->B0 + node->Z * node->h;
+	f2 = node->B0 + 0.75 * node->Z * node->h;
+	return sqrt(S) * node->U[0] * pow(node->h, 2./3.) * f2
+		/ (node->friction_coefficient[0] * f1);
 }
 
 /**

@@ -400,6 +400,7 @@ int channel_read(Channel *channel, FILE *file)
 	switch (channel->friction_model)
 	{
 	case 1:
+	case 2:
 		if (!channel_friction_read_Manning(channel, file)) return 0;
 		break;
 	default:

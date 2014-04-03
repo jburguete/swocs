@@ -58,12 +58,18 @@ void model_parameters(Model *model)
 	unsigned int i, n1;
 	Mesh *mesh = model->mesh;
 	Node *node = mesh->node;
+	#if DEBUG_MODEL
+		printf("Calculating parameters\n");
+	#endif
 	for (i = 0; i < mesh->n; ++i) node_depth(node + i);
 	model->model_node_parameters_right(model, node);
 	n1 = mesh->n - 1;
 	for (i = 0; ++i < n1;)
 		model->model_node_parameters_centre(model, node + i);
 	model->model_node_parameters_left(model, node + i);
+	#if DEBUG_MODEL
+		printf("Parameters calculated\n");
+	#endif
 }
 
 /**
@@ -229,6 +235,10 @@ int model_read(Model *model, char *file_name)
 	char *msg;
 	FILE *file;
 
+#if DEBUG_MODEL
+	printf("Reading model\n");
+#endif
+
 	file = fopen(file_name, "r");
 	if (!file)
 	{
@@ -241,6 +251,11 @@ int model_read(Model *model, char *file_name)
 	{
 	case 1:
 		model->node_friction = node_friction_Manning;
+		node_normal_discharge = node_normal_discharge_Manning;
+		break;
+	case 2:
+		model->node_friction = node_friction_Manning_minimizing_losses;
+		node_normal_discharge = node_normal_discharge_Manning_minimizing_losses;
 	}
 	switch (model->channel->infiltration_model)
 	{
@@ -277,7 +292,7 @@ int model_read(Model *model, char *file_name)
 		msg = "model: bad data";
 		goto bad;
 	}
-#if DEBUG_MODEL_READ
+#if DEBUG_MODEL
 	printf("model:\n"
 		"tfinal=%lg interval=%lg cfl=%lg\n"
 		"type_surface_flow=%u type_model=%u\n",
@@ -289,6 +304,9 @@ int model_read(Model *model, char *file_name)
 #endif
 
 	fclose(file);
+#if DEBUG_MODEL
+	printf("Model readed\n");
+#endif
 	return 1;
 
 bad:

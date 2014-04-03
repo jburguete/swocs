@@ -42,65 +42,65 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "model_zero_inertia.h"
 
 /**
- * \fn void node_discharge_centre_zero_inertia_Manning(Node *node)
- * \brief Function to calculate the zero-inertia discharge with the Manning model
- *   using centred derivatives.
+ * \fn void node_discharge_centre_zero_inertia(Node *node)
+ * \brief Function to calculate the zero-inertia discharge using centred
+ *   derivatives.
  * \param node
  * \brief node struct.
  */
-void node_discharge_centre_zero_inertia_Manning(Node *node)
+void node_discharge_centre_zero_inertia(Node *node)
 {
 	double dz, dz2;
 	dz = (node->zs - (node + 1)->zs) / node->ix;
 	dz2 = ((node - 1)->zs - node->zs) / (node - 1)->ix;
 	if (dz * dz2 <= 0. || dz <= 0.) node->U[1] = 0.;
-	else
-		node->U[1] = sqrt(fmin(dz, dz2)) * node->U[0]
-			* pow(node->U[0] / node->P, 2./3.) / node->friction_coefficient[0];
+	else node->U[1] = node_normal_discharge(node, fmin(dz, dz2));
 }
 
 /**
- * \fn void node_discharge_right_zero_inertia_Manning(Node *node)
- * \brief Function to calculate the zero-inertia discharge with the Manning model
- *   using right derivatives.
+ * \fn void node_discharge_right_zero_inertia(Node *node)
+ * \brief Function to calculate the zero-inertia discharge using right
+ *   derivatives.
  * \param node
  * \brief node struct.
  */
-void node_discharge_right_zero_inertia_Manning(Node *node)
+void node_discharge_right_zero_inertia(Node *node)
 {
 	double dz;
 	dz = node->zs - (node + 1)->zs;
-	if (dz <= 0.) node->U[1] = 0.; else
-		node->U[1] = sqrt(dz / node->ix) * node->U[0]
-			* pow(node->U[0] / node->P, 2./3.) / node->friction_coefficient[0];
+	if (dz <= 0.) node->U[1] = 0.;
+	else node->U[1] = node_normal_discharge(node, dz / node->ix);
 }
 
 /**
- * \fn void node_discharge_left_zero_inertia_Manning(Node *node)
- * \brief Function to calculate the zero-inertia discharge with the Manning model
- *   using left derivatives.
+ * \fn void node_discharge_left_zero_inertia(Node *node)
+ * \brief Function to calculate the zero-inertia discharge using left
+ *   derivatives.
  * \param node
  * \brief node struct.
  */
-void node_discharge_left_zero_inertia_Manning(Node *node)
+void node_discharge_left_zero_inertia(Node *node)
 {
 	double dz;
 	dz = (node - 1)->zs - node->zs;
-	if (dz <= 0.) node->U[1] = 0.; else
-		node->U[1] = sqrt(dz / (node - 1)->ix) * node->U[0]
-			* pow(node->U[0] / node->P, 2./3.) / node->friction_coefficient[0];
+	if (dz <= 0.) node->U[1] = 0.;
+	else node->U[1] = node_normal_discharge(node, dz / (node - 1)->ix);
 }
 
 /**
- * \fn void model_node_parameters_centre_zero_inertia(Model *model, Node *node)
+ * \fn void model_node_parameters_zero_inertia(Model *model, Node *node, \
+ *   void (*node_discharge)(Node*))
  * \brief Function to calculate the numerical parameters of a node with the
- *   zero-inertia model using centred derivatives.
+ *   zero-inertia model.
  * \param model
  * \brief model struct.
  * \param node
  * \brief node struct.
+ * \param node_discharge
+ * \brief pointer to the function to calculate the discharge.
  */
-void model_node_parameters_centre_zero_inertia(Model *model, Node *node)
+void model_node_parameters_zero_inertia(Model *model, Node *node,
+	void (*node_discharge)(Node*))
 {
 	node_width(node);
 	node_perimeter(node);
@@ -117,7 +117,7 @@ void model_node_parameters_centre_zero_inertia(Model *model, Node *node)
 	else
 	{
 		node->s = node->U[2] / node->U[0];
-		model->node_discharge_centre(node);
+		node_discharge(node);
 		node->u = node->U[1] / node->U[0];
 		node->T = node->U[1] * node->s;
 		model->node_friction(node);
@@ -129,9 +129,24 @@ void model_node_parameters_centre_zero_inertia(Model *model, Node *node)
 }
 
 /**
+ * \fn void model_node_parameters_centre_zero_inertia(Model *model, Node *node)
+ * \brief Function to calculate the numerical parameters of a node with the
+ *   zero-inertia model and centred derivatives.
+ * \param model
+ * \brief model struct.
+ * \param node
+ * \brief node struct.
+ */
+void model_node_parameters_centre_zero_inertia(Model *model, Node *node)
+{
+	model_node_parameters_zero_inertia(model, node,
+		&node_discharge_centre_zero_inertia);
+}
+
+/**
  * \fn void model_node_parameters_right_zero_inertia(Model *model, Node *node)
  * \brief Function to calculate the numerical parameters of a node with the
- *   zero-inertia model using right derivatives.
+ *   zero-inertia model and right derivatives.
  * \param model
  * \brief model struct.
  * \param node
@@ -139,34 +154,14 @@ void model_node_parameters_centre_zero_inertia(Model *model, Node *node)
  */
 void model_node_parameters_right_zero_inertia(Model *model, Node *node)
 {
-	node_width(node);
-	node_perimeter(node);
-	if (node->U[0] <= 0.)
-	{
-		node->s = node->U[1] = node->u = node->T = node->Kx = node->KxA = 0.;
-	}
-	else if (node->h < model->minimum_depth)
-	{
-		node->s = node->U[2] / node->U[0];
-		node->U[1] = node->u = node->T = node->Kx = node->KxA = 0.;
-	}
-	else
-	{
-		node->s = node->U[2] / node->U[0];
-		model->node_discharge_right(node);
-		node->u = node->U[1] / node->U[0];
-		node->T = node->U[1] * node->s;
-		model->node_diffusion(node);
-		node->KxA = node->Kx * node->U[0];
-	}
-	model->node_infiltration(node);
-	node->Pi = node->P * node->i;
+	model_node_parameters_zero_inertia(model, node,
+		&node_discharge_right_zero_inertia);
 }
 
 /**
  * \fn void model_node_parameters_left_zero_inertia(Model *model, Node *node)
  * \brief Function to calculate the numerical parameters of a node with the
- *   zero-inertia model using left derivatives.
+ *   zero-inertia model and left derivatives.
  * \param model
  * \brief model struct.
  * \param node
@@ -174,28 +169,8 @@ void model_node_parameters_right_zero_inertia(Model *model, Node *node)
  */
 void model_node_parameters_left_zero_inertia(Model *model, Node *node)
 {
-	node_width(node);
-	node_perimeter(node);
-	if (node->U[0] <= 0.)
-	{
-		node->s = node->U[1] = node->u = node->T = node->Kx = node->KxA = 0.;
-	}
-	else if (node->h < model->minimum_depth)
-	{
-		node->s = node->U[2] / node->U[0];
-		node->U[1] = node->u = node->T = node->Kx = node->KxA = 0.;
-	}
-	else
-	{
-		node->s = node->U[2] / node->U[0];
-		model->node_discharge_left(node);
-		node->u = node->U[1] / node->U[0];
-		node->T = node->U[1] * node->s;
-		model->node_diffusion(node);
-		node->KxA = node->Kx * node->U[0];
-	}
-	model->node_infiltration(node);
-	node->Pi = node->P * node->i;
+	model_node_parameters_zero_inertia(model, node,
+		&node_discharge_left_zero_inertia);
 }
 
 /**

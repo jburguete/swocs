@@ -106,42 +106,28 @@ int main(int argn, char **argc)
 		model->model_inlet_dtmax = model_inlet_dtmax_zero_advection;
 		goto zero_advection;
 	case 3:
-		switch (model->channel->friction_model)
-		{
-		case 1:
-			model->node_discharge_centre
-				= node_discharge_centre_zero_inertia_Manning;
-			model->node_discharge_right
-				= node_discharge_right_zero_inertia_Manning;
-			model->node_discharge_left
-				= node_discharge_left_zero_inertia_Manning;
-			model->model_node_parameters_centre
-				= model_node_parameters_centre_zero_inertia;
-			model->model_node_parameters_right
-				= model_node_parameters_right_zero_inertia;
-			model->model_node_parameters_left
-				= model_node_parameters_left_zero_inertia;
-		}
+		model->node_discharge_centre = node_discharge_centre_zero_inertia;
+		model->node_discharge_right = node_discharge_right_zero_inertia;
+		model->node_discharge_left = node_discharge_left_zero_inertia;
+		model->model_node_parameters_centre
+			= model_node_parameters_centre_zero_inertia;
+		model->model_node_parameters_right
+			= model_node_parameters_right_zero_inertia;
+		model->model_node_parameters_left
+			= model_node_parameters_left_zero_inertia;
 		model->node_1dt_max = node_1dt_max_zero_inertia;
 		model->model_inlet_dtmax = model_inlet_dtmax_zero_inertia;
 		goto zero_inertia;
 	case 4:
-		switch (model->channel->friction_model)
-		{
-		case 1:
-			model->node_discharge_centre
-				= node_discharge_centre_kinematic_Manning;
-			model->node_discharge_right
-				= node_discharge_right_kinematic_Manning;
-			model->node_discharge_left
-				= node_discharge_left_kinematic_Manning;
-			model->model_node_parameters_centre
-				= model_node_parameters_centre_kinematic;
-			model->model_node_parameters_right
-				= model_node_parameters_right_kinematic;
-			model->model_node_parameters_left
-				= model_node_parameters_left_kinematic;
-		}
+		model->node_discharge_centre = node_discharge_centre_kinematic;
+		model->node_discharge_right = node_discharge_right_kinematic;
+		model->node_discharge_left = node_discharge_left_kinematic;
+		model->model_node_parameters_centre
+			= model_node_parameters_centre_kinematic;
+		model->model_node_parameters_right
+			= model_node_parameters_right_kinematic;
+		model->model_node_parameters_left
+			= model_node_parameters_left_kinematic;
 		model->node_1dt_max = node_1dt_max_kinematic;
 		model->model_inlet_dtmax = model_inlet_dtmax_kinematic;
 		goto kinematic;

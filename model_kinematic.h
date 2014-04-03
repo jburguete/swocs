@@ -39,9 +39,11 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 // member functions
 
-void node_discharge_centre_kinematic_Manning(Node *node);
-void node_discharge_right_kinematic_Manning(Node *node);
-void node_discharge_left_kinematic_Manning(Node *node);
+void node_discharge_centre_kinematic(Node *node);
+void node_discharge_right_kinematic(Node *node);
+void node_discharge_left_kinematic(Node *node);
+void model_node_parameters_kinematic(Model *model, Node *node,
+	void (*node_discharge)(Node*));
 void model_node_parameters_centre_kinematic(Model *model, Node *node);
 void model_node_parameters_right_kinematic(Model *model, Node *node);
 void model_node_parameters_left_kinematic(Model *model, Node *node);

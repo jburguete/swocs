@@ -70,6 +70,12 @@ struct _Node
  * \brief former time step friction slope.
  * \var f
  * \brief friction factor (\f$S_f = f Q |Q|\f$).
+ * \var f1
+ * \brief geometry factor (\f$f1 = B_0 + Z H\f$).
+ * \var f2
+ * \brief geometry factor (\f$f2 = B_0 + \frac34 Z H\f$).
+ * \var f3
+ * \brief geometry factor (\f$f3 = B_0 + \frac35 Z H\f$).
  * \var zb
  * \brief bottom level.
  * \var zs
@@ -134,10 +140,10 @@ struct _Node
  * \brief Boussinesq's parameter.
  */
 	double friction_coefficient[3], infiltration_coefficient[4],
-		diffusion_coefficient[1], x, dx, ix, U[5], s, si, h, f, Sf, Sfn, zb, zs,
-		zmax, P, B, u, c, l1, l2, i, Pi, Z, B0, F, T, Kx, KxA, Kxi, KxiA,
-		dF[3], dFl[3], dFr[3], nu, Jp[9], Jn[9], Un[3], dU[3], dWl[3], dWr[3],
-		l[3], beta;
+		diffusion_coefficient[1], x, dx, ix, U[5], s, si, h, f, f1, f2, f3, Sf,
+		Sfn, zb, zs, zmax, P, B, u, c, l1, l2, i, Pi, Z, B0, F, T, Kx, KxA, Kxi,
+		KxiA, dF[3], dFl[3], dFr[3], nu, Jp[9], Jn[9], Un[3], dU[3], dWl[3],
+		dWr[3], l[3], beta;
 };
 
 /**
@@ -148,6 +154,7 @@ typedef struct _Node Node;
 // global variables
 
 extern double critical_depth_tolerance;
+extern double (*node_normal_discharge)(Node *node, double S);
 
 // member functions
 
@@ -159,6 +166,9 @@ void node_critical_velocity(Node *node);
 void node_subcritical_discharge(Node *node);
 double node_critical_depth(Node *node, double Q);
 void node_friction_Manning(Node *node);
+double node_normal_discharge_Manning(Node *node, double S);
+void node_friction_Manning_minimizing_losses(Node *node);
+double node_normal_discharge_Manning_minimizing_losses(Node *node, double S);
 void node_infiltration_KostiakovLewis(Node *node);
 void node_diffusion_Rutherford(Node *node);
 

@@ -52,33 +52,39 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 void model_node_parameters_hydrodynamic(Model *model, Node *node)
 {
+	double beta_u, cm;
 	node_width(node);
 	node_perimeter(node);
 	node_critical_velocity(node);
 	if (node->U[0] <= 0.)
 	{
 		node->s = node->U[1] = node->u = node->f = node->Sf = node->F = node->T
-			= node->Kx = node->KxA = 0.;
+			= node->Kx = node->KxA = beta_u = cm = 0.;
+		node->beta = 1.;
 	}
 	else if (node->h < model->minimum_depth)
 	{
 		node->s = node->U[2] / node->U[0];
 		node->U[1] = node->u = node->f = node->Sf = node->F = node->T = node->Kx
-			= node->KxA = 0.;
+			= node->KxA = beta_u = 0.;
+		node->beta = 1.;
+		cm = node->c;
 	}
 	else
 	{
 		node->s = node->U[2] / node->U[0];
 		node->u = node->U[1] / node->U[0];
-		node->F = node->U[0] * node->u * node->u + G * node->h * node->h
+		model->node_friction(node);
+		beta_u = node->beta * node->u;
+		node->F = node->U[0] * beta_u * node->u + G * node->h * node->h
 			* (0.5 * node->B0 + 1./3. * node->Z * node->h);
 		node->T = node->U[1] * node->s;
-		model->node_friction(node);
 		model->node_diffusion(node);
 		node->KxA = node->Kx * node->U[0];
+		cm = sqrt(node->c * node->c + (node->beta - 1.) * beta_u * node->u);
 	}
-	node->l1 = node->u + node->c;
-	node->l2 = node->u - node->c;
+	node->l1 = beta_u + cm;
+	node->l2 = beta_u - cm;
 	model->node_infiltration(node);
 	node->Pi = node->P * node->i;
 }
@@ -105,10 +111,15 @@ double node_1dt_max_hydrodynamic(Node *node)
  */
 void node_flows_hydrodynamic(Node *node1)
 {
+	double Am, dh;
 	Node *node2 = node1 + 1;
 	node1->dF[0] = node2->U[1] - node1->U[1];
-	node1->dF[1] = node2->F - node1->F + G * 0.5 * (node2->U[0] + node1->U[0])
-		* (node2->zb - node1->zb + 0.5 * (node2->Sf + node1->Sf) * node1->ix);
+	Am = 0.5 * (node2->U[0] + node1->U[0]);
+	dh = node2->h - node1->h;
+	Am -= 1./12. * (node2->Z + node1->Z) * dh * dh;
+	node1->dF[1] = node2->F - node1->F + G * (Am * (node2->zb - node1->zb)
+		+ 0.5 * (node2->Sf * node2->U[0] + node1->Sf * node1->U[0]) * node1->ix
+		);
 	node1->dF[2] = node2->T - node1->T;
 }
 

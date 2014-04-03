@@ -42,56 +42,56 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "model_kinematic.h"
 
 /**
- * \fn void node_discharge_centre_kinematic_Manning(Node *node)
- * \brief Function to calculate the kinematic discharge with the Manning model
- *   using centred derivatives.
+ * \fn void node_discharge_centre_kinematic(Node *node)
+ * \brief Function to calculate the kinematic discharge using centred
+ *   derivatives.
  * \param node
  * \brief node struct.
  */
-void node_discharge_centre_kinematic_Manning(Node *node)
+void node_discharge_centre_kinematic(Node *node)
 {
-	node->U[1] = sqrt(((node - 1)->zb - (node + 1)->zb)
-		/ ((node - 1)->ix + node->ix)) * node->U[0]
-		* pow(node->U[0] / node->P, 2./3.)
-		/ node->friction_coefficient[0];
+	node->U[1] = node_normal_discharge(node,
+		(((node - 1)->zb - (node + 1)->zb) / ((node - 1)->ix + node->ix)));
 }
 
 /**
- * \fn void node_discharge_right_kinematic_Manning(Node *node)
- * \brief Function to calculate the kinematic discharge with the Manning model
- *   using right derivatives.
+ * \fn void node_discharge_right_kinematic(Node *node)
+ * \brief Function to calculate the kinematic discharge using right derivatives.
  * \param node
  * \brief node struct.
  */
-void node_discharge_right_kinematic_Manning(Node *node)
+void node_discharge_right_kinematic(Node *node)
 {
-	node->U[1] = sqrt((node->zb - (node + 1)->zb) / node->ix) * node->U[0]
-		* pow(node->U[0] / node->P, 2./3.) / node->friction_coefficient[0];
+	node->U[1] = node_normal_discharge(node,
+		(node->zb - (node + 1)->zb) / node->ix);
 }
 
 /**
- * \fn void node_discharge_left_kinematic_Manning(Node *node)
- * \brief Function to calculate the kinematic discharge with the Manning model
- *   using left derivatives.
+ * \fn void node_discharge_left_kinematic(Node *node)
+ * \brief Function to calculate the kinematic discharge using left derivatives.
  * \param node
  * \brief node struct.
  */
-void node_discharge_left_kinematic_Manning(Node *node)
+void node_discharge_left_kinematic(Node *node)
 {
-	node->U[1] = sqrt(((node - 1)->zb - node->zb) / (node - 1)->ix) * node->U[0]
-		* pow(node->U[0] / node->P, 2./3.) / node->friction_coefficient[0];
+	node->U[1] = node_normal_discharge(node,
+			((node - 1)->zb - node->zb) / (node - 1)->ix);
 }
 
 /**
- * \fn void model_node_parameters_centre_kinematic(Model *model, Node *node)
+ * \fn void model_node_parameters_kinematic(Model *model, Node *node, \
+ *   void (*node_discharge)(Node*))
  * \brief Function to calculate the numerical parameters of a node with the
  *   kinematic model using centred derivatives.
  * \param model
  * \brief model struct.
  * \param node
  * \brief node struct.
+ * \param node_discharge
+ * \brief pointer to the function to calculate the discharge.
  */
-void model_node_parameters_centre_kinematic(Model *model, Node *node)
+void model_node_parameters_kinematic(Model *model, Node *node,
+	void (*node_discharge)(Node*))
 {
 	node_width(node);
 	node_perimeter(node);
@@ -108,7 +108,7 @@ void model_node_parameters_centre_kinematic(Model *model, Node *node)
 	else
 	{
 		node->s = node->U[2] / node->U[0];
-		model->node_discharge_centre(node);
+		node_discharge(node);
 		node->u = node->U[1] / node->U[0];
 		node->T = node->U[1] * node->s;
 		model->node_friction(node);
@@ -120,9 +120,24 @@ void model_node_parameters_centre_kinematic(Model *model, Node *node)
 }
 
 /**
+ * \fn void model_node_parameters_centre_kinematic(Model *model, Node *node)
+ * \brief Function to calculate the numerical parameters of a node with the
+ *   kinematic model and centred derivatives.
+ * \param model
+ * \brief model struct.
+ * \param node
+ * \brief node struct.
+ */
+void model_node_parameters_centre_kinematic(Model *model, Node *node)
+{
+	model_node_parameters_kinematic(model, node,
+		&node_discharge_centre_kinematic);
+}
+
+/**
  * \fn void model_node_parameters_right_kinematic(Model *model, Node *node)
  * \brief Function to calculate the numerical parameters of a node with the
- *   kinematic model using right derivatives.
+ *   kinematic model and right derivatives.
  * \param model
  * \brief model struct.
  * \param node
@@ -130,34 +145,14 @@ void model_node_parameters_centre_kinematic(Model *model, Node *node)
  */
 void model_node_parameters_right_kinematic(Model *model, Node *node)
 {
-	node_width(node);
-	node_perimeter(node);
-	if (node->U[0] <= 0.)
-	{
-		node->s = node->U[1] = node->u = node->T = node->Kx = node->KxA = 0.;
-	}
-	else if (node->h < model->minimum_depth)
-	{
-		node->s = node->U[2] / node->U[0];
-		node->U[1] = node->u = node->T = node->Kx = node->KxA = 0.;
-	}
-	else
-	{
-		node->s = node->U[2] / node->U[0];
-		model->node_discharge_right(node);
-		node->u = node->U[1] / node->U[0];
-		node->T = node->U[1] * node->s;
-		model->node_diffusion(node);
-		node->KxA = node->Kx * node->U[0];
-	}
-	model->node_infiltration(node);
-	node->Pi = node->P * node->i;
+	model_node_parameters_kinematic(model, node,
+		&node_discharge_right_kinematic);
 }
 
 /**
  * \fn void model_node_parameters_left_kinematic(Model *model, Node *node)
  * \brief Function to calculate the numerical parameters of a node with the
- *   kinematic model using left derivatives.
+ *   kinematic model and left derivatives.
  * \param model
  * \brief model struct.
  * \param node
@@ -165,28 +160,8 @@ void model_node_parameters_right_kinematic(Model *model, Node *node)
  */
 void model_node_parameters_left_kinematic(Model *model, Node *node)
 {
-	node_width(node);
-	node_perimeter(node);
-	if (node->U[0] <= 0.)
-	{
-		node->s = node->U[1] = node->u = node->T = node->Kx = node->KxA = 0.;
-	}
-	else if (node->h < model->minimum_depth)
-	{
-		node->s = node->U[2] / node->U[0];
-		node->U[1] = node->u = node->T = node->Kx = node->KxA = 0.;
-	}
-	else
-	{
-		node->s = node->U[2] / node->U[0];
-		model->node_discharge_left(node);
-		node->u = node->U[1] / node->U[0];
-		node->T = node->U[1] * node->s;
-		model->node_diffusion(node);
-		node->KxA = node->Kx * node->U[0];
-	}
-	model->node_infiltration(node);
-	node->Pi = node->P * node->i;
+	model_node_parameters_kinematic(model, node,
+		&node_discharge_left_kinematic);
 }
 
 /**
