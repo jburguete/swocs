@@ -22,7 +22,7 @@ long double beta(long double h)
 }
 
 void write(char *filename, long double hl, long double hr, long double ur,
-	int outlet, int scheme, int model)
+	int n, long double cfl, int outlet, int scheme, int model)
 {
 	long double ul, v, Ql, Qr, Al, Ar;
 	FILE *file;
@@ -44,13 +44,13 @@ void write(char *filename, long double hl, long double hr, long double ur,
 	fprintf(file, "0 "F"\n", Ql);
 	fprintf(file, "1\n");
 	fprintf(file, "0 "F"\n", Ql);
-	fprintf(file, "201 2\n");
+	fprintf(file, "%d 2\n", n);
 	fprintf(file, "4\n");
 	fprintf(file, "0 "F" "F" 1\n", Al, Ql);
 	fprintf(file, F" "F" "F" 1\n", x0, Al, Ql);
 	fprintf(file, F" "F" "F" 0\n", x0, Ar, Qr);
 	fprintf(file, F" "F" "F" 0\n", l, Ar, Qr);
-	fprintf(file, F" 0 0.9 0.01 %d 2 %d\n", (xf - x0) / v, scheme, model);
+	fprintf(file, F" 0 "F" 0.01 %d 2 %d\n", (xf - x0) / v, cfl, scheme, model);
 	fclose(file);
 }
 
@@ -65,23 +65,27 @@ int main()
 		b0 = 10.L;
 		z = 0.L;
 		snprintf(name, 32, "case1-%d-%d", scheme[i], model[i]);
-		write(name, 1.1L, 1.L, 0.L, 1, scheme[i], model[i]);
+		write(name, 1.1L, 1.L, 0.L, 201, 0.9, 1, scheme[i], model[i]);
 		snprintf(name, 32, "case2-%d-%d", scheme[i], model[i]);
-		write(name, 1.L, 0.1L, 0.L, 1, scheme[i], model[i]);
+		write(name, 1.L, 0.1L, 0.L, 201, 0.9, 1, scheme[i], model[i]);
 		snprintf(name, 32, "case3-%d-%d", scheme[i], model[i]);
-		write(name, 1.1L, 1.L, 4.L, 2, scheme[i], model[i]);
+		write(name, 1.1L, 1.L, 4.L, 201, 0.9, 2, scheme[i], model[i]);
 		snprintf(name, 32, "case4-%d-%d", scheme[i], model[i]);
-		write(name, 1.L, 0.1L, 1.L, 2, scheme[i], model[i]);
+		write(name, 1.L, 0.1L, 1.L, 201, 0.9, 2, scheme[i], model[i]);
 		b0 = 0.L;
 		z = 10.L;
 		snprintf(name, 32, "case5-%d-%d", scheme[i], model[i]);
-		write(name, 1.1L, 1.L, 0.L, 1, scheme[i], model[i]);
+		write(name, 1.1L, 1.L, 0.L, 201, 0.9, 1, scheme[i], model[i]);
 		snprintf(name, 32, "case6-%d-%d", scheme[i], model[i]);
-		write(name, 1.L, 0.2L, 0.L, 1, scheme[i], model[i]);
+		write(name, 1.L, 0.2L, 0.L, 201, 0.9, 1, scheme[i], model[i]);
 		snprintf(name, 32, "case7-%d-%d", scheme[i], model[i]);
-		write(name, 1.1L, 1.L, 3.L, 2, scheme[i], model[i]);
+		write(name, 1.1L, 1.L, 3.L, 201, 0.9, 2, scheme[i], model[i]);
 		snprintf(name, 32, "case8-%d-%d", scheme[i], model[i]);
-		write(name, 1.L, 0.2L, 1.L, 2, scheme[i], model[i]);
+		write(name, 1.L, 0.2L, 1.L, 201, 0.9, 2, scheme[i], model[i]);
+		snprintf(name, 32, "case8b-%d-%d", scheme[i], model[i]);
+		write(name, 1.L, 0.2L, 1.L, 401, 0.9, 2, scheme[i], model[i]);
+		snprintf(name, 32, "case8c-%d-%d", scheme[i], model[i]);
+		write(name, 1.L, 0.2L, 1.L, 201, 0.1, 2, scheme[i], model[i]);
 	}
 	return 0;
 }

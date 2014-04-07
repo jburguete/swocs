@@ -1,5 +1,5 @@
 set term pos enh eps 10
-set size 0.45,0.45
+set size 0.44,0.44
 set xlabel 'x (m)'
 set ylabel 'H (m)'
 set key bottom left
@@ -35,4 +35,10 @@ plot [100:180][0.9:1.2] 'o7-1-1' u 1:(h($2,10)) t'Hydrodynamic upwind' w p,\
 set out 'rankine-hugoniot-case8.eps'
 plot [100:200][0:1.1] 'o8-1-1' u 1:(h($2,10)) t'Hydrodynamic upwind' w p,\
 	'o8-4-1' u 1:(h($2,10)) t'Hydrodynamic TVD' w p pt 6,\
+	'sol4' t'Analytical' w l lt 1
+set out 'rankine-hugoniot-case8b.eps'
+plot [100:200][0:1.1] 'o8b-4-1' u 1:(h($2,10)) \
+		t'Hydrodynamic TVD {/Symbol d}x=0.5m CFL=0.9' w p,\
+	'o8c-4-1' u 1:(h($2,10)) \
+		t'Hydrodynamic TVD {/Symbol d}x=1.0m CFL=0.1' w p pt 6,\
 	'sol4' t'Analytical' w l lt 1
