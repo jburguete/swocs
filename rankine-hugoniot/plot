@@ -4,24 +4,24 @@ set xlabel 'x (m)'
 set ylabel 'H (m)'
 set key bottom left
 set out 'rankine-hugoniot-case1.eps'
-plot [130:170][0.9:1.2] 'o1-1-1' u 1:($2/10) t'Hydrodynamic upwind' w p,\
+plot [100:180][0.95:1.15] 'o1-1-1' u 1:($2/10) t'Hydrodynamic upwind' w p,\
 	'o1-4-1' u 1:($2/10) t'Hydrodynamic TVD' w p pt 6,\
 	'sol1' t'Analytical' w l lt 1
 set out 'rankine-hugoniot-case2.eps'
-plot [100:170][0:1.1] 'o2-1-1' u 1:($2/10) t'Hydrodynamic upwind' w p,\
+plot [100:180][0:1.1] 'o2-1-1' u 1:($2/10) t'Hydrodynamic upwind' w p,\
 	'o2-4-1' u 1:($2/10) t'Hydrodynamic TVD' w p pt 6,\
 	'sol2' t'Analytical' w l lt 1
 set out 'rankine-hugoniot-case3.eps'
-plot [130:170][0.9:1.2] 'o3-1-1' u 1:($2/10) t'Hydrodynamic upwind' w p,\
+plot [100:180][0.95:1.15] 'o3-1-1' u 1:($2/10) t'Hydrodynamic upwind' w p,\
 	'o3-4-1' u 1:($2/10) t'Hydrodynamic TVD' w p pt 6,\
 	'sol1' t'Analytical' w l lt 1
 set out 'rankine-hugoniot-case4.eps'
-plot [100:170][0:1.1] 'o4-1-1' u 1:($2/10) t'Hydrodynamic upwind' w p,\
+plot [100:180][0:1.1] 'o4-1-1' u 1:($2/10) t'Hydrodynamic upwind' w p,\
 	'o4-4-1' u 1:($2/10) t'Hydrodynamic TVD' w p pt 6,\
 	'sol2' t'Analytical' w l lt 1
 h(A,Z)=sqrt(A/Z)
 set out 'rankine-hugoniot-case5.eps'
-plot [100:180][0.9:1.2] 'o5-1-1' u 1:(h($2,10)) t'Hydrodynamic upwind' w p,\
+plot [100:200][0.95:1.15] 'o5-1-1' u 1:(h($2,10)) t'Hydrodynamic upwind' w p,\
 	'o5-4-1' u 1:(h($2,10)) t'Hydrodynamic TVD' w p pt 6,\
 	'sol3' t'Analytical' w l lt 1
 set out 'rankine-hugoniot-case6.eps'
@@ -29,13 +29,14 @@ plot [100:200][0:1.1] 'o6-1-1' u 1:(h($2,10)) t'Hydrodynamic upwind' w p,\
 	'o6-4-1' u 1:(h($2,10)) t'Hydrodynamic TVD' w p pt 6,\
 	'sol4' t'Analytical' w l lt 1
 set out 'rankine-hugoniot-case7.eps'
-plot [100:180][0.9:1.2] 'o7-1-1' u 1:(h($2,10)) t'Hydrodynamic upwind' w p,\
+plot [100:200][0.95:1.15] 'o7-1-1' u 1:(h($2,10)) t'Hydrodynamic upwind' w p,\
 	'o7-4-1' u 1:(h($2,10)) t'Hydrodynamic TVD' w p pt 6,\
 	'sol3' t'Analytical' w l lt 1
 set out 'rankine-hugoniot-case8.eps'
 plot [100:200][0:1.1] 'o8-1-1' u 1:(h($2,10)) t'Hydrodynamic upwind' w p,\
 	'o8-4-1' u 1:(h($2,10)) t'Hydrodynamic TVD' w p pt 6,\
 	'sol4' t'Analytical' w l lt 1
+set size 0.50,0.50
 set out 'rankine-hugoniot-case8b.eps'
 plot [100:200][0:1.1] 'o8b-4-1' u 1:(h($2,10)) \
 		t'Hydrodynamic TVD {/Symbol d}x=0.5m CFL=0.9' w p,\
