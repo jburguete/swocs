@@ -9,7 +9,6 @@
 #define k 2.L * M_PIl / lambda
 #define F "%.14Le"
 #define beta 49.L/48.L
-#define N 201
 #define N2 2001
 #define cfl 0.9L
 
@@ -87,7 +86,8 @@ long double q(long double h0, long double h1, long double h2, long double u0,
 {return a(h(h0, h1, h2, u0, phi, x, t)) * u(h0, h1, h2, u0, phi, x, t);}
 
 void write(char *filename1, char *filename2, long double h0, long double h1,
-	long double h2, long double u0, long double phi, int scheme, int model)
+	long double h2, long double u0, long double phi, int N, int scheme,
+	int model)
 {
 	int i, NT;
 	long double S0, TF, X, T;
@@ -142,15 +142,22 @@ int main()
 		b0 = 10.L;
 		z = 0.L;
 		snprintf(name, 32, "case1-%d-%d", scheme[i], model[i]);
-		write(name, "sol1", 1.L, 1e-7L, 1e-7L, 1.L, 0.L, scheme[i], model[i]);
+		write(name, "sol1", 1.L, 1e-7L, 1e-7L, 1.L, 0.L, 201, scheme[i],
+			model[i]);
 		snprintf(name, 32, "case2-%d-%d", scheme[i], model[i]);
-		write(name, "sol2", 1.L, 1e-7L, 1e-7L, 4.L, 0.L, scheme[i], model[i]);
+		write(name, "sol2", 1.L, 1e-7L, 1e-7L, 4.L, 0.L, 201, scheme[i],
+			model[i]);
 		b0 = 0.L;
 		z = 10.L;
 		snprintf(name, 32, "case3-%d-%d", scheme[i], model[i]);
-		write(name, "sol3", 1.L, 1e-7L, 1e-7L, 1.L, 0.L, scheme[i], model[i]);
+		write(name, "sol3", 1.L, 1e-7L, 1e-7L, 1.L, 0.L, 201, scheme[i],
+			model[i]);
 		snprintf(name, 32, "case4-%d-%d", scheme[i], model[i]);
-		write(name, "sol4", 1.L, 1e-7L, 1e-7L, 3.L, 0.L, scheme[i], model[i]);
+		write(name, "sol4", 1.L, 1e-7L, 1e-7L, 3.L, 0.L, 201, scheme[i],
+			model[i]);
+		snprintf(name, 32, "case4b-%d-%d", scheme[i], model[i]);
+		write(name, "sol4b", 1.L, 1e-7L, 1e-7L, 3.L, 0.L, 801, scheme[i],
+			model[i]);
 	}
 	return 0;
 }
