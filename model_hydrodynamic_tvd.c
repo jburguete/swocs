@@ -43,6 +43,11 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "model_hydrodynamic.h"
 #include "model_hydrodynamic_tvd.h"
 
+#define FLUX_LIMITER_MONITOR 1
+#define FLUX_LIMITER_LAX_WENDROFF 2
+
+#define FLUX_LIMITER 2
+
 /**
  * \fn void model_surface_flow_hydrodynamic_limiter(double dW1, double dW2)
  * \brief Function to make the high order TVD flux limiter.
@@ -57,9 +62,13 @@ double model_surface_flow_hydrodynamic_limiter(double dW1, double dW2)
 	double r;
 	if (dW1 * dW2 <= 0.) return 0.;
 	r = dW1 / dW2;
+#if FLUX_LIMITER == FLUX_LIMITER_MONITOR
 	if (r >=3. ) return 2.;
 	if (r <= 1./3.) return r + r;
 	return 0.5 * (r + 1.);
+#elif FLUX_LIMITER == FLUX_LIMITER_LAX_WENDROFF
+	return r;
+#endif
 }
 
 /**

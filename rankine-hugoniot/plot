@@ -36,6 +36,30 @@ set out 'rankine-hugoniot-case8.eps'
 plot [100:200][0:1.1] 'o8-1-1' u 1:(h($2,10)) t'Hydrodynamic upwind' w p,\
 	'o8-4-1' u 1:(h($2,10)) t'Hydrodynamic TVD' w p pt 6,\
 	'sol4' t'Analytical' w l lt 1
+set out 'rankine-hugoniot-case8-0.eps'
+plot [0:200][0:1.1] \
+	'o8-4-1-0' u 1:(h($2,10)) t'Hydrodynamic TVD t=0s' w p pt 6,\
+	'sol8-0' t'Analytical' w l lt 1
+set out 'rankine-hugoniot-case8-2.eps'
+plot [0:200][0:1.1] \
+	'o8-4-1-2' u 1:(h($2,10)) t'Hydrodynamic TVD t=2s' w p pt 6,\
+	'sol8-2' t'Analytical' w l lt 1
+set out 'rankine-hugoniot-case8-4.eps'
+plot [0:200][0:1.1] \
+	'o8-4-1-4' u 1:(h($2,10)) t'Hydrodynamic TVD t=4s' w p pt 6,\
+	'sol8-4' t'Analytical' w l lt 1
+set out 'rankine-hugoniot-case8-6.eps'
+plot [0:200][0:1.1] \
+	'o8-4-1-6' u 1:(h($2,10)) t'Hydrodynamic TVD t=6s' w p pt 6,\
+	'sol8-6' t'Analytical' w l lt 1
+set out 'rankine-hugoniot-case8-8.eps'
+plot [0:200][0:1.1] \
+	'o8-4-1-8' u 1:(h($2,10)) t'Hydrodynamic TVD t=8s' w p pt 6,\
+	'sol8-8' t'Analytical' w l lt 1
+set out 'rankine-hugoniot-case8-10.eps'
+plot [0:200][0:1.1] \
+	'o8-4-1-10' u 1:(h($2,10)) t'Hydrodynamic TVD t=10s' w p pt 6,\
+	'sol8-10' t'Analytical' w l lt 1
 set size 0.50,0.50
 set out 'rankine-hugoniot-case8b.eps'
 plot [100:200][0:1.1] 'o8b-4-1' u 1:(h($2,10)) \
