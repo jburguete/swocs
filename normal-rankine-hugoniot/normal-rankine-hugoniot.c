@@ -29,29 +29,35 @@ long double beta(long double h)
 }
 
 long double s0(long double s, long double h)
-{return s * g * n * n / (beta(h) * powl(h, 1.L/3.L));}
+{return s * g * n * n / powl(h, 1.L/3.L);}
 
 long double t(long double s0, long double h1, long double h2)
 {return (xf - x0) / v(s0, h1, h2);}
 
-long double f1(long double x)
+long double f1(long double x, long double b)
 {
-	long double k = (x - 1.L) / (powl(x, 2.L/3.L) - 1.L);
-	return (x + 1.L) / (x + x) * k * k;
+	long double k1, k2;
+	k1 = x - 1.L;
+	k2 = powl(x, 5.L/3.L) - 1.L;
+	return 0.5L * (x * x - 1.L)  * k1
+		/ (k2 * k2 - b * k1 * (powl(x, 7.L/3.L) - 1.L));
 }
 
-long double f2(long double x)
+long double f2(long double x, long double b)
 {
-	long double k = x * (powl(x, 2.L/3.L) - 1.L);
-	return 16.L/27.L * (x * x * x - 1.L) * (x * x - 1.L) / (k * k);
+	long double k1, k2;
+	k1 = x * x - 1.L;
+	k2 = powl(x, 8.L/3.L) - 1.L;
+	return 16.L/27.L * (x * x * x - 1.L) * k1
+		/ (k2 * k2 - b * k1 * (powl(x, 10.L/3.L) - 1.L));
 }
 
 void write(char *filename, long double hl, long double hr,
-	long double (*s)(long double), int scheme, int model)
+	long double (*s)(long double, long double), int scheme, int model)
 {
 	long double S, S0, Ql, Qr, Al, Ar;
 	FILE *file;
-	S = s(hl / hr);
+	S = s(hl / hr, beta(hr));
 	S0 = s0(S, hr);
 	Ql = q(S0, hl);
 	Qr = q(S0, hr);

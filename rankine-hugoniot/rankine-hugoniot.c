@@ -24,12 +24,16 @@ long double beta(long double h)
 void write(char *filename, long double hl, long double hr, long double ur,
 	int n, long double cfl, int outlet, int scheme, int model)
 {
-	long double ul, v, Ql, Qr, Al, Ar;
+	long double ul, v, Ql, Qr, Al, Ar, dA, A, B, C;
 	FILE *file;
 	Al = a(hl);
 	Ar = a(hr);
 	Qr = Ar * ur;
-	ul = ur + sqrtl(g * (i1(hl) - i1(hr)) * (Al - Ar) / (beta(hr) * Al * Ar));
+	dA = Al - Ar;
+	A = Al * (Al - beta(hl) * dA);
+	B = Al * Ar * ur;
+	C = Ar * (Ar + beta(hr) * dA) * ur * ur - g * dA * (i1(hl) - i1(hr));
+	ul = (B + sqrtl(B * B - A * C)) / A;
 	Ql = Al * ul;
 	v = (Ql - Qr) / (Al - Ar);
 	file = fopen(filename, "w");
@@ -77,15 +81,15 @@ int main()
 		snprintf(name, 32, "case5-%d-%d", scheme[i], model[i]);
 		write(name, 1.1L, 1.L, 0.L, 201, 0.9, 1, scheme[i], model[i]);
 		snprintf(name, 32, "case6-%d-%d", scheme[i], model[i]);
-		write(name, 1.L, 0.2L, 0.L, 201, 0.9, 1, scheme[i], model[i]);
+		write(name, 1.L, 0.3L, 0.L, 201, 0.9, 1, scheme[i], model[i]);
 		snprintf(name, 32, "case7-%d-%d", scheme[i], model[i]);
 		write(name, 1.1L, 1.L, 3.L, 201, 0.9, 2, scheme[i], model[i]);
 		snprintf(name, 32, "case8-%d-%d", scheme[i], model[i]);
-		write(name, 1.L, 0.2L, 1.L, 201, 0.9, 2, scheme[i], model[i]);
+		write(name, 1.L, 0.3L, 2.L, 201, 0.9, 2, scheme[i], model[i]);
 		snprintf(name, 32, "case8b-%d-%d", scheme[i], model[i]);
-		write(name, 1.L, 0.2L, 1.L, 401, 0.9, 2, scheme[i], model[i]);
+		write(name, 1.L, 0.3L, 2.L, 401, 0.9, 2, scheme[i], model[i]);
 		snprintf(name, 32, "case8c-%d-%d", scheme[i], model[i]);
-		write(name, 1.L, 0.2L, 1.L, 201, 0.1, 2, scheme[i], model[i]);
+		write(name, 1.L, 0.3L, 2.L, 201, 0.1, 2, scheme[i], model[i]);
 	}
 	return 0;
 }

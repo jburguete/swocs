@@ -46,7 +46,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define FLUX_LIMITER_MONITOR 1
 #define FLUX_LIMITER_LAX_WENDROFF 2
 
-#define FLUX_LIMITER 2
+#define FLUX_LIMITER 1
 
 /**
  * \fn void model_surface_flow_hydrodynamic_limiter(double dW1, double dW2)

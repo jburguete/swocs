@@ -4,27 +4,27 @@ set xlabel 'x (m)'
 set ylabel 'H (m)'
 set key bottom left
 set out 'normal-shock-case1.eps'
-plot [100:180][0.95:1.15] 'o1-1-1' u 1:($2/10) t'Hydrodynamic upwind' w p,\
+plot [110:170][0.95:1.15] 'o1-1-1' u 1:($2/10) t'Hydrodynamic upwind' w p,\
 	'o1-4-1' u 1:($2/10) t'Hydrodynamic TVD' w p pt 6,\
 	'o1-1-3' u 1:($2/10) t'Zero-inertia upwind' w p pt 2,\
 	'o1-1-4' u 1:($2/10) t'Kinematic upwind' w p pt 8,\
 	'sol1' t'Analytical' w l lt 1
 set out 'normal-shock-case2.eps'
-plot [100:180][0:1.1] 'o2-1-1' u 1:($2/10) t'Hydrodynamic upwind' w p,\
+plot [110:170][0:1.1] 'o2-1-1' u 1:($2/10) t'Hydrodynamic upwind' w p,\
 	'o2-4-1' u 1:($2/10) t'Hydrodynamic TVD' w p pt 6,\
 	'o2-1-3' u 1:($2/10) t'Zero-inertia upwind' w p pt 2,\
 	'o2-1-4' u 1:($2/10) t'Kinematic upwind' w p pt 8,\
 	'sol2' t'Analytical' w l lt 1
-h(A,Z)=sqrt(A/Z)
-set out 'normal-shock-case3.eps'
-plot [100:180][0.95:1.15] 'o3-1-1' u 1:(h($2,10)) t'Hydrodynamic upwind' w p,\
-	'o3-4-1' u 1:(h($2,10)) t'Hydrodynamic TVD' w p pt 6,\
-	'o3-1-3' u 1:(h($2,10)) t'Zero-inertia upwind' w p pt 2,\
-	'o3-1-4' u 1:(h($2,10)) t'Kinematic upwind' w p pt 8,\
-	'sol3' t'Analytical' w l lt 1
-set out 'normal-shock-case4.eps'
-plot [100:180][0:1.1] 'o4-1-1' u 1:(h($2,10)) t'Hydrodynamic upwind' w p,\
-	'o4-4-1' u 1:(h($2,10)) t'Hydrodynamic TVD' w p pt 6,\
-	'o4-1-3' u 1:(h($2,10)) t'Zero-inertia upwind' w p pt 2,\
-	'o4-1-4' u 1:(h($2,10)) t'Kinematic upwind' w p pt 8,\
-	'sol4' t'Analytical' w l lt 1
+#h(A,Z)=sqrt(A/Z)
+#set out 'normal-shock-case3.eps'
+#plot [100:180][0.95:1.15] 'o3-1-1' u 1:(h($2,10)) t'Hydrodynamic upwind' w p,\
+#	'o3-4-1' u 1:(h($2,10)) t'Hydrodynamic TVD' w p pt 6,\
+#	'o3-1-3' u 1:(h($2,10)) t'Zero-inertia upwind' w p pt 2,\
+#	'o3-1-4' u 1:(h($2,10)) t'Kinematic upwind' w p pt 8,\
+#	'sol3' t'Analytical' w l lt 1
+#set out 'normal-shock-case4.eps'
+#plot [100:180][0:1.1] 'o4-1-1' u 1:(h($2,10)) t'Hydrodynamic upwind' w p,\
+#	'o4-4-1' u 1:(h($2,10)) t'Hydrodynamic TVD' w p pt 6,\
+#	'o4-1-3' u 1:(h($2,10)) t'Zero-inertia upwind' w p pt 2,\
+#	'o4-1-4' u 1:(h($2,10)) t'Kinematic upwind' w p pt 8,\
+#	'sol4' t'Analytical' w l lt 1
