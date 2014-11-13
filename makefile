@@ -33,7 +33,7 @@ manuals = reference-manual.pdf swocs-manuals/english/user-manual.pdf \
 
 libraries = -lm
 
-flags = -O2 -Wall
+flags = -march=native -flto -O3 -Wall
 
 prefix =
 exe =
