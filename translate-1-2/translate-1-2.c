@@ -12,7 +12,7 @@ int main(int argn, char **argc)
 	char *buffer = NULL;
 	if (argn != 3)
 	{
-		printf("The sintaxis is:\ntranslate-1-2 input_file output_file\n");
+		printf("The syntax is:\ntranslate-1-2 input_file output_file\n");
 		return 1;
 	}
 	input_file = fopen(argc[1], "r");
