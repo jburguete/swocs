@@ -76,7 +76,7 @@ int main(int argn, char **argc)
 	Model model[1];
 	if (argn < 3 || argn == 6 || argn > 7)
 	{
-		printf("the sintaxis is:\n./SWOCS input_file "
+		printf("The syntax is:\n./SWOCS input_file "
 			"output_variables_file "
 			"[output_flows_file] [output_advance_file]"
 			"[input_probes_file output_probes_file]\n");
